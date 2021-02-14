@@ -1,6 +1,7 @@
 
 # Visual Studio
 /.vs/
+*.vcxproj.user
 
 # Build
 **/x64/
