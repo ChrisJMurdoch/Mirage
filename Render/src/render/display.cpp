@@ -3,8 +3,38 @@
 #define display_p // Use private display header
 #include "render\display.h"// Includes glfw3
 
+#include"render\program.h"
+#include"render\model.h"
+
 #include <iostream>
 #include <exception>
+
+const char* vertexSource =
+    "#version 330 core\n"
+    "layout(location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\n";
+
+const char* fragmentSource =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n";
+
+float vertices[] = {
+     0.5f,  0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f,
+    -0.5f,  0.5f, 0.0f
+};
+unsigned int indices[] = {
+    0, 1, 2,
+    0, 1, 3
+};
 
 void display::create(int width, int height, const char *title)
 {
@@ -31,13 +61,24 @@ void display::create(int width, int height, const char *title)
         throw std::exception("GLAD OpenGL-loading exception");
     }
 
+    // Create shader program
+    Program prog = Program();
+    prog.addShader(vertexSource, Program::Shader::VERTEX);
+    prog.addShader(fragmentSource, Program::Shader::FRAGMENT);
+    prog.link();
+
+    // Create model
+    Model model = Model(vertices, sizeof(vertices), indices, sizeof(indices), &prog);
+
     // Render loop
     while (!glfwWindowShouldClose(window))
     {
         getInput(window);
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Draw
+        model.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

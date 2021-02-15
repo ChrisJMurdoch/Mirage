@@ -8,7 +8,6 @@
 
 int main()
 {
-	std::cout << "Starting..." << std::endl;
 	try
 	{
 		display::create(1000, 600, "Redshift");
@@ -17,6 +16,5 @@ int main()
 	{
 		std::cout << e.what() << std::endl;
 	}
-	std::cout << "Finished." << std::endl;
 	return 0;
 }
