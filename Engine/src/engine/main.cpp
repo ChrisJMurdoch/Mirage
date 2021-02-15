@@ -8,10 +8,9 @@
 #include <exception>
 
 float vertices[] = {
-     0.5f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    -0.5f,  0.5f, 0.0f
+     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
 };
 unsigned int indices[] = {
     0, 1, 2,
@@ -40,9 +39,6 @@ int main()
 
         // Link shaders into program
         prog.link();
-
-        // Add uniforms
-        prog.setUniform4f("colour", 0.8, 0.3, 0.5, 1);
 
         // Add model
         Model model = Model(vertices, sizeof(vertices), indices, sizeof(indices), &prog);
