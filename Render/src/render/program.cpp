@@ -58,6 +58,13 @@ void Program::link()
 	shaders.clear();
 }
 
+void Program::setUniform4f(const char *name, float x, float y, float z, float w)
+{
+	glUseProgram(id);
+	int loc = glGetUniformLocation(id, name);
+	glUniform4f(loc, x, y, z, w);
+}
+
 void Program::use()
 {
 	glUseProgram(id);
