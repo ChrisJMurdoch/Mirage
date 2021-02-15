@@ -33,9 +33,6 @@ void Program::addShader(const char* source, Shader type)
 	// Attach and track
 	glAttachShader(id, shader);
 	shaders.push_front(shader);
-
-	// Display
-	std::cout << " Shader compiled." << std::endl;
 }
 
 void Program::link()
@@ -57,12 +54,8 @@ void Program::link()
 	for (unsigned int shader : shaders)
 	{
 		glDeleteShader(shader);
-		std::cout << " Shader deleted." << std::endl;
 	}
 	shaders.clear();
-
-	// Display
-	std::cout << " Program linked." << std::endl;
 }
 
 void Program::use()

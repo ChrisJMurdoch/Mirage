@@ -9,34 +9,12 @@
 #include <iostream>
 #include <exception>
 
-const char* vertexSource =
-    "#version 330 core\n"
-    "layout(location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\n";
+void resizeCallback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
-const char* fragmentSource =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n";
-
-float vertices[] = {
-     0.5f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    -0.5f,  0.5f, 0.0f
-};
-unsigned int indices[] = {
-    0, 1, 2,
-    0, 1, 3
-};
-
-void display::create(int width, int height, const char *title)
+Display::Display(int width, int height, const char *title)
 {
     // Initialise GLFW
     glfwInit();
@@ -45,7 +23,7 @@ void display::create(int width, int height, const char *title)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
     // Create window
-    GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
+    window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (window == NULL)
     {
         glfwTerminate();
@@ -61,39 +39,37 @@ void display::create(int width, int height, const char *title)
         throw std::exception("GLAD OpenGL-loading exception");
     }
 
-    // Create shader program
-    Program prog = Program();
-    prog.addShader(vertexSource, Program::Shader::VERTEX);
-    prog.addShader(fragmentSource, Program::Shader::FRAGMENT);
-    prog.link();
+    std::cout << "+Display." << std::endl;
+}
 
-    // Create model
-    Model model = Model(vertices, sizeof(vertices), indices, sizeof(indices), &prog);
+void Display::addModel(Model *model)
+{
+    models.push_back(model);
+}
 
-    // Render loop
+void Display::start()
+{
     while (!glfwWindowShouldClose(window))
     {
-        getInput(window);
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw
-        model.render();
+        // Render all models
+        for (Model* model : models)
+        {
+            model->render();
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+}
 
+Display::~Display()
+{
     glfwTerminate();
-}
-
-void display::resizeCallback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
-void display::getInput(GLFWwindow* window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    std::cout << "~Display." << std::endl;
 }
