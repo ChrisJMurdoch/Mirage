@@ -6,11 +6,11 @@
 
 std::string *io::read(const char* filename)
 {
-    std::ifstream fs(filename);
     std::string *text = new std::string();
-    std::string line;
+    std::ifstream fs(filename);
     if (fs.is_open())
     {
+        std::string line;
         while (getline(fs, line))
         {
             text->append(line).append("\n");
@@ -19,6 +19,7 @@ std::string *io::read(const char* filename)
     }
     else
     {
+        delete text;
         throw std::exception("File could not be opened.");
     }
     return text;

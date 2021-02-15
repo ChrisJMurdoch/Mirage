@@ -5,6 +5,7 @@
 
 #include"render\program.h"
 #include"render\model.h"
+#include "utility\debug.h"
 
 #include <iostream>
 #include <exception>
@@ -24,20 +25,12 @@ Display::Display(int width, int height, const char *title)
     
     // Create window
     window = glfwCreateWindow(width, height, title, NULL, NULL);
-    if (window == NULL)
-    {
-        glfwTerminate();
-        throw std::exception("GLFW window-creation exception");
-    }
+    debug::nullThrow(window, "GLFW window-creation exception");
     glfwSetFramebufferSizeCallback(window, resizeCallback);
     glfwMakeContextCurrent(window);
 
     // Load OpenGL
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        glfwTerminate();
-        throw std::exception("GLAD OpenGL-loading exception");
-    }
+    debug::zeroThrow( gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "GLAD OpenGL-loading exception" );
 
     std::cout << "+Display." << std::endl;
 }

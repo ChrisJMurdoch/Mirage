@@ -141,9 +141,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\utility\debug.h" />
     <ClInclude Include="include\utility\io.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\utility\debug.cpp" />
     <ClCompile Include="src\utility\io.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -7,14 +7,6 @@
 #include <iostream>
 #include <exception>
 
-const char* fragmentSource =
-"#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n";
-
 float vertices[] = {
      0.5f,  0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
@@ -36,14 +28,17 @@ int main()
         // Create shader program
         Program prog = Program();
 
+        // Add vertex shader
         std::string *vertexSource = io::read("shaders\\shader.vert");
         prog.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
         delete vertexSource;
 
+        // Add fragment shader
         std::string *fragmentSource = io::read("shaders\\shader.frag");
         prog.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
         delete fragmentSource;
 
+        // Link shaders into program
         prog.link();
 
         // Add model
