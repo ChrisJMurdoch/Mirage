@@ -8,7 +8,7 @@ private:
 	float *vertices;
 	unsigned int *indices;
 public:
-	Mesh(int dimension);
+	Mesh(int edgeVertices, int vertStride, int vertCoord, int vertColour);
 	int getNVertices();
 	float *getVertices();
 	int getNIndices();

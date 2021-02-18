@@ -8,6 +8,8 @@
 
 class Model
 {
+public:
+	static const int STRIDE=6, COORD_INDEX=0, COLOUR_INDEX=3;
 private:
 	int nVertices, nIndices;
 	unsigned int VBO, VAO, EBO;

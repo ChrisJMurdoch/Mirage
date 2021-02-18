@@ -16,7 +16,7 @@ int main()
         Display display = Display(1000, 600, "Redshift");
 
         // Create Mesh
-        Mesh mesh = Mesh(2);
+        Mesh mesh = Mesh(10, Model::STRIDE, Model::COORD_INDEX , Model::COLOUR_INDEX);
 
         // Create program
         Program prog = Program();
@@ -36,8 +36,6 @@ int main()
         }
         
         // Create model
-        std::cout << "nVert" << mesh.getNVertices() << std::endl;
-        std::cout << "nIndi" << mesh.getNIndices() << std::endl;
         Model model = Model(&mesh, &prog);
         display.addModel(&model);
 
