@@ -62,7 +62,7 @@ void Display::start()
         {
             static const glm::mat4 IDENTITY = glm::mat4(1.0f);
             glm::mat4 view = glm::translate(IDENTITY, glm::vec3(0.0f, 0.0f, -2.0f));
-            static const float FOV = glm::radians(100.0f), NEAR = 0.1, FAR = 100;
+            static const float FOV = glm::radians(100.0f), NEAR = 0.1f, FAR = 100.0f;
             glm::mat4 projection = glm::perspective(FOV, aspect, NEAR, FAR);
             model->render(view, projection);
         }
