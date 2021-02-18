@@ -3,6 +3,8 @@
 
 #include "render\program.h"
 
+#include <glm\glm.hpp>
+
 class Model
 {
 private:
@@ -11,6 +13,6 @@ private:
 	Program *prog;
 public:
 	Model(float *vertices, int nVertices, unsigned int *indices, int nIndices, Program *prog);
-	void render();
+	void render(glm::mat4 &view, glm::mat4 &projection);
 	~Model();
 };

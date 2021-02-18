@@ -5,5 +5,5 @@
 
 namespace io
 {
-	std::string *read(const char* filename);
+	std::string *read(const char *filename);
 }

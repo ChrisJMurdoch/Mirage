@@ -7,13 +7,14 @@
 #include"render\model.h"
 #include "utility\debug.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 #include <exception>
-
-void resizeCallback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
+#include <algorithm>
+#include <functional>
 
 Display::Display(int width, int height, const char *title)
 {
@@ -27,11 +28,16 @@ Display::Display(int width, int height, const char *title)
     // Create window
     window = glfwCreateWindow(width, height, title, NULL, NULL);
     debug::nullThrow(window, "GLFW window-creation exception");
+    glfwSetWindowSizeLimits(window, 200, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, resizeCallback);
+    aspect = (float)width / height;
     glfwMakeContextCurrent(window);
 
     // Load OpenGL
     debug::zeroThrow( gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "GLAD OpenGL-loading exception" );
+    glViewport(0, 0, width, height);
+    glEnable(GL_DEPTH_TEST);
 
     std::cout << "+Display." << std::endl;
 }
@@ -49,12 +55,16 @@ void Display::start()
             glfwSetWindowShouldClose(window, true);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Render all models
-        for (Model* model : models)
+        for (Model *model : models)
         {
-            model->render();
+            static const glm::mat4 IDENTITY = glm::mat4(1.0f);
+            glm::mat4 view = glm::translate(IDENTITY, glm::vec3(0.0f, 0.0f, -2.0f));
+            static const float FOV = glm::radians(100.0f), NEAR = 0.1, FAR = 100;
+            glm::mat4 projection = glm::perspective(FOV, aspect, NEAR, FAR);
+            model->render(view, projection);
         }
 
         glfwSwapBuffers(window);
@@ -66,4 +76,11 @@ Display::~Display()
 {
     glfwTerminate();
     std::cout << "~Display." << std::endl;
+}
+
+void Display::resizeCallback(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+    Display *display = (Display *)glfwGetWindowUserPointer(window);
+    display->aspect = (float)width / height;
 }

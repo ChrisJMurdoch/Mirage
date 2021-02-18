@@ -3,6 +3,9 @@
 
 #include <glad\glad.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 #include <exception>
 
@@ -12,7 +15,7 @@ Program::Program()
 	std::cout << "+Program" << std::endl;
 }
 
-void Program::addShader(const char* source, Shader type)
+void Program::addShader(const char *source, Shader type)
 {
 	// Compile
 	unsigned int shader = glCreateShader( (type==Shader::VERTEX) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER );
@@ -61,8 +64,13 @@ void Program::link()
 void Program::setUniform4f(const char *name, float x, float y, float z, float w)
 {
 	glUseProgram(id);
-	int loc = glGetUniformLocation(id, name);
-	glUniform4f(loc, x, y, z, w);
+	glUniform4f(glGetUniformLocation(id, name), x, y, z, w);
+}
+
+void Program::setUniformMatrix4fv(const char *name, glm::mat4 &matrix)
+{
+	glUseProgram(id);
+	glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 void Program::use()

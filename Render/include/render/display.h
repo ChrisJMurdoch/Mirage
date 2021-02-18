@@ -10,11 +10,14 @@
 class Display
 {
 private:
-    GLFWwindow* window;
-    std::list<Model*> models;
+    float aspect = 1;
+    GLFWwindow *window;
+    std::list<Model *> models;
 public:
-    Display(int width, int height, const char* title);
-    void addModel(Model* model);
+    Display(int width, int height, const char *title);
+    void addModel(Model *model);
     void start();
     ~Display();
+private:
+    static void resizeCallback(GLFWwindow *window, int width, int height);
 };

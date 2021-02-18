@@ -8,13 +8,14 @@
 #include <exception>
 
 float vertices[] = {
-     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+    -1, -1, 0,   1, 0, 0,
+     1, -1, 0,   0, 1, 0,
+     1,  1, 0,   0, 0, 1,
+    -1,  1, 0,   1, 0, 1,
 };
 unsigned int indices[] = {
     0, 1, 2,
-    0, 1, 3
+    2, 3, 0,
 };
 
 int main()
@@ -24,27 +25,28 @@ int main()
         // Create display
         Display display = Display(1000, 600, "Redshift");
 
-        // Create shader program
+        // Create program
         Program prog = Program();
+        {
+            // Add vertex shader
+            std::string *vertexSource = io::read("shaders\\shader.vert");
+            prog.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
+            delete vertexSource;
 
-        // Add vertex shader
-        std::string *vertexSource = io::read("shaders\\shader.vert");
-        prog.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
-        delete vertexSource;
+            // Add fragment shader
+            std::string *fragmentSource = io::read("shaders\\shader.frag");
+            prog.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
+            delete fragmentSource;
 
-        // Add fragment shader
-        std::string *fragmentSource = io::read("shaders\\shader.frag");
-        prog.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
-        delete fragmentSource;
-
-        // Link shaders into program
-        prog.link();
-
-        // Add model
+            // Link shaders into program
+            prog.link();
+        }
+        
+        // Create model
         Model model = Model(vertices, sizeof(vertices), indices, sizeof(indices), &prog);
         display.addModel(&model);
 
-        // Start render loop
+        // Start display
         display.start();
 
         return 0;

@@ -4,7 +4,7 @@
 #include <exception>
 #include <iostream>
 
-void debug::zeroThrow(int value, const char* message)
+void debug::zeroThrow(int value, const char *message)
 {
 	if (value == 0)
 	{
@@ -12,7 +12,7 @@ void debug::zeroThrow(int value, const char* message)
 	}
 }
 
-void debug::nullThrow(void *ptr, const char* message)
+void debug::nullThrow(void *ptr, const char *message)
 {
 	if (ptr == nullptr)
 	{

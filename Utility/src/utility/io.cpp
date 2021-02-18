@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-std::string *io::read(const char* filename)
+std::string *io::read(const char *filename)
 {
     std::string *text = new std::string();
     std::ifstream fs(filename);
