@@ -50,7 +50,7 @@ void Model::render(glm::mat4 &view, glm::mat4 &projection)
     static const glm::mat4 IDENTITY = glm::mat4(1.0f);
     static float rotate = 0.0f;
     rotate += 1;
-    glm::mat4 model = glm::rotate(IDENTITY, glm::radians(rotate), glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 model = glm::rotate(IDENTITY, glm::radians(rotate), glm::vec3(0.0f, 0.5f, 0.5f));
 
     // Set uniforms
     prog->setUniformMatrix4fv("model", model);

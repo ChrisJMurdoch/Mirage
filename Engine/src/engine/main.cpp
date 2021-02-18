@@ -16,7 +16,7 @@ int main()
         Display display = Display(1000, 600, "Redshift");
 
         // Create Mesh
-        Mesh mesh = Mesh(10, Model::STRIDE, Model::COORD_INDEX , Model::COLOUR_INDEX);
+        Mesh mesh = Mesh(100, Model::STRIDE, Model::COORD_INDEX , Model::COLOUR_INDEX);
 
         // Create program
         Program prog = Program();
