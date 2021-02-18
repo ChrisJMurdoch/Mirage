@@ -9,10 +9,10 @@
 
 #include <iostream>
 
-Model::Model(float *vertices, int nVertices, unsigned int *indices, int nIndices, Program *prog)
+Model::Model(Mesh *mesh, Program *prog)
 {
-    this->nVertices = nVertices;
-    this->nIndices = nIndices;
+    nVertices = mesh->getNVertices();
+    nIndices = mesh->getNIndices();
     this->prog = prog;
 
     // Generate buffers
@@ -25,11 +25,11 @@ Model::Model(float *vertices, int nVertices, unsigned int *indices, int nIndices
     {
         // Buffer vertex data
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, nVertices, vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(float), mesh->getVertices(), GL_STATIC_DRAW);
 
         // Buffer index data
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices, indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof(unsigned int), mesh->getIndices(), GL_STATIC_DRAW);
 
         // Position attribute
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(0*sizeof(float)));

@@ -1,22 +1,12 @@
 
 #include "engine\main.h"
 
+#include "generate\mesh.h"
 #include "render\display.h"
 #include "utility\io.h"
 
 #include <iostream>
 #include <exception>
-
-float vertices[] = {
-    -1, -1, 0,   1, 0, 0,
-     1, -1, 0,   0, 1, 0,
-     1,  1, 0,   0, 0, 1,
-    -1,  1, 0,   1, 0, 1,
-};
-unsigned int indices[] = {
-    0, 1, 2,
-    2, 3, 0,
-};
 
 int main()
 {
@@ -24,6 +14,9 @@ int main()
     {
         // Create display
         Display display = Display(1000, 600, "Redshift");
+
+        // Create Mesh
+        Mesh mesh = Mesh(2);
 
         // Create program
         Program prog = Program();
@@ -43,7 +36,9 @@ int main()
         }
         
         // Create model
-        Model model = Model(vertices, sizeof(vertices), indices, sizeof(indices), &prog);
+        std::cout << "nVert" << mesh.getNVertices() << std::endl;
+        std::cout << "nIndi" << mesh.getNIndices() << std::endl;
+        Model model = Model(&mesh, &prog);
         display.addModel(&model);
 
         // Start display

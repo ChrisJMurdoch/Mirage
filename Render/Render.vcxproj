@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;$(SolutionDir)\Generate\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,7 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;$(SolutionDir)\Generate\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,6 +162,9 @@
     <ClCompile Include="src\render\program.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Generate\Generate.vcxproj">
+      <Project>{40cc7aae-3852-4917-9e24-f2020fc5242f}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Utility\Utility.vcxproj">
       <Project>{5cec7417-55f8-4bf8-b492-f04a6f37c6fe}</Project>
     </ProjectReference>
