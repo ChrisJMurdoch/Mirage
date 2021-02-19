@@ -1,10 +1,10 @@
 
-#include "engine\main.h"
+#include "engine/main.h"
 
-#include "generate\mesh.h"
-#include "render\display.h"
-#include "model\VirtualVector.h"
-#include "utility\io.h"
+#include "render/display.h"
+#include "utility/io.h"
+#include "generate/mesh.h"
+#include "model/virtualVector.h"
 
 #include <iostream>
 #include <exception>
@@ -16,10 +16,6 @@ int main()
         // Create display
         Display display = Display(1000, 600, "Redshift");
         
-        // Create Mesh
-        Mesh mesh = Mesh(100);
-        mesh.morph([](VirtualVector vector) { vector.normalise(); });
-
         // Create program
         Program prog = Program();
         {
@@ -36,9 +32,18 @@ int main()
             // Link shaders into program
             prog.link();
         }
-        
-        // Create model
-        Model model = Model(&mesh, &prog);
+
+        // Create arrays
+        const int edgeVertices = 100;
+        VertexArray vertexArray(mesh::vertexCount(edgeVertices));
+        IndexArray indexArray(mesh::indexCount(edgeVertices));
+        mesh::generateCube(edgeVertices, &vertexArray, &indexArray);
+
+        // Sphere
+        mesh::morph(&vertexArray, [](VirtualVector vector) { vector.normalise(); });
+
+        // Add model to display
+        Model model = Model(&vertexArray, &indexArray, &prog);
         display.addModel(&model);
 
         // Start display
