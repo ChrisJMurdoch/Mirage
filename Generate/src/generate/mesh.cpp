@@ -6,43 +6,35 @@
 #include <iostream>
 #include <exception>
 
-Mesh::Mesh(int edgeVertices, AttributeSpecifier *spec)
+const int CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
+
+Mesh::Mesh(int edgeVertices, AttributeSpecifier *spec) : indexArray( (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES)
 {
     if (edgeVertices < 2)
-        throw std::exception("Mesh cannot have edge vertices < 2.");
+        throw std::exception("Mesh cannot have < 2 edge vertices.");
+    int edgeLines = edgeVertices-1;
 
+    // Save attribute specifier
     this->spec = spec;
-
-    // Shorthand edge-vertices and edge-lines
-    int ev = edgeVertices, el = edgeVertices-1;
-
-    // Array data
-    static const int FACES = 6;
-    nVertices = ev*ev*FACES, nIndices = (el*el)*6*FACES;
+    
+    // Create data arrays
+    nVertices = edgeVertices*edgeVertices*CUBE_FACES;
     vertices = new float[(long long)nVertices*spec->STRIDE];
-    indices = new unsigned int[(long long)nIndices];
 
-    // Setup
-    int faceVertStride = nVertices/FACES;
-    int faceIndiStride = nIndices/FACES;
-    float space = 1.0f / el;
-    Coord o, d;
+    // Calculate array strides
+    int verticesFaceStride = edgeVertices*edgeVertices;
+    int indicesFaceStride = edgeLines*edgeLines*TRIANGLES_PER_QUAD;
+    float space = 1.0f / edgeLines; // Space between vertices
 
     // Faces
-    o.x=-0.5f, o.y=-0.5f, o.z=-0.5f, d.x=space, d.y=space, d.z=0;
-    generatePlane(edgeVertices, faceVertStride*0, faceIndiStride*0, o, d);
-    o.x=-0.5f, o.y=-0.5f, o.z=0.5f, d.x=space, d.y=space, d.z=0;
-    generatePlane(edgeVertices, faceVertStride*1, faceIndiStride*1, o, d);
-    o.x=-0.5f, o.y=0.5f, o.z=-0.5f, d.x=space, d.y=0, d.z=space;
-    generatePlane(edgeVertices, faceVertStride*2, faceIndiStride*2, o, d);
-    o.x=-0.5f, o.y=-0.5f, o.z=-0.5f, d.x=space, d.y=0, d.z=space;
-    generatePlane(edgeVertices, faceVertStride*3, faceIndiStride*3, o, d);
-    o.x=0.5f, o.y=-0.5f, o.z=-0.5f, d.x=0, d.y=space, d.z=space;
-    generatePlane(edgeVertices, faceVertStride*4, faceIndiStride*4, o, d);
-    o.x=-0.5f, o.y=-0.5f, o.z=-0.5f, d.x=0, d.y=space, d.z=space;
-    generatePlane(edgeVertices, faceVertStride*5, faceIndiStride*5, o, d);
+    generatePlane( edgeVertices, verticesFaceStride*0, indicesFaceStride*0, Coord{  0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X+
+    generatePlane( edgeVertices, verticesFaceStride*1, indicesFaceStride*1, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X-
+    generatePlane( edgeVertices, verticesFaceStride*2, indicesFaceStride*2, Coord{ -0.5f, 0.5f,-0.5f }, Coord{ space,0,space } ); // Y+
+    generatePlane( edgeVertices, verticesFaceStride*3, indicesFaceStride*3, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,0,space } ); // Y-
+    generatePlane( edgeVertices, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 } ); // Z+
+    generatePlane( edgeVertices, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 } ); // Z-
     
-    std::cout << "+Mesh - nV=" << nVertices << " nI=" << nIndices << std::endl;
+    std::cout << "+Mesh - nV=" << nVertices << " nI=" << indexArray.getNIndices() << std::endl;
 }
 
 void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset, Coord origin, Coord delta)
@@ -50,7 +42,7 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
     // Shorthand edge-vertices and edge-lines
     int ev = edgeVertices, el = edgeVertices-1;
 
-    // Generate vertices
+    // Generate vertices on 2D plane axb
     for (int a=0; a<ev; a++)
     {
         for (int b=0; b<ev; b++)
@@ -85,7 +77,7 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
         }
     }
 
-    // Alternate quad splitting
+    // Alternate quad splitting direction
     bool toggle = false;
 
     // Generate indices
@@ -93,8 +85,8 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
     {
         for (int x=0; x<el; x++)
         {
-            // Calculate index for indices
-            int i = (((y*el) + x) * 6) + indicesOffset;
+            // Calculate index for quad
+            int i = (((y*el) + x) * TRIANGLES_PER_QUAD) + indicesOffset;
 
             // Calulate indices for vertices
             int xo=x, yo=y, xp=x+1, yp=y+1;
@@ -104,14 +96,14 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
                 botleft = (yp*ev)+xo;
 
             // Triangle 1
-            indices[i+0] = verticesOffset+topleft;
-            indices[i+1] = verticesOffset+topright;
-            indices[i+2] = verticesOffset+botright;
+            indexArray[i][0] = verticesOffset+topleft;
+            indexArray[i][1] = verticesOffset+topright;
+            indexArray[i][2] = verticesOffset+botright;
 
             // Triangle 2
-            indices[i+3] = verticesOffset+botright;
-            indices[i+4] = verticesOffset+botleft;
-            indices[i+5] = verticesOffset+topleft;
+            indexArray[i+1][0] = verticesOffset+botright;
+            indexArray[i+1][1] = verticesOffset+botleft;
+            indexArray[i+1][2] = verticesOffset+topleft;
         }
     }
 }
@@ -153,17 +145,16 @@ float *Mesh::getVertices()
 
 int Mesh::getNIndices()
 {
-    return nIndices;
+    return indexArray.getNIndices();
 }
 
 unsigned int *Mesh::getIndices()
 {
-    return indices;
+    return indexArray.getArrayPointer();
 }
 
 Mesh::~Mesh()
 {
     delete[] vertices;
-    delete[] indices;
     std::cout << "~Mesh" << std::endl;
 }

@@ -7,9 +7,15 @@ private:
 	const int nIndices;
 	unsigned int *indices;
 public:
-	IndexArray(int nIndices, unsigned int *indices);
+	IndexArray(int nTriangles);
+
+	// Triangle access
+	int getNTriangles();
+	unsigned int *operator[](int i);
+
+	// Index access
 	int getNIndices();
 	unsigned int *getArrayPointer();
-	unsigned int *operator[](int i);
+
 	~IndexArray();
 };

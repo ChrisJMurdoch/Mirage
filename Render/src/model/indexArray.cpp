@@ -1,27 +1,36 @@
 
 #include "model/indexArray.h"
 
-IndexArray::IndexArray(int nIndices, unsigned int *indices) : nIndices(nIndices)
+#include <iostream>
+
+IndexArray::IndexArray(int nTriangles) : nIndices(nTriangles*3)
 {
-	this->indices = new unsigned int[nIndices];
+	indices = new unsigned int[nIndices];
+	std::cout << "+IndexArray" << std::endl;
 }
 
-int IndexArray::getNIndices()
+// Triangle access
+int IndexArray::getNTriangles()
 {
 	return nIndices;
 }
-
-unsigned int *IndexArray::getArrayPointer()
-{
-	return indices;
-}
-
 unsigned int *IndexArray::operator[](int i)
 {
 	return &indices[i*3];
 }
 
+// Index access
+int IndexArray::getNIndices()
+{
+	return nIndices;
+}
+unsigned int *IndexArray::getArrayPointer()
+{
+	return indices;
+}
+
 IndexArray::~IndexArray()
 {
 	delete[] indices;
+	std::cout << "~IndexArray" << std::endl;
 }

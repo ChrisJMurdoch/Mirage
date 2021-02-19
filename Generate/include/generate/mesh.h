@@ -2,6 +2,7 @@
 #pragma once
 
 #include "render/attributeSpecifier.h"
+#include "model/indexArray.h"
 
 #include <glm/glm.hpp>
 
@@ -10,9 +11,9 @@ class Mesh
 private:
 	struct Coord { float x, y, z; };
 	AttributeSpecifier *spec;
-	int nVertices, nIndices;
+	IndexArray indexArray;
+	int nVertices;
 	float *vertices;
-	unsigned int *indices;
 public:
 	Mesh(int edgeVertices, AttributeSpecifier *spec);
 	void generatePlane(int edgeVertices, int vertOffset, int indiOffset, Coord o, Coord d);
