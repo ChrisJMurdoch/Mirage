@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <GLFW\glfw3.h>
+#include "model/model.h"
 
-#include "render\model.h"
+#include <GLFW/glfw3.h>
 
 #include <list>
 

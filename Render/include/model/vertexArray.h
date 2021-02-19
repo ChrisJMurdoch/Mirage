@@ -1,9 +1,7 @@
 
 #pragma once
 
-#include "model\virtualVector.h"
-
-#include "glm\glm.hpp"
+#include "model/virtualVector.h"
 
 class VertexArray
 {
@@ -24,6 +22,4 @@ public:
 	float *getArrayPointer();
 
 	~VertexArray();
-private:
-	void setAttribute(int i, int attr, float a, float b, float c);
 };

@@ -1,18 +1,15 @@
 
-#include "render\model.h"
+#include "model/model.h"
 
-#include <glad\glad.h>
-
-#include <glm\glm.hpp>
-#include <glm\gtc\matrix_transform.hpp>
-#include <glm\gtc\type_ptr.hpp>
+#include <glad/glad.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 
-Model::Model(Mesh *mesh, Program *prog)
+Model::Model(VertexArray *vertexArray, IndexArray *indexArray, Program *prog)
 {
-    nVertices = mesh->getNVertices();
-    nIndices = mesh->getNIndices();
+    nVertices = vertexArray->getNVertices();
+    nIndices = indexArray->getNIndices();
     this->prog = prog;
 
     // Generate buffers
@@ -25,11 +22,11 @@ Model::Model(Mesh *mesh, Program *prog)
     {
         // Buffer vertex data
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, (long long)nVertices*STRIDE*sizeof(float), mesh->getVertices(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (long long)nVertices*STRIDE*sizeof(float), vertexArray->getArrayPointer(), GL_STATIC_DRAW);
 
         // Buffer index data
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices*sizeof(unsigned int), mesh->getIndices(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices*sizeof(unsigned int), indexArray->getArrayPointer(), GL_STATIC_DRAW);
 
         // Position attribute
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void *)(POSITION_INDEX*sizeof(float)));
@@ -45,7 +42,7 @@ Model::Model(Mesh *mesh, Program *prog)
     }
     glBindVertexArray(0);
 
-    std::cout << "+Model." << std::endl;
+    std::cout << "+Model" << std::endl;
 }
 
 void Model::render(glm::mat4 &view, glm::mat4 &projection)

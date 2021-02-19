@@ -1,10 +1,11 @@
 
 #pragma once
 
-#include "render\program.h"
-#include "generate\mesh.h"
+#include "model/vertexArray.h"
+#include "model/indexArray.h"
+#include "render/program.h"
 
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 
 class Model
 {
@@ -15,7 +16,7 @@ private:
 	unsigned int VBO, VAO, EBO;
 	Program *prog;
 public:
-	Model(Mesh *mesh, Program *prog);
+	Model(VertexArray *vertexArray, IndexArray *indexArray, Program *prog);
 	void render(glm::mat4 &view, glm::mat4 &projection);
 	~Model();
 };

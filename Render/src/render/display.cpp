@@ -1,20 +1,15 @@
 
-#include <glad\glad.h> // Must be included before glfw3
-#define display_p // Use private display header
-#include "render\display.h"// Includes glfw3
+#include <glad/glad.h> // Must be included before glfw3
 
-#include"render\program.h"
-#include"render\model.h"
-#include "utility\debug.h"
+#include "render/display.h"// Includes glfw3
+
+#include "utility/debug.h"
+#include"model/model.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
-#include <exception>
-#include <algorithm>
-#include <functional>
 
 Display::Display(int width, int height, const char *title)
 {
@@ -39,7 +34,7 @@ Display::Display(int width, int height, const char *title)
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
 
-    std::cout << "+Display." << std::endl;
+    std::cout << "+Display" << std::endl;
 }
 
 void Display::addModel(Model *model)
@@ -75,7 +70,7 @@ void Display::start()
 Display::~Display()
 {
     glfwTerminate();
-    std::cout << "~Display." << std::endl;
+    std::cout << "~Display" << std::endl;
 }
 
 void Display::resizeCallback(GLFWwindow *window, int width, int height)
