@@ -17,7 +17,7 @@ int mesh::indexCount(int edgeVertices)
     return (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES;
 }
 
-void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta);
+void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind);
 
 void mesh::generateCube(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray)
 {
@@ -35,15 +35,15 @@ void mesh::generateCube(int edgeVertices, VertexArray *vertexArray, IndexArray *
     float space = 1.0f / edgeLines;
 
     // Generate faces
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*0, indicesFaceStride*0, Coord{  0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X+
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*1, indicesFaceStride*1, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X-
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*2, indicesFaceStride*2, Coord{ -0.5f, 0.5f,-0.5f }, Coord{ space,0,space } ); // Y+
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*3, indicesFaceStride*3, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,0,space } ); // Y-
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 } ); // Z+
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 } ); // Z-
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*0, indicesFaceStride*0, Coord{  0.5f,-0.5f,-0.5f }, Coord{ 0,space,space }, true  ); // X+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*1, indicesFaceStride*1, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ 0,space,space }, false ); // X-
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*2, indicesFaceStride*2, Coord{ -0.5f, 0.5f,-0.5f }, Coord{ space,0,space }, true  ); // Y+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*3, indicesFaceStride*3, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,0,space }, false ); // Y-
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 }, false ); // Z+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 }, true  ); // Z-
 }
 
-void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta)
+void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind)
 {
     // Shorthand edge-vertices and edge-lines
     int ev = edgeVertices, el = edgeVertices-1;
@@ -88,14 +88,14 @@ void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *index
                 botright = (yp*ev)+xp,
                 botleft = (yp*ev)+xo;
 
-            // Triangle 1
-            (*indexArray)[i][0] = verticesOffset + topleft;
-            (*indexArray)[i][1] = verticesOffset + topright;
-            (*indexArray)[i][2] = verticesOffset + botright;
+            int a = wind ? topright : botleft, b = wind ? botleft : topright;
 
-            // Triangle 2
+            (*indexArray)[i+0][0] = verticesOffset + topleft;
+            (*indexArray)[i+0][1] = verticesOffset + a;
+            (*indexArray)[i+0][2] = verticesOffset + botright;
+
             (*indexArray)[i+1][0] = verticesOffset + botright;
-            (*indexArray)[i+1][1] = verticesOffset + botleft;
+            (*indexArray)[i+1][1] = verticesOffset + b;
             (*indexArray)[i+1][2] = verticesOffset + topleft;
         }
     }

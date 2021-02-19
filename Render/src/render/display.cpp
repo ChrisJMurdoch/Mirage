@@ -33,6 +33,7 @@ Display::Display(int width, int height, const char *title)
     debug::zeroThrow( gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "GLAD OpenGL-loading exception" );
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     std::cout << "+Display" << std::endl;
 }
