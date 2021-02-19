@@ -3,6 +3,7 @@
 
 #include "generate\mesh.h"
 #include "render\display.h"
+#include "model\VirtualVector.h"
 #include "utility\io.h"
 #include "render\attributeSpecifier.h"
 
@@ -15,12 +16,11 @@ int main()
     {
         // Create display
         Display display = Display(1000, 600, "Redshift");
-
-
+        
         // Create Mesh
         AttributeSpecifier spec = AttributeSpecifier(6, 0, AttributeSpecifier::NONE, 3);
-        Mesh mesh = Mesh(10, &spec);
-        mesh.morph([](glm::vec3 &vector) { vector = glm::normalize(vector); });
+        Mesh mesh = Mesh(100, &spec);
+        mesh.morph([](VirtualVector vector) { vector.normalise(); });
 
         // Create program
         Program prog = Program();

@@ -1,6 +1,8 @@
 
 #include "generate\mesh.h"
 
+#include "model\virtualVector.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
@@ -8,18 +10,11 @@
 
 const int CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
 
-Mesh::Mesh(int edgeVertices, AttributeSpecifier *spec) : indexArray( (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES)
+Mesh::Mesh(int edgeVertices, AttributeSpecifier *spec) : indexArray( (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES), vertexArray( edgeVertices * edgeVertices * CUBE_FACES, spec)
 {
     if (edgeVertices < 2)
         throw std::exception("Mesh cannot have < 2 edge vertices.");
     int edgeLines = edgeVertices-1;
-
-    // Save attribute specifier
-    this->spec = spec;
-    
-    // Create data arrays
-    nVertices = edgeVertices*edgeVertices*CUBE_FACES;
-    vertices = new float[(long long)nVertices*spec->STRIDE];
 
     // Calculate array strides
     int verticesFaceStride = edgeVertices*edgeVertices;
@@ -34,7 +29,7 @@ Mesh::Mesh(int edgeVertices, AttributeSpecifier *spec) : indexArray( (edgeVertic
     generatePlane( edgeVertices, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 } ); // Z+
     generatePlane( edgeVertices, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 } ); // Z-
     
-    std::cout << "+Mesh - nV=" << nVertices << " nI=" << indexArray.getNIndices() << std::endl;
+    std::cout << "+Mesh - Vertices: " << vertexArray.getNVertices() << ", Indices: " << indexArray.getNIndices() << std::endl;
 }
 
 void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset, Coord origin, Coord delta)
@@ -48,32 +43,17 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
         for (int b=0; b<ev; b++)
         {
             // Calculate vertex index
-            int i = (((a*ev) + b + verticesOffset) * spec->STRIDE);
+            int i = (a*ev) + b + verticesOffset;
 
-            // Set position
-            if (spec->hasAttribute(spec->POSITION_INDEX))
-            {
-                vertices[i+spec->POSITION_INDEX+0] = origin.x + a*delta.x;
-                vertices[i+spec->POSITION_INDEX+1] = origin.y + b*delta.y;
-                if (delta.z == 0)
-                    vertices[i+spec->POSITION_INDEX+2] = origin.z;
-                else
-                    vertices[i+spec->POSITION_INDEX+2] = (delta.x==0) ? (origin.z + a*delta.z) : (origin.z + b*delta.z);
-            }
+            VirtualVector position = vertexArray.position(i);
+            position.setX(origin.x + a*delta.x);
+            position.setY(origin.y + b*delta.y);
+            position.setZ( (delta.z == 0) ? (origin.z) : (delta.x==0) ? (origin.z + a*delta.z) : (origin.z + b*delta.z) );
 
-            // Set normal
-            if (spec->hasAttribute(spec->NORMAL_INDEX))
-            {
-
-            }
-
-            // Set colour
-            if (spec->hasAttribute(spec->COLOUR_INDEX))
-            {
-                vertices[i+spec->COLOUR_INDEX+0] = float(rand()) / float((RAND_MAX));
-                vertices[i+spec->COLOUR_INDEX+1] = float(rand()) / float((RAND_MAX));
-                vertices[i+spec->COLOUR_INDEX+2] = float(rand()) / float((RAND_MAX));
-            }
+            VirtualVector colour = vertexArray.colour(i);
+            colour.setX(float(rand()) / float((RAND_MAX)));
+            colour.setY(float(rand()) / float((RAND_MAX)));
+            colour.setZ(float(rand()) / float((RAND_MAX)));
         }
     }
 
@@ -108,39 +88,22 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
     }
 }
 
-void Mesh::morph(void (*function)(glm::vec3 &vector))
+void Mesh::morph(void (*function)(VirtualVector vector))
 {
-    // For every vertex
-    for (int i=0; i<nVertices; i++)
+    for (int i=0; i<vertexArray.getNVertices(); i++)
     {
-        // Get index of vertex
-        int index = i * spec->STRIDE;
-
-        // Parse to vec3
-        glm::vec3 vector = glm::vec3(
-            vertices[index+spec->POSITION_INDEX+0],
-            vertices[index+spec->POSITION_INDEX+1],
-            vertices[index+spec->POSITION_INDEX+2]
-        );
-
-        // Perform morph
-        function(vector);
-
-        // Return to array
-        vertices[index+spec->POSITION_INDEX+0] = vector.x;
-        vertices[index+spec->POSITION_INDEX+1] = vector.y;
-        vertices[index+spec->POSITION_INDEX+2] = vector.z;
+        function(vertexArray.position(i));
     }
 }
 
 int Mesh::getNVertices()
 {
-    return nVertices;
+    return vertexArray.getNVertices();
 }
 
 float *Mesh::getVertices()
 {
-    return vertices;
+    return vertexArray.getArrayPointer();
 }
 
 int Mesh::getNIndices()
@@ -155,6 +118,5 @@ unsigned int *Mesh::getIndices()
 
 Mesh::~Mesh()
 {
-    delete[] vertices;
     std::cout << "~Mesh" << std::endl;
 }
