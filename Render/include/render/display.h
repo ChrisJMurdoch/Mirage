@@ -10,7 +10,9 @@
 class Display
 {
 private:
-    float aspect = 1;
+    bool windowSizeSynced;
+    int windowWidth, windowHeight;
+    float aspect;
     GLFWwindow *window;
     std::list<Model *> models;
 public:

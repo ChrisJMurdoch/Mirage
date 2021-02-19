@@ -34,13 +34,20 @@ int main()
         }
 
         // Create arrays
-        const int edgeVertices = 100;
+        const int edgeVertices = 200;
         VertexArray vertexArray(mesh::vertexCount(edgeVertices));
-        IndexArray indexArray(mesh::indexCount(edgeVertices));
+        IndexArray indexArray(mesh::triangleCount(edgeVertices));
         mesh::generateCube(edgeVertices, &vertexArray, &indexArray);
 
         // Sphere
-        mesh::morph(&vertexArray, [](VirtualVector vector) { vector.normalise(); });
+        mesh::morph(&vertexArray, [](VirtualVector vector)
+        {
+            const float MULT = 0.03, FREQ = 20;
+            vector.normalise();
+            float delta = sin(vector.getX()*FREQ);
+            vector.multiply( (1-MULT) + (MULT*delta) );
+        });
+        mesh::fixNormals(&vertexArray, &indexArray);
 
         // Add model to display
         Model model = Model(&vertexArray, &indexArray, &prog);

@@ -8,7 +8,8 @@ namespace mesh
 {
 	struct Coord { float x, y, z; };
 	int vertexCount(int edgeVertices);
-	int indexCount(int edgeVertices);
+	int triangleCount(int edgeVertices);
 	void generateCube(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray);
 	void morph(VertexArray *vertexArray, void (*function)(VirtualVector vector));
+	void fixNormals(VertexArray *vertexArray, IndexArray *indexArray);
 };

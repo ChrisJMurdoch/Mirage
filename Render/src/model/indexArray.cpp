@@ -12,7 +12,7 @@ IndexArray::IndexArray(int nTriangles) : nIndices(nTriangles*3)
 // Triangle access
 int IndexArray::getNTriangles()
 {
-	return nIndices;
+	return nIndices/3;
 }
 unsigned int *IndexArray::operator[](int i)
 {

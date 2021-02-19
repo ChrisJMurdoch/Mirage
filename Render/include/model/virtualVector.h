@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "glm/glm.hpp"
+
 class VirtualVector
 {
 private:
@@ -21,4 +23,8 @@ public:
 
 	// Manipulators
 	void normalise();
+	void multiply(float value);
+
+	// Export
+	glm::vec3 asVec3();
 };

@@ -20,13 +20,17 @@ Display::Display(int width, int height, const char *title)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
     
+    // Sync size
+    windowWidth = width, windowHeight = height;
+    aspect = (float)width / height;
+    windowSizeSynced = true;
+
     // Create window
     window = glfwCreateWindow(width, height, title, NULL, NULL);
     debug::nullThrow(window, "GLFW window-creation exception");
     glfwSetWindowSizeLimits(window, 200, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, resizeCallback);
-    aspect = (float)width / height;
     glfwMakeContextCurrent(window);
 
     // Load OpenGL
@@ -48,13 +52,22 @@ void Display::start()
 {
     while (!glfwWindowShouldClose(window))
     {
+        // Sync OpenGL
+        if (!windowSizeSynced)
+        {
+            windowSizeSynced = true;
+            glViewport(0, 0, windowWidth, windowHeight);
+        }
+
+        // Input
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
+        // Clear
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Render all models
+        // Render models
         for (Model *model : models)
         {
             static const glm::mat4 IDENTITY = glm::mat4(1.0f);
@@ -63,7 +76,7 @@ void Display::start()
             glm::mat4 projection = glm::perspective(FOV, aspect, NEAR, FAR);
             model->render(view, projection);
         }
-
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -77,7 +90,8 @@ Display::~Display()
 
 void Display::resizeCallback(GLFWwindow *window, int width, int height)
 {
-    glViewport(0, 0, width, height);
     Display *display = (Display *)glfwGetWindowUserPointer(window);
     display->aspect = (float)width / height;
+    display->windowWidth = width, display->windowHeight = height;
+    display->windowSizeSynced = false;
 }

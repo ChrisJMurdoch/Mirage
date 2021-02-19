@@ -47,6 +47,16 @@ float VirtualVector::getZ()
 
 void VirtualVector::normalise()
 {
-	float magnitude = sqrt( pow(ptr[0],2) + pow(ptr[1],2) + pow(ptr[2],2) );
-	set( getX()/magnitude, getY()/magnitude, getZ()/magnitude );
+	float magnitude = sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2));
+	set(getX()/magnitude, getY()/magnitude, getZ()/magnitude);
+}
+
+void VirtualVector::multiply(float value)
+{
+	set(getX()*value, getY()*value, getZ()*value);
+}
+
+glm::vec3 VirtualVector::asVec3()
+{
+	return glm::vec3(ptr[0], ptr[1], ptr[2]);
 }

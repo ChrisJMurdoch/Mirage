@@ -3,7 +3,10 @@
 
 #include "model/virtualVector.h"
 
+#include "glm/glm.hpp"
+
 #include <iostream>
+#include <unordered_map>
 
 const int CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
 
@@ -12,7 +15,7 @@ int mesh::vertexCount(int edgeVertices)
     return edgeVertices * edgeVertices * CUBE_FACES;
 }
 
-int mesh::indexCount(int edgeVertices)
+int mesh::triangleCount(int edgeVertices)
 {
     return (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES;
 }
@@ -66,7 +69,7 @@ void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *index
             normal.normalise();
 
             VirtualVector colour = vertexArray->colour(i);
-            colour.set( float(rand())/float((RAND_MAX)), float(rand())/float((RAND_MAX)), float(rand())/float((RAND_MAX)) );
+            colour.set( 1, 1, 1 );
         }
     }
 
@@ -106,5 +109,52 @@ void mesh::morph(VertexArray *vertexArray, void (*function)(VirtualVector vector
     for (int i=0; i<vertexArray->getNVertices(); i++)
     {
         function(vertexArray->position(i));
+    }
+}
+
+void mesh::fixNormals(VertexArray *vertexArray, IndexArray *indexArray)
+{
+    std::unordered_map<int, int> occurrences;
+    std::unordered_map<int, glm::vec3> normals;
+
+    // Initialise maps
+    for (int i=0; i<indexArray->getNTriangles(); i++)
+    {
+        unsigned int *tri = (*indexArray)[i];
+        normals[tri[0]] = glm::vec3(0, 0, 0);
+        normals[tri[1]] = glm::vec3(0, 0, 0);
+        normals[tri[2]] = glm::vec3(0, 0, 0);
+        occurrences[tri[0]] = 0;
+        occurrences[tri[1]] = 0;
+        occurrences[tri[2]] = 0;
+    }
+
+    // Every triangle
+    for (int i=0; i<indexArray->getNTriangles(); i++)
+    {
+        // Get tri
+        unsigned int *tri = (*indexArray)[i];
+        glm::vec3 a = vertexArray->position(tri[0]).asVec3(),
+                  b = vertexArray->position(tri[1]).asVec3(),
+                  c = vertexArray->position(tri[2]).asVec3();
+
+        // Calculate normal
+        glm::vec3 normal = glm::cross( (c-b), (a-b) );
+        
+        // Add to maps
+        occurrences[tri[0]]++;
+        occurrences[tri[1]]++;
+        occurrences[tri[2]]++;
+        normals[tri[0]] += normal;
+        normals[tri[1]] += normal;
+        normals[tri[2]] += normal;
+    }
+
+    // Set vertices
+    for (int i=0; i<vertexArray->getNVertices(); i++)
+    {
+        int occurrence = occurrences[i];
+        glm::vec3 normal = glm::normalize( normals[i] / (float)occurrence );
+        vertexArray->normal(i).set(normal.x, normal.y, normal.z);
     }
 }
