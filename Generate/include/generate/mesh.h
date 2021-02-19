@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "render/attributeSpecifier.h"
 #include "model/vertexArray.h"
 #include "model/indexArray.h"
 
@@ -14,7 +13,7 @@ private:
 	VertexArray vertexArray;
 	IndexArray indexArray;
 public:
-	Mesh(int edgeVertices, AttributeSpecifier *spec);
+	Mesh(int edgeVertices);
 	void generatePlane(int edgeVertices, int vertOffset, int indiOffset, Coord o, Coord d);
 	void morph(void (*function)(VirtualVector vector));
 	int getNVertices();

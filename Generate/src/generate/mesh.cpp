@@ -10,7 +10,7 @@
 
 const int CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
 
-Mesh::Mesh(int edgeVertices, AttributeSpecifier *spec) : indexArray( (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES), vertexArray( edgeVertices * edgeVertices * CUBE_FACES, spec)
+Mesh::Mesh(int edgeVertices) : indexArray( (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES), vertexArray( edgeVertices * edgeVertices * CUBE_FACES)
 {
     if (edgeVertices < 2)
         throw std::exception("Mesh cannot have < 2 edge vertices.");
@@ -49,6 +49,10 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
             position.setX(origin.x + a*delta.x);
             position.setY(origin.y + b*delta.y);
             position.setZ( (delta.z == 0) ? (origin.z) : (delta.x==0) ? (origin.z + a*delta.z) : (origin.z + b*delta.z) );
+
+            VirtualVector normal = vertexArray.normal (i);
+            normal.set( position.getX(), position.getY(), position.getZ() );
+            normal.normalise();
 
             VirtualVector colour = vertexArray.colour(i);
             colour.setX(float(rand()) / float((RAND_MAX)));

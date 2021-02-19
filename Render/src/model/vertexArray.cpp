@@ -1,11 +1,13 @@
 
 #include "model/vertexArray.h"
 
+#include "render/model.h"
+
 #include <iostream>
 
-VertexArray::VertexArray(int nVertices, AttributeSpecifier *spec) : nVertices(nVertices), spec(spec)
+VertexArray::VertexArray(int nVertices) : nVertices(nVertices)
 {
-	vertices = new float[(long long)nVertices*spec->STRIDE];
+	vertices = new float[(long long)nVertices*Model::STRIDE];
 	std::cout << "+VertexArray" << std::endl;
 }
 
@@ -16,21 +18,21 @@ int VertexArray::getNVertices()
 }
 VirtualVector VertexArray::position(int i)
 {
-	return VirtualVector(&vertices[(i*spec->STRIDE)+spec->POSITION_INDEX]);
+	return VirtualVector(&vertices[(i*Model::STRIDE)+Model::POSITION_INDEX]);
 }
 VirtualVector VertexArray::normal(int i)
 {
-	return VirtualVector(&vertices[(i*spec->STRIDE)+spec->NORMAL_INDEX]);
+	return VirtualVector(&vertices[(i*Model::STRIDE)+Model::NORMAL_INDEX]);
 }
 VirtualVector VertexArray::colour(int i)
 {
-	return VirtualVector(&vertices[(i*spec->STRIDE)+spec->COLOUR_INDEX]);
+	return VirtualVector(&vertices[(i*Model::STRIDE)+Model::COLOUR_INDEX]);
 }
 
 // Raw access
 int VertexArray::getArrayLength()
 {
-	return nVertices *spec->STRIDE;
+	return nVertices *Model::STRIDE;
 }
 float *VertexArray::getArrayPointer()
 {

@@ -32,12 +32,16 @@ Model::Model(Mesh *mesh, Program *prog)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices*sizeof(unsigned int), mesh->getIndices(), GL_STATIC_DRAW);
 
         // Position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void*)(COORD_INDEX*sizeof(float)));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void *)(POSITION_INDEX*sizeof(float)));
         glEnableVertexAttribArray(0);
 
-        // Colour attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void*)(COLOUR_INDEX*sizeof(float)));
+        // Normal attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void *)(NORMAL_INDEX*sizeof(float)));
         glEnableVertexAttribArray(1);
+
+        // Colour attribute
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void *)(COLOUR_INDEX*sizeof(float)));
+        glEnableVertexAttribArray(2);
     }
     glBindVertexArray(0);
 

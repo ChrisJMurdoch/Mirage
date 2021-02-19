@@ -5,7 +5,6 @@
 #include "render\display.h"
 #include "model\VirtualVector.h"
 #include "utility\io.h"
-#include "render\attributeSpecifier.h"
 
 #include <iostream>
 #include <exception>
@@ -18,8 +17,7 @@ int main()
         Display display = Display(1000, 600, "Redshift");
         
         // Create Mesh
-        AttributeSpecifier spec = AttributeSpecifier(6, 0, AttributeSpecifier::NONE, 3);
-        Mesh mesh = Mesh(100, &spec);
+        Mesh mesh = Mesh(100);
         mesh.morph([](VirtualVector vector) { vector.normalise(); });
 
         // Create program
