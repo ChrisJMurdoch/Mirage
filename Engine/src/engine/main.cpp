@@ -4,6 +4,7 @@
 #include "render/display.h"
 #include "utility/io.h"
 #include "generate/mesh.h"
+#include "generate/noise.h"
 #include "model/virtualVector.h"
 
 #include <iostream>
@@ -42,9 +43,9 @@ int main()
         // Sphere
         mesh::morph(&vertexArray, [](VirtualVector vector)
         {
-            const float MULT = 0.03, FREQ = 20;
+            const float MULT = 0.2f, FREQ = 0.3;
             vector.normalise();
-            float delta = sin(vector.getX()*FREQ);
+            float delta = noise::perlinSample(vector.getX(), vector.getY(), vector.getZ(), FREQ);
             vector.multiply( (1-MULT) + (MULT*delta) );
         });
         mesh::fixNormals(&vertexArray, &indexArray);

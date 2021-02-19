@@ -146,9 +146,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\generate\mesh.h" />
+    <ClInclude Include="include\generate\noise.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\generate\mesh.cpp" />
+    <ClCompile Include="src\generate\noise.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
