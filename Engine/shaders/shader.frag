@@ -11,6 +11,9 @@ out vec4 fragColour;
 
 void main()
 {
+    // Clip colour
+    vec3 colour = vec3( min(max(colour.r,0),1), min(max(colour.g,0),1), min(max(colour.b,0),1) );
+
     // Ambient
     float ambient = 0.1;
   	
