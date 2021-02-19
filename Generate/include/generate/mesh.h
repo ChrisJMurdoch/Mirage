@@ -4,21 +4,11 @@
 #include "model/vertexArray.h"
 #include "model/indexArray.h"
 
-#include <glm/glm.hpp>
-
-class Mesh
+namespace mesh
 {
-private:
 	struct Coord { float x, y, z; };
-	VertexArray vertexArray;
-	IndexArray indexArray;
-public:
-	Mesh(int edgeVertices);
-	void generatePlane(int edgeVertices, int vertOffset, int indiOffset, Coord o, Coord d);
-	void morph(void (*function)(VirtualVector vector));
-	int getNVertices();
-	float *getVertices();
-	int getNIndices();
-	unsigned int *getIndices();
-	~Mesh();
+	int vertexCount(int edgeVertices);
+	int indexCount(int edgeVertices);
+	void generateCube(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray);
+	void morph(VertexArray *vertexArray, void (*function)(VirtualVector vector));
 };

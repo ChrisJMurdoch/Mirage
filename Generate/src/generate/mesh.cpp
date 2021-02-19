@@ -1,38 +1,49 @@
 
-#include "generate\mesh.h"
+#include "generate/mesh.h"
 
-#include "model\virtualVector.h"
+#include "model/virtualVector.h"
 
-#include <stdlib.h>
-#include <string.h>
 #include <iostream>
-#include <exception>
 
 const int CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
 
-Mesh::Mesh(int edgeVertices) : indexArray( (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES), vertexArray( edgeVertices * edgeVertices * CUBE_FACES)
+int mesh::vertexCount(int edgeVertices)
+{
+    return edgeVertices * edgeVertices * CUBE_FACES;
+}
+
+int mesh::indexCount(int edgeVertices)
+{
+    return (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES;
+}
+
+void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta);
+
+void mesh::generateCube(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray)
 {
     if (edgeVertices < 2)
         throw std::exception("Mesh cannot have < 2 edge vertices.");
+
+    // Dimension variable: lines -> squares -> cubes
     int edgeLines = edgeVertices-1;
 
-    // Calculate array strides
-    int verticesFaceStride = edgeVertices*edgeVertices;
-    int indicesFaceStride = edgeLines*edgeLines*TRIANGLES_PER_QUAD;
-    float space = 1.0f / edgeLines; // Space between vertices
-
-    // Faces
-    generatePlane( edgeVertices, verticesFaceStride*0, indicesFaceStride*0, Coord{  0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X+
-    generatePlane( edgeVertices, verticesFaceStride*1, indicesFaceStride*1, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X-
-    generatePlane( edgeVertices, verticesFaceStride*2, indicesFaceStride*2, Coord{ -0.5f, 0.5f,-0.5f }, Coord{ space,0,space } ); // Y+
-    generatePlane( edgeVertices, verticesFaceStride*3, indicesFaceStride*3, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,0,space } ); // Y-
-    generatePlane( edgeVertices, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 } ); // Z+
-    generatePlane( edgeVertices, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 } ); // Z-
+    // Array strides
+    int verticesFaceStride = edgeVertices * edgeVertices;
+    int indicesFaceStride = edgeLines * edgeLines * TRIANGLES_PER_QUAD;
     
-    std::cout << "+Mesh - Vertices: " << vertexArray.getNVertices() << ", Indices: " << indexArray.getNIndices() << std::endl;
+    // Space between vertices
+    float space = 1.0f / edgeLines;
+
+    // Generate faces
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*0, indicesFaceStride*0, Coord{  0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*1, indicesFaceStride*1, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ 0,space,space } ); // X-
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*2, indicesFaceStride*2, Coord{ -0.5f, 0.5f,-0.5f }, Coord{ space,0,space } ); // Y+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*3, indicesFaceStride*3, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,0,space } ); // Y-
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 } ); // Z+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 } ); // Z-
 }
 
-void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset, Coord origin, Coord delta)
+void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta)
 {
     // Shorthand edge-vertices and edge-lines
     int ev = edgeVertices, el = edgeVertices-1;
@@ -45,19 +56,17 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
             // Calculate vertex index
             int i = (a*ev) + b + verticesOffset;
 
-            VirtualVector position = vertexArray.position(i);
-            position.setX(origin.x + a*delta.x);
-            position.setY(origin.y + b*delta.y);
+            VirtualVector position = vertexArray->position(i);
+            position.setX( origin.x + a*delta.x );
+            position.setY( origin.y + b*delta.y );
             position.setZ( (delta.z == 0) ? (origin.z) : (delta.x==0) ? (origin.z + a*delta.z) : (origin.z + b*delta.z) );
 
-            VirtualVector normal = vertexArray.normal (i);
+            VirtualVector normal = vertexArray->normal (i);
             normal.set( position.getX(), position.getY(), position.getZ() );
             normal.normalise();
 
-            VirtualVector colour = vertexArray.colour(i);
-            colour.setX(float(rand()) / float((RAND_MAX)));
-            colour.setY(float(rand()) / float((RAND_MAX)));
-            colour.setZ(float(rand()) / float((RAND_MAX)));
+            VirtualVector colour = vertexArray->colour(i);
+            colour.set( float(rand())/float((RAND_MAX)), float(rand())/float((RAND_MAX)), float(rand())/float((RAND_MAX)) );
         }
     }
 
@@ -80,47 +89,22 @@ void Mesh::generatePlane(int edgeVertices, int verticesOffset, int indicesOffset
                 botleft = (yp*ev)+xo;
 
             // Triangle 1
-            indexArray[i][0] = verticesOffset+topleft;
-            indexArray[i][1] = verticesOffset+topright;
-            indexArray[i][2] = verticesOffset+botright;
+            (*indexArray)[i][0] = verticesOffset + topleft;
+            (*indexArray)[i][1] = verticesOffset + topright;
+            (*indexArray)[i][2] = verticesOffset + botright;
 
             // Triangle 2
-            indexArray[i+1][0] = verticesOffset+botright;
-            indexArray[i+1][1] = verticesOffset+botleft;
-            indexArray[i+1][2] = verticesOffset+topleft;
+            (*indexArray)[i+1][0] = verticesOffset + botright;
+            (*indexArray)[i+1][1] = verticesOffset + botleft;
+            (*indexArray)[i+1][2] = verticesOffset + topleft;
         }
     }
 }
 
-void Mesh::morph(void (*function)(VirtualVector vector))
+void mesh::morph(VertexArray *vertexArray, void (*function)(VirtualVector vector))
 {
-    for (int i=0; i<vertexArray.getNVertices(); i++)
+    for (int i=0; i<vertexArray->getNVertices(); i++)
     {
-        function(vertexArray.position(i));
+        function(vertexArray->position(i));
     }
-}
-
-int Mesh::getNVertices()
-{
-    return vertexArray.getNVertices();
-}
-
-float *Mesh::getVertices()
-{
-    return vertexArray.getArrayPointer();
-}
-
-int Mesh::getNIndices()
-{
-    return indexArray.getNIndices();
-}
-
-unsigned int *Mesh::getIndices()
-{
-    return indexArray.getArrayPointer();
-}
-
-Mesh::~Mesh()
-{
-    std::cout << "~Mesh" << std::endl;
 }
