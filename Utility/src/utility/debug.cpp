@@ -2,7 +2,6 @@
 #include "utility\debug.h"
 
 #include <exception>
-#include <iostream>
 
 void debug::zeroThrow(int value, const char *message)
 {

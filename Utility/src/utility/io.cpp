@@ -1,7 +1,6 @@
 
 #include "utility\io.h"
 
-#include <iostream>
 #include <fstream>
 
 std::string *io::read(const char *filename)
