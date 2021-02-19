@@ -5,19 +5,19 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 normal;
-layout(location = 2) in vec3 colour;
+layout(location = 0) in vec3 l_position;
+layout(location = 1) in vec3 l_normal;
+layout(location = 2) in vec3 l_colour;
 
-out vec4 vertColour;
+out vec3 position;
+out vec3 normal;
+out vec3 colour;
 
 void main()
 {
-	// Position
-	gl_Position = projection * view * model * vec4(position, 1.0);
+    gl_Position = projection * view * model * vec4(l_position, 1.0);
 
-	// Colour
-	vec4 wn = model * vec4(normal, 1.0); // Transform normal into world space
-	float lum = dot( vec3(wn.x, wn.y, wn.z), vec3(0.0f,1.0f,0.0f) ); // Get upward-facing value
-	vertColour = vec4(colour.r*lum, colour.g*lum, colour.b*lum, 1);
+    position = vec3(model * vec4(l_position, 1.0));
+    normal = mat3(transpose(inverse(model))) * l_normal;
+    colour = l_colour;
 }
