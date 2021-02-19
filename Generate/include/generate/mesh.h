@@ -1,17 +1,22 @@
 
 #pragma once
 
+#include "render/attributeSpecifier.h"
+
+#include <glm/glm.hpp>
+
 class Mesh
 {
 private:
 	struct Coord { float x, y, z; };
+	AttributeSpecifier *spec;
 	int nVertices, nIndices;
 	float *vertices;
 	unsigned int *indices;
 public:
-	Mesh(int edgeVertices, int vertStride, int vertCoord, int vertColour);
-	void generatePlane(int edgeVertices, int vertStride, int vertCoord, int vertColour, int vertOffset, int indiOffset, Coord o, Coord d);
-	void sphere(int nVertices, float *vertices, int vertStride, int vertCoord);
+	Mesh(int edgeVertices, AttributeSpecifier *spec);
+	void generatePlane(int edgeVertices, int vertOffset, int indiOffset, Coord o, Coord d);
+	void morph(void (*function)(glm::vec3 &vector));
 	int getNVertices();
 	float *getVertices();
 	int getNIndices();

@@ -4,6 +4,7 @@
 #include "generate\mesh.h"
 #include "render\display.h"
 #include "utility\io.h"
+#include "render\attributeSpecifier.h"
 
 #include <iostream>
 #include <exception>
@@ -15,8 +16,11 @@ int main()
         // Create display
         Display display = Display(1000, 600, "Redshift");
 
+
         // Create Mesh
-        Mesh mesh = Mesh(100, Model::STRIDE, Model::COORD_INDEX , Model::COLOUR_INDEX);
+        AttributeSpecifier spec = AttributeSpecifier(6, 0, AttributeSpecifier::NONE, 3);
+        Mesh mesh = Mesh(10, &spec);
+        mesh.morph([](glm::vec3 &vector) { vector = glm::normalize(vector); });
 
         // Create program
         Program prog = Program();
