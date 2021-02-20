@@ -124,8 +124,14 @@ void mesh::planet(VertexArray &vertexArray, int octaves)
         VirtualVector position = vertexArray.position(i);
         VirtualVector colour = vertexArray.colour(i);
 
+        // Domain warp
+        static const float WARP = 0.15f, PERIOD = 0.25f;
+        float warpX = WARP * noise::perlinSample(position.getX(), position.getY(), position.getZ(), PERIOD);
+        float warpY = WARP * noise::perlinSample(position.getY(), position.getZ(), position.getX(), PERIOD);
+        float warpZ = WARP * noise::perlinSample(position.getZ(), position.getX(), position.getY(), PERIOD);
+        
         // Get noise value
-        float delta = noise::fractalSample(position.getX(), position.getY(), position.getZ(), FREQ, octaves);
+        float delta = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, FREQ, octaves);
 
         // Set new vector magnitude
         position.normalise( (1-SCALE)+(SCALE*delta) );

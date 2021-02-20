@@ -88,7 +88,7 @@ float noise::perlinSample(float x, float y, float z, float period)
 float noise::fractalSample(float x, float y, float z, float period, int octaves)
 {
     // Settings
-    static const float LACUNARITY = 0.5f, PERSISTANCE = 0.5f;
+    static const float LACUNARITY = 0.5f, PERSISTANCE = 0.52f;
 
     // Octaves
     float value = 0.0f, max = 0.0f;
