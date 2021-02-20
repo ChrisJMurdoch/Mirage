@@ -2,9 +2,12 @@
 #include "generate/mesh.h"
 
 #include "model/virtualVector.h"
+#include "generate/noise.h"
 
 #include "glm/glm.hpp"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <iostream>
 #include <unordered_map>
 
@@ -20,9 +23,9 @@ int mesh::triangleCount(int edgeVertices)
     return (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES;
 }
 
-void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind);
+void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind);
 
-void mesh::generateCube(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray)
+void mesh::generateCube(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray)
 {
     if (edgeVertices < 2)
         throw std::exception("Mesh cannot have < 2 edge vertices.");
@@ -46,7 +49,12 @@ void mesh::generateCube(int edgeVertices, VertexArray *vertexArray, IndexArray *
     generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 }, true  ); // Z-
 }
 
-void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind)
+inline float curveAdjust(float x)
+{
+    return tan(0.5*M_PI*x) / 2;
+}
+
+void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind)
 {
     // Shorthand edge-vertices and edge-lines
     int ev = edgeVertices, el = edgeVertices-1;
@@ -59,16 +67,16 @@ void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *index
             // Calculate vertex index
             int i = (a*ev) + b + verticesOffset;
 
-            VirtualVector position = vertexArray->position(i);
-            position.setX( origin.x + a*delta.x );
-            position.setY( origin.y + b*delta.y );
-            position.setZ( (delta.z == 0) ? (origin.z) : (delta.x==0) ? (origin.z + a*delta.z) : (origin.z + b*delta.z) );
+            VirtualVector position = vertexArray.position(i);
+            position.setX( curveAdjust( origin.x + a*delta.x ) );
+            position.setY( curveAdjust( origin.y + b*delta.y ) );
+            position.setZ( curveAdjust( (delta.z == 0) ? (origin.z) : (delta.x==0) ? (origin.z + a*delta.z) : (origin.z + b*delta.z) ) );
 
-            VirtualVector normal = vertexArray->normal (i);
+            VirtualVector normal = vertexArray.normal (i);
             normal.set( position.getX(), position.getY(), position.getZ() );
             normal.normalise();
 
-            VirtualVector colour = vertexArray->colour(i);
+            VirtualVector colour = vertexArray.colour(i);
             colour.set( 1, 1, 1 );
         }
     }
@@ -93,34 +101,46 @@ void generatePlane(int edgeVertices, VertexArray *vertexArray, IndexArray *index
 
             int a = wind ? topright : botleft, b = wind ? botleft : topright;
 
-            (*indexArray)[i+0][0] = verticesOffset + topleft;
-            (*indexArray)[i+0][1] = verticesOffset + a;
-            (*indexArray)[i+0][2] = verticesOffset + botright;
+            indexArray[i+0][0] = verticesOffset + topleft;
+            indexArray[i+0][1] = verticesOffset + a;
+            indexArray[i+0][2] = verticesOffset + botright;
 
-            (*indexArray)[i+1][0] = verticesOffset + botright;
-            (*indexArray)[i+1][1] = verticesOffset + b;
-            (*indexArray)[i+1][2] = verticesOffset + topleft;
+            indexArray[i+1][0] = verticesOffset + botright;
+            indexArray[i+1][1] = verticesOffset + b;
+            indexArray[i+1][2] = verticesOffset + topleft;
         }
     }
 }
 
-void mesh::morph(VertexArray *vertexArray, void (*function)(VirtualVector vector))
+void mesh::planet(VertexArray &vertexArray, int octaves)
 {
-    for (int i=0; i<vertexArray->getNVertices(); i++)
+    // Settings
+    const float SCALE = 0.3f, FREQ = 0.4;
+
+    // For every vertex
+    for (int i=0; i<vertexArray.getNVertices(); i++)
     {
-        function(vertexArray->position(i));
+        // Get vectors
+        VirtualVector position = vertexArray.position(i);
+        VirtualVector colour = vertexArray.colour(i);
+
+        // Get noise value
+        float delta = noise::fractalSample(position.getX(), position.getY(), position.getZ(), FREQ, octaves);
+
+        // Set new vector magnitude
+        position.normalise( (1-SCALE)+(SCALE*delta) );
     }
 }
 
-void mesh::fixNormals(VertexArray *vertexArray, IndexArray *indexArray)
+void mesh::fixNormals(VertexArray &vertexArray, IndexArray &indexArray)
 {
     std::unordered_map<int, int> occurrences;
     std::unordered_map<int, glm::vec3> normals;
 
     // Initialise maps
-    for (int i=0; i<indexArray->getNTriangles(); i++)
+    for (int i=0; i<indexArray.getNTriangles(); i++)
     {
-        unsigned int *tri = (*indexArray)[i];
+        unsigned int *tri = indexArray[i];
         normals[tri[0]] = glm::vec3(0, 0, 0);
         normals[tri[1]] = glm::vec3(0, 0, 0);
         normals[tri[2]] = glm::vec3(0, 0, 0);
@@ -130,13 +150,13 @@ void mesh::fixNormals(VertexArray *vertexArray, IndexArray *indexArray)
     }
 
     // Every triangle
-    for (int i=0; i<indexArray->getNTriangles(); i++)
+    for (int i=0; i<indexArray.getNTriangles(); i++)
     {
         // Get tri
-        unsigned int *tri = (*indexArray)[i];
-        glm::vec3 a = vertexArray->position(tri[0]).asVec3(),
-                  b = vertexArray->position(tri[1]).asVec3(),
-                  c = vertexArray->position(tri[2]).asVec3();
+        unsigned int *tri = indexArray[i];
+        glm::vec3 a = vertexArray.position(tri[0]).asVec3(),
+                  b = vertexArray.position(tri[1]).asVec3(),
+                  c = vertexArray.position(tri[2]).asVec3();
 
         // Calculate normal
         glm::vec3 normal = glm::cross( (c-b), (a-b) );
@@ -151,10 +171,10 @@ void mesh::fixNormals(VertexArray *vertexArray, IndexArray *indexArray)
     }
 
     // Set vertices
-    for (int i=0; i<vertexArray->getNVertices(); i++)
+    for (int i=0; i<vertexArray.getNVertices(); i++)
     {
         int occurrence = occurrences[i];
         glm::vec3 normal = glm::normalize( normals[i] / (float)occurrence );
-        vertexArray->normal(i).set(normal.x, normal.y, normal.z);
+        vertexArray.normal(i).set(normal.x, normal.y, normal.z);
     }
 }

@@ -7,8 +7,10 @@
 #include "generate/noise.h"
 #include "model/virtualVector.h"
 
+#include <chrono>
 #include <iostream>
 #include <exception>
+#include <unordered_map>
 
 int main()
 {
@@ -35,20 +37,21 @@ int main()
         }
 
         // Create arrays
-        const int edgeVertices = 200;
+        const int edgeVertices = 300;
         VertexArray vertexArray(mesh::vertexCount(edgeVertices));
         IndexArray indexArray(mesh::triangleCount(edgeVertices));
-        mesh::generateCube(edgeVertices, &vertexArray, &indexArray);
+        mesh::generateCube(edgeVertices, vertexArray, indexArray);
 
-        // Sphere
-        mesh::morph(&vertexArray, [](VirtualVector vector)
+        // Create planet
         {
-            const float MULT = 0.3f, FREQ = 0.4;
-            vector.normalise();
-            float delta = noise::fractal(vector.getX(), vector.getY(), vector.getZ(), FREQ, 5);
-            vector.multiply( (1-MULT) + (MULT*delta) );
-        });
-        mesh::fixNormals(&vertexArray, &indexArray);
+            std::cout << "Starting noise generation..." << std::endl;
+            std::chrono::steady_clock::time_point loadStart = std::chrono::steady_clock::now();
+            mesh::planet(vertexArray, 10);
+            std::chrono::steady_clock::time_point loadEnd = std::chrono::steady_clock::now();
+            float loadTime = std::chrono::duration_cast<std::chrono::microseconds>(loadEnd - loadStart).count() / 1000000.0f;
+            std::cout << "Done.  Process took " << loadTime << " seconds." << std::endl;
+        }
+        mesh::fixNormals(vertexArray, indexArray);
 
         // Add model to display
         Model model = Model(&vertexArray, &indexArray, &prog);

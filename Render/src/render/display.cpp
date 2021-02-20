@@ -18,7 +18,7 @@ Display::Display(int width, int height, const char *title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_SAMPLES, 16);
     
     // Sync size
     windowWidth = width, windowHeight = height;
@@ -71,7 +71,7 @@ void Display::start()
         for (Model *model : models)
         {
             static const glm::mat4 IDENTITY = glm::mat4(1.0f);
-            glm::mat4 view = glm::translate(IDENTITY, glm::vec3(0.0f, 0.0f, -2.0f));
+            glm::mat4 view = glm::translate(IDENTITY, glm::vec3(0.0f, 0.0f, -1.5f));
             static const float FOV = glm::radians(100.0f), NEAR = 0.1f, FAR = 100.0f;
             glm::mat4 projection = glm::perspective(FOV, aspect, NEAR, FAR);
             model->render(view, projection);

@@ -1,7 +1,7 @@
 
 #version 460 core
 
-const vec3 lightPosition = vec3(5,5,5);
+const vec3 lightPosition = vec3(3,5,3);
 
 in vec3 position;
 in vec3 normal;
@@ -11,16 +11,17 @@ out vec4 fragColour;
 
 void main()
 {
-    // Clip colour
-    vec3 colour = vec3( min(max(colour.r,0),1), min(max(colour.g,0),1), min(max(colour.b,0),1) );
+    // Fix values
+    vec3 colour = clamp(colour, 1, 1);
+    vec3 normal = normalize(normal);
 
     // Ambient
     float ambient = 0.1;
   	
     // Diffuse 
     vec3 lightDir = normalize(lightPosition - position);
-    float diffuse = max(dot(normal, lightDir), 0.0);
+    float diffuse = max(dot(normal, lightDir), 0);
     
     vec3 result = (ambient + diffuse) * colour;
-    fragColour = vec4(result, 1.0);
+    fragColour = vec4(result, 1);
 }

@@ -1,4 +1,6 @@
 
+![FractalSphere](images/FractalSphere.gif)
+
 # Redshift
 
 C++ libraries focused on planetary generation, simulation, and rendering.

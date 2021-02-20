@@ -20,9 +20,11 @@ public:
 	float getX();
 	float getY();
 	float getZ();
+	float getMagnitude();
 
 	// Manipulators
 	void normalise();
+	void normalise(float magnitude);
 	void multiply(float value);
 
 	// Export
