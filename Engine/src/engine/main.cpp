@@ -43,9 +43,9 @@ int main()
         // Sphere
         mesh::morph(&vertexArray, [](VirtualVector vector)
         {
-            const float MULT = 0.2f, FREQ = 0.3;
+            const float MULT = 0.3f, FREQ = 0.4;
             vector.normalise();
-            float delta = noise::perlinSample(vector.getX(), vector.getY(), vector.getZ(), FREQ);
+            float delta = noise::fractal(vector.getX(), vector.getY(), vector.getZ(), FREQ, 5);
             vector.multiply( (1-MULT) + (MULT*delta) );
         });
         mesh::fixNormals(&vertexArray, &indexArray);

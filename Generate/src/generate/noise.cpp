@@ -86,3 +86,21 @@ float noise::perlinSample(float x, float y, float z, float period)
     // 0-1
     return (last+1) / 2;
 }
+
+float noise::fractal(float x, float y, float z, float period, int octaves)
+{
+    // Octaves
+    float height = 0;
+    float max = 0;
+    for (int o=0; o<octaves; o++)
+    {
+        // Caluculate amplitude and period
+        const float lacunarity = 0.5, persistance = 0.4;
+        float pmult = pow(lacunarity, o), amplitude = pow(persistance, o);
+
+        height += perlinSample(x, y, z, pmult*period) * amplitude;
+
+        max += amplitude;
+    }
+    return height / max;
+}
