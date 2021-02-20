@@ -1,6 +1,8 @@
 
 #include "generate/noise.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
@@ -14,8 +16,7 @@ inline float lerp(float a, float b, float x)
 /* Smoothing function */
 inline float diverge(float x)
 {
-    const float PI = 3.14159265358979323846;
-    return 0.5f - (cos(fmod(x, 1.0f) * PI)*0.5f);
+    return 0.5f - ((float)cos(fmod(x, 1.0f) * M_PI)*0.5f);
 }
 
 /* Combine integer seeds for hashing */
@@ -48,9 +49,9 @@ inline glm::vec3 getProceduralVector(int X, int Y, int Z)
 float noise::perlinSample(float x, float y, float z, float period)
 {
     // Get cube position
-    int X = std::floor(x / period);
-    int Y = std::floor(y / period);
-    int Z = std::floor(z / period);
+    int X = (int)std::floor(x / period);
+    int Y = (int)std::floor(y / period);
+    int Z = (int)std::floor(z / period);
 
     // Get sample position relative to cube
     glm::vec3 point = glm::vec3( (x/period)-X, (y/period)-Y, (z/period)-Z );
@@ -81,24 +82,24 @@ float noise::perlinSample(float x, float y, float z, float period)
     );
 
     // Move value into 0-1 range
-    return (value+1) / 2;
+    return (value+1.0f) / 2.0f;
 }
 
 float noise::fractalSample(float x, float y, float z, float period, int octaves)
 {
     // Settings
-    static const float LACUNARITY = 0.5, PERSISTANCE = 0.5;
+    static const float LACUNARITY = 0.5f, PERSISTANCE = 0.5f;
 
     // Octaves
-    float value = 0, max = 0;
+    float value = 0.0f, max = 0.0f;
     for (int o=0; o<octaves; o++)
     {
         // Caluculate amplitude and period
-        float pmult = pow(LACUNARITY, o), amplitude = pow(PERSISTANCE, o);
+        float pmult = (float)pow(LACUNARITY, o), amplitude = (float)pow(PERSISTANCE, o);
 
         // Calculate value
         value += amplitude * perlinSample(x, y, z, pmult*period);
-        max   += amplitude * 1;
+        max   += amplitude * 1.0f;
     }
     return value / max;
 }

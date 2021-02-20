@@ -47,18 +47,18 @@ float VirtualVector::getZ()
 
 float VirtualVector::getMagnitude()
 {
-	return sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2));
+	return (float)sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2));
 }
 
 void VirtualVector::normalise()
 {
-	float mag = sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2));
+	float mag = (float)sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2));
 	set(getX()/mag, getY()/mag, getZ()/mag);
 }
 
 void VirtualVector::normalise(float magnitude)
 {
-	float mag = sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2)) / magnitude;
+	float mag = (float)sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2)) / magnitude;
 	set(getX()/mag, getY()/mag, getZ()/mag);
 }
 

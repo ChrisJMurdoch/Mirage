@@ -5,3 +5,6 @@
 
 # Build
 **/x64/
+
+# 3rd-party files
+/vendor/

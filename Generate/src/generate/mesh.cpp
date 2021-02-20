@@ -51,7 +51,7 @@ void mesh::generateCube(int edgeVertices, VertexArray &vertexArray, IndexArray &
 
 inline float curveAdjust(float x)
 {
-    return tan(0.5*M_PI*x) / 2;
+    return (float)tan(0.5*M_PI*x) / 2;
 }
 
 void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind)
@@ -115,7 +115,7 @@ void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &index
 void mesh::planet(VertexArray &vertexArray, int octaves)
 {
     // Settings
-    const float SCALE = 0.3f, FREQ = 0.4;
+    const float SCALE = 0.3f, FREQ = 0.4f;
 
     // For every vertex
     for (int i=0; i<vertexArray.getNVertices(); i++)
