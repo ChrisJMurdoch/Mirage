@@ -10,6 +10,8 @@
 #include <math.h>
 #include <iostream>
 #include <unordered_map>
+#include <thread>
+#include <list>
 
 const int CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
 
@@ -112,29 +114,42 @@ void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &index
     }
 }
 
-void mesh::planet(VertexArray &vertexArray, int octaves)
-{
-    // Settings
-    const float SCALE = 0.3f, FREQ = 0.4f;
+// Noise settings
+const float NOISE_MAGNITUDE = 0.3f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.15f, WARP_PERIOD = 0.25f;
 
-    // For every vertex
-    for (int i=0; i<vertexArray.getNVertices(); i++)
+// Grid-stride allocation
+void planetAllocation(VertexArray *vertexArray, int octaves, int offset, int stride)
+{
+    for (int i=offset; i<vertexArray->getNVertices(); i+=stride)
     {
         // Get vectors
-        VirtualVector position = vertexArray.position(i);
-        VirtualVector colour = vertexArray.colour(i);
+        VirtualVector position = vertexArray->position(i);
+        VirtualVector colour = vertexArray->colour(i);
 
         // Domain warp
-        static const float WARP = 0.15f, PERIOD = 0.25f;
-        float warpX = WARP * noise::perlinSample(position.getX(), position.getY(), position.getZ(), PERIOD);
-        float warpY = WARP * noise::perlinSample(position.getY(), position.getZ(), position.getX(), PERIOD);
-        float warpZ = WARP * noise::perlinSample(position.getZ(), position.getX(), position.getY(), PERIOD);
-        
+        float warpX = WARP_MAGNITUDE * noise::perlinSample(position.getX(), position.getY(), position.getZ(), WARP_PERIOD);
+        float warpY = WARP_MAGNITUDE * noise::perlinSample(position.getY(), position.getZ(), position.getX(), WARP_PERIOD);
+        float warpZ = WARP_MAGNITUDE * noise::perlinSample(position.getZ(), position.getX(), position.getY(), WARP_PERIOD);
+
         // Get noise value
-        float delta = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, FREQ, octaves);
+        float delta = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, NOISE_PERIOD, octaves);
 
         // Set new vector magnitude
-        position.normalise( (1-SCALE)+(SCALE*delta) );
+        position.normalise((1-NOISE_MAGNITUDE)+(NOISE_PERIOD*delta));
+    }
+}
+
+void mesh::planet(VertexArray &vertexArray, int octaves, int threads)
+{
+    // Allocate threads
+    std::list<std::thread> threadList;
+    for (int i=0; i<threads; i++)
+    {
+        threadList.push_back( std::thread(planetAllocation, &vertexArray, octaves, i, threads) );
+    }
+    for (std::thread &thread : threadList)
+    {
+        thread.join();
     }
 }
 
@@ -142,18 +157,6 @@ void mesh::fixNormals(VertexArray &vertexArray, IndexArray &indexArray)
 {
     std::unordered_map<int, int> occurrences;
     std::unordered_map<int, glm::vec3> normals;
-
-    // Initialise maps
-    for (int i=0; i<indexArray.getNTriangles(); i++)
-    {
-        unsigned int *tri = indexArray[i];
-        normals[tri[0]] = glm::vec3(0, 0, 0);
-        normals[tri[1]] = glm::vec3(0, 0, 0);
-        normals[tri[2]] = glm::vec3(0, 0, 0);
-        occurrences[tri[0]] = 0;
-        occurrences[tri[1]] = 0;
-        occurrences[tri[2]] = 0;
-    }
 
     // Every triangle
     for (int i=0; i<indexArray.getNTriangles(); i++)

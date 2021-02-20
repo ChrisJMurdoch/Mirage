@@ -46,7 +46,7 @@ int main()
         {
             std::cout << "Starting noise generation..." << std::endl;
             std::chrono::steady_clock::time_point loadStart = std::chrono::steady_clock::now();
-            mesh::planet(vertexArray, 8);
+            mesh::planet(vertexArray, 10, 16);
             std::chrono::steady_clock::time_point loadEnd = std::chrono::steady_clock::now();
             float loadTime = std::chrono::duration_cast<std::chrono::microseconds>(loadEnd - loadStart).count() / 1000000.0f;
             std::cout << "Done.  Process took " << loadTime << " seconds." << std::endl;
