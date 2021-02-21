@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-std::string *io::read(const char *filename)
+std::string *io::read(char const *filename)
 {
     std::string *text = new std::string();
     std::ifstream fs(filename);
@@ -22,4 +22,12 @@ std::string *io::read(const char *filename)
         throw std::exception("File could not be opened.");
     }
     return text;
+}
+
+void io::write(char const *filename, char const *text)
+{
+    std::ofstream os;
+    os.open(filename);
+    os << text;
+    os.close();
 }

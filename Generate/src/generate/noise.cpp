@@ -1,52 +1,29 @@
 
 #include "generate/noise.h"
 
-#define _USE_MATH_DEFINES
+#include "utility/math.h"
+
 #include <math.h>
 #include <cmath>
-#include <stdexcept>
-#include <iostream>
+#include <algorithm>
 
-/* Interpolate between a and b using x */
-inline float lerp(float a, float b, float x)
+inline float adjustFunction(float x)
 {
-    return a + x * (b - a);
-}
-
-/* Smoothing function */
-inline float diverge(float x)
-{
-    return 0.5f - ((float)cos(fmod(x, 1.0f) * M_PI)*0.5f);
-}
-
-/* Combine integer seeds for hashing */
-inline int combine(int x, int y) {
-    return (x*12345) + y;
-}
-inline int combine(int x, int y, int z) {
-    return combine(combine(x, y), z);
-}
-
-/* Quick hashing function */
-inline float floatHash(int x)
-{
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = (x >> 16) ^ x;
-    return (x % 10000) / 9999.0f;
+    static float const START = 0.25f, MIDDLE = 1-(START*2);
+    return std::max(std::min((x-START)/MIDDLE, 1.0f), 0.0f);
 }
 
 /* Procedurally generate vector from three integers */
 inline glm::vec3 getProceduralVector(int X, int Y, int Z)
 {
     return glm::normalize( glm::vec3(
-        floatHash( combine(X,Y,Z)+0) -0.5,
-        floatHash( combine(X,Y,Z)+1) -0.5,
-        floatHash( combine(X,Y,Z)+2) -0.5
+        math::floatHash(math::combine(X,Y,Z)+0) -0.5,
+        math::floatHash(math::combine(X,Y,Z)+1) -0.5,
+        math::floatHash(math::combine(X,Y,Z)+2) -0.5
     ) );
 }
 
-float noise::perlinSample(float x, float y, float z, float period)
+float noise::perlinSample(float x, float y, float z, float period, bool adjust)
 {
     // Get cube position
     int X = (int)std::floor(x / period);
@@ -67,25 +44,31 @@ float noise::perlinSample(float x, float y, float z, float period)
     float CTRd = glm::dot( getProceduralVector(X+1, Y+1, Z+1), glm::vec3(1, 1, 1)-point );
 
     // Interpolate using diverge
-    float value = lerp(
-        lerp(
-            lerp(FBLd, FBRd, diverge(point.x)),
-            lerp(FTLd, FTRd, diverge(point.x)),
-            diverge(point.y)
+    float value = math::lerp(
+        math::lerp(
+            math::lerp(FBLd, FBRd, math::smooth(point.x)),
+            math::lerp(FTLd, FTRd, math::smooth(point.x)),
+            math::smooth(point.y)
         ),
-        lerp(
-            lerp(CBLd, CBRd, diverge(point.x)),
-            lerp(CTLd, CTRd, diverge(point.x)),
-            diverge(point.y)
+        math::lerp(
+            math::lerp(CBLd, CBRd, math::smooth(point.x)),
+            math::lerp(CTLd, CTRd, math::smooth(point.x)),
+            math::smooth(point.y)
         ),
-        diverge(point.z)
+        math::smooth(point.z)
     );
 
     // Move value into 0-1 range
-    return (value+1.0f) / 2.0f;
+    value = (value+1.0f) / 2.0f;
+
+    // Optionally adjust
+    if (adjust)
+        value = adjustFunction(value);
+
+    return value;
 }
 
-float noise::fractalSample(float x, float y, float z, float period, int octaves)
+float noise::fractalSample(float x, float y, float z, float period, int octaves, bool adjust)
 {
     // Settings
     static const float LACUNARITY = 0.5f, PERSISTANCE = 0.52f;
@@ -98,7 +81,7 @@ float noise::fractalSample(float x, float y, float z, float period, int octaves)
         float pmult = (float)pow(LACUNARITY, o), amplitude = (float)pow(PERSISTANCE, o);
 
         // Calculate value
-        value += amplitude * perlinSample(x, y, z, pmult*period);
+        value += amplitude * perlinSample(x, y, z, pmult*period, adjust);
         max   += amplitude * 1.0f;
     }
     return value / max;

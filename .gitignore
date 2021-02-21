@@ -6,5 +6,8 @@
 # Build
 **/x64/
 
+# Output
+/Tools/ToolData/*
+
 # 3rd-party files
 /vendor/
