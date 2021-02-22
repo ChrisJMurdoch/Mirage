@@ -12,7 +12,7 @@ class Instance
 private:
 	Model const &model;
 	glm::vec3 position;
-	float rotateY = 0.0f;
+	glm::quat orientation;
 public:
 	Instance(Model const &model);
 	void render(glm::mat4 const &view, glm::mat4 const  &projection) const;
