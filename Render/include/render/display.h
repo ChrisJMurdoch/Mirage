@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "model/model.h"
+#include "model/instance.h"
 
 #include <GLFW/glfw3.h>
 
@@ -14,11 +14,12 @@ private:
     int windowWidth, windowHeight;
     float aspect;
     GLFWwindow *window;
-    std::list<Model *> models;
+    std::list<Instance const *> instances;
 public:
     Display(int width, int height, const char *title);
-    void addModel(Model *model);
-    void start();
+    void addInstance(Instance const * instance);
+    void render();
+    bool shouldClose();
     ~Display();
 private:
     static void resizeCallback(GLFWwindow *window, int width, int height);

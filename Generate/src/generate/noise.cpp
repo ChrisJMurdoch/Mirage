@@ -7,12 +7,6 @@
 #include <cmath>
 #include <algorithm>
 
-inline float adjustFunction(float x)
-{
-    static float const START = 0.25f, MIDDLE = 1-(START*2);
-    return std::max(std::min((x-START)/MIDDLE, 1.0f), 0.0f);
-}
-
 /* Procedurally generate vector from three integers */
 inline glm::vec3 getProceduralVector(int X, int Y, int Z)
 {
@@ -23,7 +17,7 @@ inline glm::vec3 getProceduralVector(int X, int Y, int Z)
     ) );
 }
 
-float noise::perlinSample(float x, float y, float z, float period, bool adjust)
+float noise::perlinSample(float x, float y, float z, float period)
 {
     // Get cube position
     int X = (int)std::floor(x / period);
@@ -58,17 +52,10 @@ float noise::perlinSample(float x, float y, float z, float period, bool adjust)
         math::smooth(point.z)
     );
 
-    // Move value into 0-1 range
-    value = (value+1.0f) / 2.0f;
-
-    // Optionally adjust
-    if (adjust)
-        value = adjustFunction(value);
-
     return value;
 }
 
-float noise::fractalSample(float x, float y, float z, float period, int octaves, bool adjust)
+float noise::fractalSample(float x, float y, float z, float period, int octaves)
 {
     // Settings
     static const float LACUNARITY = 0.5f, PERSISTANCE = 0.52f;
@@ -81,7 +68,7 @@ float noise::fractalSample(float x, float y, float z, float period, int octaves,
         float pmult = (float)pow(LACUNARITY, o), amplitude = (float)pow(PERSISTANCE, o);
 
         // Calculate value
-        value += amplitude * perlinSample(x, y, z, pmult*period, adjust);
+        value += amplitude * perlinSample(x, y, z, pmult*period);
         max   += amplitude * 1.0f;
     }
     return value / max;

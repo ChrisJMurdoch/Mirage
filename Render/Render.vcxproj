@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\model\indexArray.h" />
+    <ClInclude Include="include\model\instance.h" />
     <ClInclude Include="include\model\vertexArray.h" />
     <ClInclude Include="include\model\virtualVector.h" />
     <ClInclude Include="include\render\display.h" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClCompile Include="..\vendor\glad\src\glad.c" />
     <ClCompile Include="src\model\indexArray.cpp" />
+    <ClCompile Include="src\model\instance.cpp" />
     <ClCompile Include="src\model\vertexArray.cpp" />
     <ClCompile Include="src\model\virtualVector.cpp" />
     <ClCompile Include="src\render\display.cpp" />

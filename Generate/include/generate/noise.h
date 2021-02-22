@@ -7,6 +7,6 @@
 
 namespace noise
 {
-	float perlinSample(float x, float y, float z, float period, bool adjust);
-	float fractalSample(float x, float y, float z, float period, int octaves, bool adjust);
+	float perlinSample(float x, float y, float z, float period);
+	float fractalSample(float x, float y, float z, float period, int octaves);
 }

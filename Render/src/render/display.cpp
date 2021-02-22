@@ -39,47 +39,51 @@ Display::Display(int width, int height, const char *title)
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     std::cout << "+Display" << std::endl;
 }
 
-void Display::addModel(Model *model)
+void Display::addInstance(Instance const * instance)
 {
-    models.push_back(model);
+    instances.push_back(instance);
 }
 
-void Display::start()
+void Display::render()
 {
-    while (!glfwWindowShouldClose(window))
+    // Sync OpenGL
+    if (!windowSizeSynced)
     {
-        // Sync OpenGL
-        if (!windowSizeSynced)
-        {
-            windowSizeSynced = true;
-            glViewport(0, 0, windowWidth, windowHeight);
-        }
-
-        // Input
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, true);
-
-        // Clear
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Render models
-        for (Model *model : models)
-        {
-            static const glm::mat4 IDENTITY = glm::mat4(1.0f);
-            glm::mat4 view = glm::translate(IDENTITY, glm::vec3(0.0f, 0.0f, -1.5f));
-            static const float FOV = glm::radians(100.0f), NEAR = 0.1f, FAR = 100.0f;
-            glm::mat4 projection = glm::perspective(FOV, aspect, NEAR, FAR);
-            model->render(view, projection);
-        }
-        
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        windowSizeSynced = true;
+        glViewport(0, 0, windowWidth, windowHeight);
     }
+
+    // Input
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    // Clear
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Render models
+    for (Instance const * const instance : instances)
+    {
+        static const glm::mat4 IDENTITY = glm::mat4(1.0f);
+        glm::mat4 view = glm::translate(IDENTITY, glm::vec3(0.0f, 0.0f, -1.5f));
+        static const float FOV = glm::radians(100.0f), NEAR = 0.1f, FAR = 100.0f;
+        glm::mat4 projection = glm::perspective(FOV, aspect, NEAR, FAR);
+        instance->render(view, projection);
+    }
+    
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+}
+
+bool Display::shouldClose()
+{
+    return glfwWindowShouldClose(window);
 }
 
 Display::~Display()

@@ -66,7 +66,7 @@ void Program::setUniform4f(const char *name, float x, float y, float z, float w)
 	glUniform4f(glGetUniformLocation(id, name), x, y, z, w);
 }
 
-void Program::setUniformMatrix4fv(const char *name, glm::mat4 &matrix)
+void Program::setUniformMatrix4fv(const char *name, glm::mat4 const &matrix)
 {
 	glUseProgram(id);
 	glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(matrix));

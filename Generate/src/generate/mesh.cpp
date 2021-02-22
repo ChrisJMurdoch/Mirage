@@ -3,6 +3,7 @@
 
 #include "model/virtualVector.h"
 #include "generate/noise.h"
+#include "utility/math.h"
 
 #include "glm/glm.hpp"
 
@@ -114,17 +115,11 @@ void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &index
     }
 }
 
-/* Interpolate between a and b using x */
-inline float lerp(float a, float b, float x)
-{
-    return a + x * (b - a);
-}
-
 // Noise settings
-static float const NOISE_MAGNITUDE = 0.4f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.15f, WARP_PERIOD = 0.25f;
+static float const NOISE_MAGNITUDE = 0.2f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.15f, WARP_PERIOD = 0.25f;
 
 // Grid-stride allocation
-void planetAllocation(VertexArray *vertexArray, int octaves, int offset, int stride, bool adjust)
+void planetThread(VertexArray *vertexArray, int octaves, int offset, int stride)
 {
     for (int i=offset; i<vertexArray->getNVertices(); i+=stride)
     {
@@ -132,25 +127,23 @@ void planetAllocation(VertexArray *vertexArray, int octaves, int offset, int str
         VirtualVector position = vertexArray->position(i);
         VirtualVector colour = vertexArray->colour(i);
 
+        // Create sphere for sample coords
+        position.normalise();
+
         // Domain warp
-        float warpX = WARP_MAGNITUDE * noise::perlinSample(position.getX(), position.getY(), position.getZ(), WARP_PERIOD, adjust);
-        float warpY = WARP_MAGNITUDE * noise::perlinSample(position.getY(), position.getZ(), position.getX(), WARP_PERIOD, adjust);
-        float warpZ = WARP_MAGNITUDE * noise::perlinSample(position.getZ(), position.getX(), position.getY(), WARP_PERIOD, adjust);
+        float warpX = WARP_MAGNITUDE * noise::perlinSample(position.getX(), position.getY(), position.getZ(), WARP_PERIOD);
+        float warpY = WARP_MAGNITUDE * noise::perlinSample(position.getY(), position.getZ(), position.getX(), WARP_PERIOD);
+        float warpZ = WARP_MAGNITUDE * noise::perlinSample(position.getZ(), position.getX(), position.getY(), WARP_PERIOD);
 
-        // Get continent multiplier
-        float continent = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, 0.2f, 1, adjust);
-
-        // Noisy terrain
-        float noise = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, NOISE_PERIOD, octaves, adjust);
-
-        // Flat land
-        float flat = 0.5f;
+        // Generate noise
+        float noise = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, NOISE_PERIOD, octaves);
 
         // Final height value
-        float value = lerp(flat, noise, continent);
+        float value = noise;
 
         // Set new vector magnitude
-        position.normalise((1-NOISE_MAGNITUDE)+(NOISE_MAGNITUDE*value));
+        position.normalise( 1 + (value*NOISE_MAGNITUDE) );
+        colour.set(1.0f, 1.0f, 1.0f);
     }
 }
 
@@ -160,7 +153,36 @@ void mesh::planet(VertexArray &vertexArray, int octaves, int threads)
     std::list<std::thread> threadList;
     for (int i=0; i<threads; i++)
     {
-        threadList.push_back( std::thread(planetAllocation, &vertexArray, octaves, i, threads, true) );
+        threadList.push_back( std::thread(planetThread, &vertexArray, octaves, i, threads) );
+    }
+    for (std::thread &thread : threadList)
+    {
+        thread.join();
+    }
+}
+
+// Grid-stride allocation
+void seaThread(VertexArray *vertexArray, int offset, int stride)
+{
+    for (int i=offset; i<vertexArray->getNVertices(); i+=stride)
+    {
+        // Get vectors
+        VirtualVector position = vertexArray->position(i);
+        VirtualVector colour = vertexArray->colour(i);
+
+        // Blue sphere
+        position.normalise(1.0f);
+        colour.set(0.1f, 0.4f, 1.0f);
+    }
+}
+
+void mesh::sea(VertexArray &vertexArray, int threads)
+{
+    // Allocate threads
+    std::list<std::thread> threadList;
+    for (int i=0; i<threads; i++)
+    {
+        threadList.push_back(std::thread(seaThread, &vertexArray, i, threads));
     }
     for (std::thread &thread : threadList)
     {

@@ -15,23 +15,23 @@ int main()
 
 		octaves = 1;
 		std::cout << "Dumping fractal distribution for " << octaves << " octaves." << std::endl;
-		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution1.txt", octaves, true, SAMPLES, THREADS);
+		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution1.txt", octaves, SAMPLES, THREADS);
 
 		octaves = 2;
 		std::cout << "Dumping fractal distribution for " << octaves << " octaves." << std::endl;
-		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution2.txt", octaves, true, SAMPLES, THREADS);
+		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution2.txt", octaves, SAMPLES, THREADS);
 
 		octaves = 3;
 		std::cout << "Dumping fractal distribution for " << octaves << " octaves." << std::endl;
-		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution3.txt", octaves, true, SAMPLES, THREADS);
+		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution3.txt", octaves, SAMPLES, THREADS);
 
 		octaves = 4;
 		std::cout << "Dumping fractal distribution for " << octaves << " octaves." << std::endl;
-		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution4.txt", octaves, true, SAMPLES, THREADS);
+		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution4.txt", octaves, SAMPLES, THREADS);
 
 		octaves = 5;
 		std::cout << "Dumping fractal distribution for " << octaves << " octaves." << std::endl;
-		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution5.txt", octaves, true, SAMPLES, THREADS);
+		tests::dumpFractalDistribution("ToolData/AdjustedFractalDistribution5.txt", octaves, SAMPLES, THREADS);
 
 		std::cout << "Done." << std::endl;
 		return 0;

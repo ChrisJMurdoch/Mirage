@@ -6,6 +6,7 @@
 #include "generate/mesh.h"
 #include "generate/noise.h"
 #include "model/virtualVector.h"
+#include "model/instance.h"
 
 #include <chrono>
 #include <iostream>
@@ -18,47 +19,72 @@ int main()
     {
         // Create display
         Display display = Display(1000, 600, "Redshift");
-        
-        // Create program
-        Program prog = Program();
+
+        // Create terrain program
+        Program terrain = Program();
         {
             // Add vertex shader
-            std::string *vertexSource = io::read("shaders\\shader.vert");
-            prog.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
+            std::string *vertexSource = io::read("shaders\\terrain.vert");
+            terrain.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
             delete vertexSource;
 
             // Add fragment shader
-            std::string *fragmentSource = io::read("shaders\\shader.frag");
-            prog.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
+            std::string *fragmentSource = io::read("shaders\\terrain.frag");
+            terrain.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
             delete fragmentSource;
 
             // Link shaders into program
-            prog.link();
+            terrain.link();
         }
 
-        // Create arrays
-        const int edgeVertices = 500;
-        VertexArray vertexArray(mesh::vertexCount(edgeVertices));
-        IndexArray indexArray(mesh::triangleCount(edgeVertices));
-        mesh::generateCube(edgeVertices, vertexArray, indexArray);
+        // Create terrain program
+        Program water = Program();
+        {
+            // Add vertex shader
+            std::string *vertexSource = io::read("shaders\\water.vert");
+            water.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
+            delete vertexSource;
+
+            // Add fragment shader
+            std::string *fragmentSource = io::read("shaders\\water.frag");
+            water.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
+            delete fragmentSource;
+
+            // Link shaders into program
+            water.link();
+        }
 
         // Create planet
+        const int edgeVerticesA = 500;
+        VertexArray vertexArrayA(mesh::vertexCount(edgeVerticesA));
+        IndexArray indexArrayA(mesh::triangleCount(edgeVerticesA));
+        mesh::generateCube(edgeVerticesA, vertexArrayA, indexArrayA);
+        mesh::planet(vertexArrayA, 10, 16);
+        mesh::fixNormals(vertexArrayA, indexArrayA);
+        Model modelA = Model(&vertexArrayA, &indexArrayA, &terrain);
+
+        // Create sea
+        const int edgeVerticesB = 50;
+        VertexArray vertexArrayB(mesh::vertexCount(edgeVerticesB));
+        IndexArray indexArrayB(mesh::triangleCount(edgeVerticesB));
+        mesh::generateCube(edgeVerticesB, vertexArrayB, indexArrayB);
+        mesh::sea(vertexArrayB, 16);
+        mesh::fixNormals(vertexArrayB, indexArrayB);
+        Model modelB = Model(&vertexArrayB, &indexArrayB, &water);
+
+        // Add instances
+        Instance planet(modelA);
+        Instance sea(modelB);
+        display.addInstance(&planet);
+        display.addInstance(&sea);
+
+        // Run display
+        while (!display.shouldClose())
         {
-            std::cout << "Starting noise generation..." << std::endl;
-            std::chrono::steady_clock::time_point loadStart = std::chrono::steady_clock::now();
-            mesh::planet(vertexArray, 10, 16);
-            std::chrono::steady_clock::time_point loadEnd = std::chrono::steady_clock::now();
-            float loadTime = std::chrono::duration_cast<std::chrono::microseconds>(loadEnd - loadStart).count() / 1000000.0f;
-            std::cout << "Done.  Process took " << loadTime << " seconds." << std::endl;
+            planet.physics();
+            sea.physics();
+            display.render();
         }
-        mesh::fixNormals(vertexArray, indexArray);
-
-        // Add model to display
-        Model model = Model(&vertexArray, &indexArray, &prog);
-        display.addModel(&model);
-
-        // Start display
-        display.start();
 
         return 0;
     }
