@@ -55,7 +55,7 @@ int main()
         }
 
         // Create planet
-        const int edgeVerticesA = 500;
+        const int edgeVerticesA = 600;
         VertexArray vertexArrayA(mesh::vertexCount(edgeVerticesA));
         IndexArray indexArrayA(mesh::triangleCount(edgeVerticesA));
         mesh::generateCube(edgeVerticesA, vertexArrayA, indexArrayA);
