@@ -116,7 +116,7 @@ void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &index
 }
 
 // Noise settings
-static float const NOISE_MAGNITUDE = 0.10f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.10f, WARP_PERIOD = 0.25f;
+static float const NOISE_MAGNITUDE = 0.15f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.10f, WARP_PERIOD = 0.25f;
 
 // Grid-stride allocation
 void planetThread(VertexArray *vertexArray, int octaves, int offset, int stride)
@@ -154,35 +154,6 @@ void mesh::planet(VertexArray &vertexArray, int octaves, int threads)
     for (int i=0; i<threads; i++)
     {
         threadList.push_back( std::thread(planetThread, &vertexArray, octaves, i, threads) );
-    }
-    for (std::thread &thread : threadList)
-    {
-        thread.join();
-    }
-}
-
-// Grid-stride allocation
-void seaThread(VertexArray *vertexArray, int offset, int stride)
-{
-    for (int i=offset; i<vertexArray->getNVertices(); i+=stride)
-    {
-        // Get vectors
-        VirtualVector position = vertexArray->position(i);
-        VirtualVector colour = vertexArray->colour(i);
-
-        // Blue sphere
-        position.normalise(1.0f);
-        colour.set(0.1f, 0.4f, 1.0f);
-    }
-}
-
-void mesh::sea(VertexArray &vertexArray, int threads)
-{
-    // Allocate threads
-    std::list<std::thread> threadList;
-    for (int i=0; i<threads; i++)
-    {
-        threadList.push_back(std::thread(seaThread, &vertexArray, i, threads));
     }
     for (std::thread &thread : threadList)
     {

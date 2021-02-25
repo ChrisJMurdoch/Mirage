@@ -13,6 +13,5 @@ namespace mesh
 	int triangleCount(int edgeVertices);
 	void generateCube(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray);
 	void planet(VertexArray &vertexArray, int octaves, int threads=1);
-	void sea(VertexArray &vertexArray, int threads=1);
 	void fixNormals(VertexArray &vertexArray, IndexArray &indexArray);
 };
