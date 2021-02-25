@@ -16,6 +16,8 @@ public:
 	Program();
 	void addShader(const char *source, Shader type);
 	void link();
+	void setUniform1i(const char *name, int value);
+	void setUniform3fv(const char *name, glm::vec3 const &vector);
 	void setUniform4f(const char *name, float x, float y, float z, float w);
 	void setUniformMatrix4fv(const char *name, glm::mat4 const &matrix);
 	void use();

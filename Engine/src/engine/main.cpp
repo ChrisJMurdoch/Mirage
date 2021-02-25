@@ -20,69 +20,31 @@ int main()
         // Create display
         Display display = Display(1000, 600, "Redshift");
 
-        // Create terrain program
-        Program terrain = Program();
-        {
-            // Add vertex shader
-            std::string *vertexSource = io::read("shaders\\terrain.vert");
-            terrain.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
-            delete vertexSource;
+        // Create programs
+        Program post = Program(), terrain = Program();
+        addShaders(post, "shaders\\post.vert", "shaders\\post.frag");
+        addShaders(terrain, "shaders\\terrain.vert", "shaders\\terrain.frag");
 
-            // Add fragment shader
-            std::string *fragmentSource = io::read("shaders\\terrain.frag");
-            terrain.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
-            delete fragmentSource;
-
-            // Link shaders into program
-            terrain.link();
-        }
-
-        // Create terrain program
-        Program water = Program();
-        {
-            // Add vertex shader
-            std::string *vertexSource = io::read("shaders\\water.vert");
-            water.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
-            delete vertexSource;
-
-            // Add fragment shader
-            std::string *fragmentSource = io::read("shaders\\water.frag");
-            water.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
-            delete fragmentSource;
-
-            // Link shaders into program
-            water.link();
-        }
+        // Add post-processing to display
+        display.addPostProgram(&post);
 
         // Create planet
-        const int edgeVerticesA = 600;
-        VertexArray vertexArrayA(mesh::vertexCount(edgeVerticesA));
-        IndexArray indexArrayA(mesh::triangleCount(edgeVerticesA));
-        mesh::generateCube(edgeVerticesA, vertexArrayA, indexArrayA);
-        mesh::planet(vertexArrayA, 10, 16);
-        mesh::fixNormals(vertexArrayA, indexArrayA);
-        Model modelA = Model(&vertexArrayA, &indexArrayA, &terrain);
-
-        // Create sea
-        const int edgeVerticesB = 50;
-        VertexArray vertexArrayB(mesh::vertexCount(edgeVerticesB));
-        IndexArray indexArrayB(mesh::triangleCount(edgeVerticesB));
-        mesh::generateCube(edgeVerticesB, vertexArrayB, indexArrayB);
-        mesh::sea(vertexArrayB, 16);
-        mesh::fixNormals(vertexArrayB, indexArrayB);
-        Model modelB = Model(&vertexArrayB, &indexArrayB, &water);
+        const int terrainVertices = 600;
+        VertexArray terrainVertexArray(mesh::vertexCount(terrainVertices));
+        IndexArray terrainIndexArray(mesh::triangleCount(terrainVertices));
+        mesh::generateCube(terrainVertices, terrainVertexArray, terrainIndexArray);
+        mesh::planet(terrainVertexArray, 10, 16);
+        mesh::fixNormals(terrainVertexArray, terrainIndexArray);
+        Model terrainModel = Model(&terrainVertexArray, &terrainIndexArray, &terrain);
 
         // Add instances
-        Instance planet(modelA);
-        Instance sea(modelB);
+        Instance planet = Instance(terrainModel);
         display.addInstance(&planet);
-        display.addInstance(&sea);
 
         // Run display
         while (!display.shouldClose())
         {
             planet.physics();
-            sea.physics();
             display.render();
         }
 
@@ -93,4 +55,20 @@ int main()
         std::cout << e.what() << std::endl;
         return -1;
     }
+}
+
+void addShaders(Program &prog, char const *vert, char const *frag)
+{
+    // Add vertex shader
+    std::string *vertexSource = io::read(vert);
+    prog.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
+    delete vertexSource;
+
+    // Add fragment shader
+    std::string *fragmentSource = io::read(frag);
+    prog.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
+    delete fragmentSource;
+
+    // Link shaders into program
+    prog.link();
 }

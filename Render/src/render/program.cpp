@@ -60,6 +60,18 @@ void Program::link()
 	shaders.clear();
 }
 
+void Program::setUniform1i(const char *name, int value)
+{
+	glUseProgram(id);
+	glUniform1i(glGetUniformLocation(id, name), value);
+}
+
+void Program::setUniform3fv(const char *name, glm::vec3 const &vector)
+{
+	glUseProgram(id);
+	glUniform3fv(glGetUniformLocation(id, name), 1, glm::value_ptr(vector));
+}
+
 void Program::setUniform4f(const char *name, float x, float y, float z, float w)
 {
 	glUseProgram(id);
