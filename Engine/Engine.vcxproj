@@ -166,8 +166,6 @@
   <ItemGroup>
     <None Include="shaders\post.frag" />
     <None Include="shaders\post.vert" />
-    <None Include="shaders\water.frag" />
-    <None Include="shaders\water.vert" />
     <None Include="shaders\terrain.frag" />
     <None Include="shaders\terrain.vert" />
   </ItemGroup>

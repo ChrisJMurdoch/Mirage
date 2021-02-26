@@ -12,7 +12,7 @@ out vec4 fragColour;
 void main()
 {
     // Fix values
-    vec3 colour = clamp(colour, 1, 1);
+    vec3 colour = clamp(colour, 0, 1);
     vec3 normal = normalize(normal);
 
     // Ambient

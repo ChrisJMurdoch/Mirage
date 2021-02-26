@@ -135,6 +135,7 @@ void Display::render()
     
     // Set uniforms
     post->use();
+    post->setUniform3fv("camera_position", glm::vec3(0, 0, 2.0f));
     post->setUniform3fv("planet_centre", glm::vec3(0, 0, 0));
     post->setUniformMatrix4fv("view_inverse", view_inverse);
     post->setUniformMatrix4fv("projection_inverse", projection_inverse);
