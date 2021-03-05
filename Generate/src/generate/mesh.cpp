@@ -116,7 +116,7 @@ void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &index
 }
 
 // Noise settings
-static float const NOISE_MAGNITUDE = 0.15f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.10f, WARP_PERIOD = 0.25f;
+static float const NOISE_MAGNITUDE = 0.15f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.15f, WARP_PERIOD = 0.25f;
 
 // Grid-stride allocation
 void planetThread(VertexArray *vertexArray, int octaves, int offset, int stride)

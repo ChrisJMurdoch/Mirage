@@ -108,7 +108,7 @@ void Display::render()
     debug::nullThrow(post, "Must call addPostProgram() before render()");
 
     // Transform matrices
-    static glm::mat4 const view = glm::lookAt( glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
+    static glm::mat4 const view = glm::lookAt( glm::vec3(0.0f, 0.0f, 1.7f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
     static glm::mat4 const view_inverse = glm::inverse(view);
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), aspect, 0.1f, 100.0f);
     glm::mat4 projection_inverse = glm::inverse(projection);
@@ -135,7 +135,7 @@ void Display::render()
     
     // Set uniforms
     post->use();
-    post->setUniform3fv("camera_position", glm::vec3(0, 0, 2.0f));
+    post->setUniform3fv("camera_position", glm::vec3(0, 0, 1.7f));
     post->setUniform3fv("planet_centre", glm::vec3(0, 0, 0));
     post->setUniformMatrix4fv("view_inverse", view_inverse);
     post->setUniformMatrix4fv("projection_inverse", projection_inverse);

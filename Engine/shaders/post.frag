@@ -52,8 +52,8 @@ void main()
     water = min(1, water*20);
 
     // Add water to colour
-    const vec4 OCEAN = vec4(0.0, 0.15, 0.3, 1.0);
-    const vec4 SHORE = vec4(0.3, 0.4, 0.4, 1.0);
+    const vec4 OCEAN = vec4(0.082, 0.203, 0.356, 1.0);
+    const vec4 SHORE = vec4(0.113, 0.403, 0.568, 1.0);
     if (water>0)
         fragColour = water*OCEAN + (1-water)*SHORE;
     else

@@ -20,5 +20,8 @@ void Instance::render(glm::mat4 const &view, glm::mat4 const &projection)const
 void Instance::physics()
 {
     // Rotate
-    orientation = glm::rotate(orientation, 0.005f, glm::vec3(-0.5f, 1.0f, 0.0f));
+    orientation = glm::rotate(orientation, 0.007f, glm::vec3(-0.5f, 1.0f, 0.0f));
+
+    // Clear accumulated error
+    orientation = glm::normalize(orientation);
 }
