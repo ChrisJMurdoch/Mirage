@@ -115,8 +115,14 @@ void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &index
     }
 }
 
-// Noise settings
-static float const NOISE_MAGNITUDE = 0.15f, NOISE_PERIOD = 0.2f, WARP_MAGNITUDE = 0.15f, WARP_PERIOD = 0.25f;
+// WARPING
+static float const WARP_MAGNITUDE = 0.15f, WARP_PERIOD = 0.25f;
+
+// NOISE
+static float const NOISE_MAGNITUDE = 0.15f, NOISE_PERIOD = 0.2f;
+
+// MASKS
+static float const MMASK_PERIOD = 0.25f, MMASK_SMOOTH_PASSES = 4;
 
 // Grid-stride allocation
 void planetThread(VertexArray *vertexArray, int octaves, int offset, int stride)
@@ -136,14 +142,30 @@ void planetThread(VertexArray *vertexArray, int octaves, int offset, int stride)
         float warpZ = WARP_MAGNITUDE * noise::perlinSample(position.getZ(), position.getX(), position.getY(), WARP_PERIOD);
 
         // Generate noise
-        float noise = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, NOISE_PERIOD, octaves);
+        float landNoise = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, NOISE_PERIOD, octaves) * 0.25f;
+        float mountainNoise = noise::fractalSample(position.getX()+warpX+100, position.getY()+warpY+100, position.getZ()+warpZ+100, NOISE_PERIOD, octaves) * 0.75f;
 
-        // Final height value
-        float value = noise;
+        // Generate masks
+        float mountainMask = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, MMASK_PERIOD, 1);
+        mountainMask = (mountainMask+1)/2;
+
+        for (int i=0; i<MMASK_SMOOTH_PASSES; i++)
+            mountainMask = math::smooth(mountainMask);
+
+        // MIX
+        float value = (mountainMask*mountainNoise) + landNoise;
 
         // Set new vector magnitude
         position.normalise( 1 + (value*NOISE_MAGNITUDE) );
-        colour.set(1.0f, 1.0f, 1.0f);
+
+        if (value>0.13)
+            colour.set(1.0f, 1.0f, 1.0f);
+        else if (value>0.08)
+            colour.set(0.5f, 0.5f, 0.5f);
+        else if(value>0.015)
+            colour.set(0.3f, 0.6f, 0.1f);
+        else
+            colour.set(0.85f, 0.85f, 0.7f);
     }
 }
 
