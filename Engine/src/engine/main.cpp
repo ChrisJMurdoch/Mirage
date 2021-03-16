@@ -7,6 +7,7 @@
 #include "generate/noise.h"
 #include "model/virtualVector.h"
 #include "model/instance.h"
+#include "engine/planet.h"
 
 #include <chrono>
 #include <iostream>
@@ -29,22 +30,24 @@ int main()
         display.addPostProgram(&post);
 
         // Create planet
+        Planet planet(10);
         const int terrainVertices = 600;
         VertexArray terrainVertexArray(mesh::vertexCount(terrainVertices));
         IndexArray terrainIndexArray(mesh::triangleCount(terrainVertices));
         mesh::generateCube(terrainVertices, terrainVertexArray, terrainIndexArray);
-        mesh::planet(terrainVertexArray, 10, 16);
+        mesh::setPositions(terrainVertexArray, &planet, 16);
         mesh::fixNormals(terrainVertexArray, terrainIndexArray);
-        Model terrainModel = Model(&terrainVertexArray, &terrainIndexArray, &terrain);
+        mesh::setColours(terrainVertexArray, &planet, 16);
+        Model terrainModel(&terrainVertexArray, &terrainIndexArray, &terrain);
 
         // Add instances
-        Instance planet = Instance(terrainModel);
-        display.addInstance(&planet);
+        Instance planetInstance = Instance(terrainModel);
+        display.addInstance(&planetInstance);
 
         // Run display
         while (!display.shouldClose())
         {
-            planet.physics();
+            planetInstance.physics();
             display.render();
         }
 

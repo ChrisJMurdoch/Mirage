@@ -148,9 +148,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\engine\main.h" />
+    <ClInclude Include="include\engine\planet.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\main.cpp" />
+    <ClCompile Include="src\engine\planet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Generate\Generate.vcxproj">

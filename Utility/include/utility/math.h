@@ -29,6 +29,9 @@ namespace math
     inline int combine(int x, int y, int z) {
         return combine(combine(x, y), z);
     }
+    inline int combine(int x, int y, int z, int w) {
+        return combine(combine(x, y, z), w);
+    }
 
     /* Quick hashing function */
     inline float floatHash(int x)

@@ -4,6 +4,7 @@
 #include "model/virtualVector.h"
 #include "generate/noise.h"
 #include "utility/math.h"
+#include "engine/planet.h"
 
 #include "glm/glm.hpp"
 
@@ -14,7 +15,7 @@
 #include <thread>
 #include <list>
 
-const int CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
+static int const CUBE_FACES = 6, TRIANGLES_PER_QUAD = 2;
 
 int mesh::vertexCount(int edgeVertices)
 {
@@ -26,38 +27,12 @@ int mesh::triangleCount(int edgeVertices)
     return (edgeVertices-1) * (edgeVertices-1) * TRIANGLES_PER_QUAD * CUBE_FACES;
 }
 
-void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind);
-
-void mesh::generateCube(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray)
-{
-    if (edgeVertices < 2)
-        throw std::exception("Mesh cannot have < 2 edge vertices.");
-
-    // Dimension variable: lines -> squares -> cubes
-    int edgeLines = edgeVertices-1;
-
-    // Array strides
-    int verticesFaceStride = edgeVertices * edgeVertices;
-    int indicesFaceStride = edgeLines * edgeLines * TRIANGLES_PER_QUAD;
-    
-    // Space between vertices
-    float space = 1.0f / edgeLines;
-
-    // Generate faces
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*0, indicesFaceStride*0, Coord{  0.5f,-0.5f,-0.5f }, Coord{ 0,space,space }, true  ); // X+
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*1, indicesFaceStride*1, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ 0,space,space }, false ); // X-
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*2, indicesFaceStride*2, Coord{ -0.5f, 0.5f,-0.5f }, Coord{ space,0,space }, true  ); // Y+
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*3, indicesFaceStride*3, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,0,space }, false ); // Y-
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 }, false ); // Z+
-    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 }, true  ); // Z-
-}
-
-inline float curveAdjust(float x)
+static inline float curveAdjust(float x)
 {
     return (float)tan(0.5*M_PI*x) / 2;
 }
 
-void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind)
+static void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray, int verticesOffset, int indicesOffset, mesh::Coord origin, mesh::Coord delta, bool wind)
 {
     // Shorthand edge-vertices and edge-lines
     int ev = edgeVertices, el = edgeVertices-1;
@@ -115,74 +90,81 @@ void generatePlane(int edgeVertices, VertexArray &vertexArray, IndexArray &index
     }
 }
 
-// WARPING
-static float const WARP_MAGNITUDE = 0.15f, WARP_PERIOD = 0.25f;
+void mesh::generateCube(int edgeVertices, VertexArray &vertexArray, IndexArray &indexArray)
+{
+    if (edgeVertices < 2)
+        throw std::exception("Mesh cannot have < 2 edge vertices.");
 
-// NOISE
-static float const NOISE_MAGNITUDE = 0.15f, NOISE_PERIOD = 0.2f;
+    // Dimension variable: lines -> squares -> cubes
+    int edgeLines = edgeVertices-1;
 
-// MASKS
-static float const MMASK_PERIOD = 0.25f, MMASK_SMOOTH_PASSES = 4;
+    // Array strides
+    int verticesFaceStride = edgeVertices * edgeVertices;
+    int indicesFaceStride = edgeLines * edgeLines * TRIANGLES_PER_QUAD;
+    
+    // Space between vertices
+    float space = 1.0f / edgeLines;
+
+    // Generate faces
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*0, indicesFaceStride*0, Coord{  0.5f,-0.5f,-0.5f }, Coord{ 0,space,space }, true  ); // X+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*1, indicesFaceStride*1, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ 0,space,space }, false ); // X-
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*2, indicesFaceStride*2, Coord{ -0.5f, 0.5f,-0.5f }, Coord{ space,0,space }, true  ); // Y+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*3, indicesFaceStride*3, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,0,space }, false ); // Y-
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*4, indicesFaceStride*4, Coord{ -0.5f,-0.5f, 0.5f }, Coord{ space,space,0 }, false ); // Z+
+    generatePlane( edgeVertices, vertexArray, indexArray, verticesFaceStride*5, indicesFaceStride*5, Coord{ -0.5f,-0.5f,-0.5f }, Coord{ space,space,0 }, true  ); // Z-
+}
 
 // Grid-stride allocation
-void planetThread(VertexArray *vertexArray, int octaves, int offset, int stride)
+static void setPositionsThread(VertexArray *vertexArray, mesh::Shape *shape, int offset, int stride)
 {
     for (int i=offset; i<vertexArray->getNVertices(); i+=stride)
     {
-        // Get vectors
-        VirtualVector position = vertexArray->position(i);
-        VirtualVector colour = vertexArray->colour(i);
-
-        // Create sphere for sample coords
-        position.normalise();
-
-        // Domain warp
-        float warpX = WARP_MAGNITUDE * noise::perlinSample(position.getX(), position.getY(), position.getZ(), WARP_PERIOD);
-        float warpY = WARP_MAGNITUDE * noise::perlinSample(position.getY(), position.getZ(), position.getX(), WARP_PERIOD);
-        float warpZ = WARP_MAGNITUDE * noise::perlinSample(position.getZ(), position.getX(), position.getY(), WARP_PERIOD);
-
-        // Generate noise
-        float landNoise = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, NOISE_PERIOD, octaves) * 0.25f;
-        float mountainNoise = noise::fractalSample(position.getX()+warpX+100, position.getY()+warpY+100, position.getZ()+warpZ+100, NOISE_PERIOD, octaves) * 0.75f;
-
-        // Generate masks
-        float mountainMask = noise::fractalSample(position.getX()+warpX, position.getY()+warpY, position.getZ()+warpZ, MMASK_PERIOD, 1);
-        mountainMask = (mountainMask+1)/2;
-
-        for (int i=0; i<MMASK_SMOOTH_PASSES; i++)
-            mountainMask = math::smooth(mountainMask);
-
-        // MIX
-        float value = (mountainMask*mountainNoise) + landNoise;
-
-        // Set new vector magnitude
-        position.normalise( 1 + (value*NOISE_MAGNITUDE) );
-
-        if (value>0.13)
-            colour.set(1.0f, 1.0f, 1.0f);
-        else if (value>0.08)
-            colour.set(0.5f, 0.5f, 0.5f);
-        else if(value>0.015)
-            colour.set(0.3f, 0.6f, 0.1f);
-        else
-            colour.set(0.85f, 0.85f, 0.7f);
+        shape->setPosition(vertexArray->position(i));
     }
 }
 
-void mesh::planet(VertexArray &vertexArray, int octaves, int threads)
+void mesh::setPositions(VertexArray &vertexArray, Shape *shape, int threads)
 {
     // Allocate threads
     std::list<std::thread> threadList;
     for (int i=0; i<threads; i++)
     {
-        threadList.push_back( std::thread(planetThread, &vertexArray, octaves, i, threads) );
+        threadList.push_back(std::thread(setPositionsThread, &vertexArray, shape, i, threads));
     }
+
+    // Wait for threads to finish
     for (std::thread &thread : threadList)
     {
         thread.join();
     }
 }
 
+// Grid-stride allocation
+static void setColoursThread(VertexArray *vertexArray, mesh::Shape *shape, int offset, int stride)
+{
+    for (int i=offset; i<vertexArray->getNVertices(); i+=stride)
+    {
+        shape->setColour(vertexArray->position(i), vertexArray->normal(i), vertexArray->colour(i));
+    }
+}
+
+void mesh::setColours(VertexArray &vertexArray, Shape *shape, int threads)
+{
+    // Allocate threads
+    std::list<std::thread> threadList;
+    for (int i=0; i<threads; i++)
+    {
+        threadList.push_back(std::thread(setColoursThread, &vertexArray, shape, i, threads));
+    }
+
+    // Wait for threads to finish
+    for (std::thread &thread : threadList)
+    {
+        thread.join();
+    }
+}
+
+/* Calculate normals for each vertex by averaging normals of composite triangles */
 void mesh::fixNormals(VertexArray &vertexArray, IndexArray &indexArray)
 {
     std::unordered_map<int, int> occurrences;
@@ -200,10 +182,12 @@ void mesh::fixNormals(VertexArray &vertexArray, IndexArray &indexArray)
         // Calculate normal
         glm::vec3 normal = glm::cross( (c-b), (a-b) );
         
-        // Add to maps
+        // Increment occurrences
         occurrences[tri[0]]++;
         occurrences[tri[1]]++;
         occurrences[tri[2]]++;
+
+        // Add normal to totals
         normals[tri[0]] += normal;
         normals[tri[1]] += normal;
         normals[tri[2]] += normal;
@@ -212,8 +196,7 @@ void mesh::fixNormals(VertexArray &vertexArray, IndexArray &indexArray)
     // Set vertices
     for (int i=0; i<vertexArray.getNVertices(); i++)
     {
-        int occurrence = occurrences[i];
-        glm::vec3 normal = glm::normalize( normals[i] / (float)occurrence );
+        glm::vec3 normal = glm::normalize( normals[i] / (float)occurrences[i]);
         vertexArray.normal(i).set(normal.x, normal.y, normal.z);
     }
 }

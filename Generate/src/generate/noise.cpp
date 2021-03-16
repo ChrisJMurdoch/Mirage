@@ -8,16 +8,16 @@
 #include <algorithm>
 
 /* Procedurally generate vector from three integers */
-inline glm::vec3 getProceduralVector(int X, int Y, int Z)
+inline glm::vec3 getProceduralVector(int X, int Y, int Z, int seed)
 {
     return glm::normalize( glm::vec3(
-        math::floatHash(math::combine(X,Y,Z)+0) -0.5,
-        math::floatHash(math::combine(X,Y,Z)+1) -0.5,
-        math::floatHash(math::combine(X,Y,Z)+2) -0.5
+        math::floatHash( math::combine(X,Y,Z,seed+0) ) -0.5,
+        math::floatHash( math::combine(X,Y,Z,seed+1) ) -0.5,
+        math::floatHash( math::combine(X,Y,Z,seed+2) ) -0.5
     ) );
 }
 
-float noise::perlinSample(float x, float y, float z, float period)
+float noise::perlinSample(float x, float y, float z, float period, int seed)
 {
     // Get cube position
     int X = (int)std::floor(x / period);
@@ -28,14 +28,14 @@ float noise::perlinSample(float x, float y, float z, float period)
     glm::vec3 point = glm::vec3( (x/period)-X, (y/period)-Y, (z/period)-Z );
 
     // Dot products
-    float FBLd = glm::dot( getProceduralVector(X+0, Y+0, Z+0), glm::vec3(0, 0, 0)-point );
-    float FBRd = glm::dot( getProceduralVector(X+1, Y+0, Z+0), glm::vec3(1, 0, 0)-point );
-    float FTLd = glm::dot( getProceduralVector(X+0, Y+1, Z+0), glm::vec3(0, 1, 0)-point );
-    float FTRd = glm::dot( getProceduralVector(X+1, Y+1, Z+0), glm::vec3(1, 1, 0)-point );
-    float CBLd = glm::dot( getProceduralVector(X+0, Y+0, Z+1), glm::vec3(0, 0, 1)-point );
-    float CBRd = glm::dot( getProceduralVector(X+1, Y+0, Z+1), glm::vec3(1, 0, 1)-point );
-    float CTLd = glm::dot( getProceduralVector(X+0, Y+1, Z+1), glm::vec3(0, 1, 1)-point );
-    float CTRd = glm::dot( getProceduralVector(X+1, Y+1, Z+1), glm::vec3(1, 1, 1)-point );
+    float FBLd = glm::dot( getProceduralVector(X+0, Y+0, Z+0, seed), glm::vec3(0, 0, 0)-point );
+    float FBRd = glm::dot( getProceduralVector(X+1, Y+0, Z+0, seed), glm::vec3(1, 0, 0)-point );
+    float FTLd = glm::dot( getProceduralVector(X+0, Y+1, Z+0, seed), glm::vec3(0, 1, 0)-point );
+    float FTRd = glm::dot( getProceduralVector(X+1, Y+1, Z+0, seed), glm::vec3(1, 1, 0)-point );
+    float CBLd = glm::dot( getProceduralVector(X+0, Y+0, Z+1, seed), glm::vec3(0, 0, 1)-point );
+    float CBRd = glm::dot( getProceduralVector(X+1, Y+0, Z+1, seed), glm::vec3(1, 0, 1)-point );
+    float CTLd = glm::dot( getProceduralVector(X+0, Y+1, Z+1, seed), glm::vec3(0, 1, 1)-point );
+    float CTRd = glm::dot( getProceduralVector(X+1, Y+1, Z+1, seed), glm::vec3(1, 1, 1)-point );
 
     // Interpolate using diverge
     float value = math::lerp(
@@ -55,7 +55,7 @@ float noise::perlinSample(float x, float y, float z, float period)
     return value;
 }
 
-float noise::fractalSample(float x, float y, float z, float period, int octaves)
+float noise::fractalSample(float x, float y, float z, float period, int octaves, int seed)
 {
     // Settings
     static const float LACUNARITY = 0.5f, PERSISTANCE = 0.52f;
@@ -65,10 +65,10 @@ float noise::fractalSample(float x, float y, float z, float period, int octaves)
     for (int o=0; o<octaves; o++)
     {
         // Caluculate amplitude and period
-        float pmult = (float)pow(LACUNARITY, o), amplitude = (float)pow(PERSISTANCE, o);
+        float const pmult = (float)pow(LACUNARITY, o), amplitude = (float)pow(PERSISTANCE, o);
 
         // Calculate value
-        value += amplitude * perlinSample(x, y, z, pmult*period);
+        value += amplitude * perlinSample(x, y, z, pmult*period, seed);
         max   += amplitude * 1.0f;
     }
     return value / max;
