@@ -1,5 +1,5 @@
 
-![FractalSphere](images/FractalSphere.gif)
+![FractalSphere](images/Planet.gif)
 
 # Redshift
 
