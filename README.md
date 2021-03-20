@@ -1,9 +1,9 @@
 
 ![FractalSphere](images/Planet.gif)
 
-# Redshift
+# World Engine
 
-C++ libraries focused on planetary generation, simulation, and rendering.
+C++ libraries focused on procedural world generation, simulation, and rendering.
 
 ## Build from source
 
