@@ -58,14 +58,14 @@ float noise::perlinSample(float x, float y, float z, float period, int seed)
 float noise::fractalSample(float x, float y, float z, float period, int octaves, int seed)
 {
     // Settings
-    static const float LACUNARITY = 0.5f, PERSISTANCE = 0.52f;
+    static const float LACUNARITY = 0.5f, PERSISTENCE = 0.52f;
 
     // Octaves
     float value = 0.0f, max = 0.0f;
     for (int o=0; o<octaves; o++)
     {
         // Caluculate amplitude and period
-        float const pmult = (float)pow(LACUNARITY, o), amplitude = (float)pow(PERSISTANCE, o);
+        float const pmult = (float)pow(LACUNARITY, o), amplitude = (float)pow(PERSISTENCE, o);
 
         // Calculate value
         value += amplitude * perlinSample(x, y, z, pmult*period, seed);
