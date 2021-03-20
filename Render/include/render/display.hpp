@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "model/instance.h"
+#include "model/instance.hpp"
 
 #include <GLFW/glfw3.h>
 

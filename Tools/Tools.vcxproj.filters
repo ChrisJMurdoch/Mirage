@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\tools\main.h">
+    <ClInclude Include="include\tools\tests.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\tools\tests.h">
+    <ClInclude Include="include\tools\main.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

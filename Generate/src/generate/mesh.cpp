@@ -1,10 +1,10 @@
 
-#include "generate/mesh.h"
+#include "generate/mesh.hpp"
 
-#include "model/virtualVector.h"
-#include "generate/noise.h"
-#include "utility/math.h"
-#include "engine/planet.h"
+#include "model/virtualVector.hpp"
+#include "generate/noise.hpp"
+#include "utility/math.hpp"
+#include "engine/planet.hpp"
 
 #include "glm/glm.hpp"
 

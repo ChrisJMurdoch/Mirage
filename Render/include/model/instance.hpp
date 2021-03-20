@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "model/model.h"
+#include "model/model.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>

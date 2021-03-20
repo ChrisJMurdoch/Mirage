@@ -146,9 +146,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\utility\debug.h" />
-    <ClInclude Include="include\utility\io.h" />
-    <ClInclude Include="include\utility\math.h" />
+    <ClInclude Include="include\utility\debug.hpp" />
+    <ClInclude Include="include\utility\io.hpp" />
+    <ClInclude Include="include\utility\math.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\debug.cpp" />

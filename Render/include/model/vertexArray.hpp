@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "model/virtualVector.h"
+#include "model/virtualVector.hpp"
 
 class VertexArray
 {

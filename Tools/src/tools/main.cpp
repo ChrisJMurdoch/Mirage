@@ -1,7 +1,7 @@
 
-#include "tools/main.h"
+#include "tools/main.hpp"
 
-#include "tools/tests.h"
+#include "tools/tests.hpp"
 
 #include <exception>
 #include <iostream>

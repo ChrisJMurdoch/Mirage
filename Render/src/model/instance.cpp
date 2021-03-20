@@ -1,5 +1,5 @@
 
-#include "model/instance.h"
+#include "model/instance.hpp"
 
 static glm::mat4 const IDENTITY = glm::mat4(1.0f);
 

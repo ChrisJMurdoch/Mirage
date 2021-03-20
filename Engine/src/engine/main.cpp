@@ -1,13 +1,13 @@
 
-#include "engine/main.h"
+#include "engine/main.hpp"
 
-#include "render/display.h"
-#include "utility/io.h"
-#include "generate/mesh.h"
-#include "generate/noise.h"
-#include "model/virtualVector.h"
-#include "model/instance.h"
-#include "engine/planet.h"
+#include "render/display.hpp"
+#include "utility/io.hpp"
+#include "generate/mesh.hpp"
+#include "generate/noise.hpp"
+#include "model/virtualVector.hpp"
+#include "model/instance.hpp"
+#include "engine/planet.hpp"
 
 #include <chrono>
 #include <iostream>

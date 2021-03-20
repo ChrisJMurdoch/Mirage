@@ -1,8 +1,8 @@
 
-#include "tools/tests.h"
+#include "tools/tests.hpp"
 
-#include "generate/noise.h"
-#include "utility/io.h"
+#include "generate/noise.hpp"
+#include "utility/io.hpp"
 
 #include <thread>
 #include <random>

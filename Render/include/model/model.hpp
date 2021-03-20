@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "model/vertexArray.h"
-#include "model/indexArray.h"
-#include "render/program.h"
+#include "model/vertexArray.hpp"
+#include "model/indexArray.hpp"
+#include "render/program.hpp"
 
 #include <glm/glm.hpp>
 

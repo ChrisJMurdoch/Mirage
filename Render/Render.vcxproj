@@ -152,13 +152,13 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\model\indexArray.h" />
-    <ClInclude Include="include\model\instance.h" />
-    <ClInclude Include="include\model\vertexArray.h" />
-    <ClInclude Include="include\model\virtualVector.h" />
-    <ClInclude Include="include\render\display.h" />
-    <ClInclude Include="include\model\model.h" />
-    <ClInclude Include="include\render\program.h" />
+    <ClInclude Include="include\model\indexArray.hpp" />
+    <ClInclude Include="include\model\instance.hpp" />
+    <ClInclude Include="include\model\vertexArray.hpp" />
+    <ClInclude Include="include\model\virtualVector.hpp" />
+    <ClInclude Include="include\render\display.hpp" />
+    <ClInclude Include="include\model\model.hpp" />
+    <ClInclude Include="include\render\program.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\glad\src\glad.c" />

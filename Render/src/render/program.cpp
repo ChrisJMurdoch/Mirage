@@ -1,5 +1,5 @@
 
-#include "render/program.h"
+#include "render/program.hpp"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>

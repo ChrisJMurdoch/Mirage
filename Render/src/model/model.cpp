@@ -1,5 +1,5 @@
 
-#include "model/model.h"
+#include "model/model.hpp"
 
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>

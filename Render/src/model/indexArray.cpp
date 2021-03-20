@@ -1,5 +1,5 @@
 
-#include "model/indexArray.h"
+#include "model/indexArray.hpp"
 
 #include <iostream>
 

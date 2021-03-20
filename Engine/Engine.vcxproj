@@ -147,8 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\engine\main.h" />
-    <ClInclude Include="include\engine\planet.h" />
+    <ClInclude Include="include\engine\main.hpp" />
+    <ClInclude Include="include\engine\planet.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\main.cpp" />

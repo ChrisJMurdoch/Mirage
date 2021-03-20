@@ -1,8 +1,8 @@
 
-#include "engine/planet.h"
+#include "engine/planet.hpp"
 
-#include "utility/math.h"
-#include "generate/noise.h"
+#include "utility/math.hpp"
+#include "generate/noise.hpp"
 
 #include <math.h>
 #include <iostream>
@@ -77,7 +77,7 @@ void Planet::setColour(VirtualVector position, VirtualVector normal, VirtualVect
     glm::vec3 normal_vec = glm::normalize( normal.asVec3() );
 
     float flatness = glm::dot(position_vec, normal_vec);
-    flatness = pow(flatness, 24);
+    flatness = pow(flatness, 24.0f);
 
     glm::vec3 const SAND(0.9f, 0.9f, 0.7f);
     glm::vec3 const GRASS(0.3f, 0.6f, 0.1f);

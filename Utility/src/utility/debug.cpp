@@ -1,5 +1,5 @@
 
-#include "utility/debug.h"
+#include "utility/debug.hpp"
 
 #include <exception>
 

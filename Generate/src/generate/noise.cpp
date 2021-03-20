@@ -1,7 +1,7 @@
 
-#include "generate/noise.h"
+#include "generate/noise.hpp"
 
-#include "utility/math.h"
+#include "utility/math.hpp"
 
 #include <math.h>
 #include <cmath>

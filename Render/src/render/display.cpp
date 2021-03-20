@@ -1,10 +1,10 @@
 
 #include <glad/glad.h> // Must be included before glfw3
 
-#include "render/display.h"// Includes glfw3
+#include "render/display.hpp"// Includes glfw3
 
-#include "utility/debug.h"
-#include"model/model.h"
+#include "utility/debug.hpp"
+#include"model/model.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

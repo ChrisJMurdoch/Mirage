@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "model/virtualVector.h"
-#include "generate/mesh.h"
+#include "model/virtualVector.hpp"
+#include "generate/mesh.hpp"
 
 class Planet: public mesh::Shape
 {

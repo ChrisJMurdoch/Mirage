@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "model/vertexArray.h"
+#include "model/vertexArray.hpp"
 
 #include <glm/glm.hpp>
 

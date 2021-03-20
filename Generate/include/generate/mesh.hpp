@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "model/vertexArray.h"
-#include "model/indexArray.h"
-#include "model/virtualVector.h"
+#include "model/vertexArray.hpp"
+#include "model/indexArray.hpp"
+#include "model/virtualVector.hpp"
 
 #include <unordered_map>
 

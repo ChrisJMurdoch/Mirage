@@ -1,7 +1,7 @@
 
-#include "model/vertexArray.h"
+#include "model/vertexArray.hpp"
 
-#include "model/model.h"
+#include "model/model.hpp"
 
 #include <iostream>
 
