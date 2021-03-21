@@ -19,7 +19,7 @@ int main()
     try
     {
         // Create display
-        Display display = Display(1000, 600, "Redshift");
+        Display display = Display(1000, 600, "WorldEngine");
 
         // Create programs
         Program post = Program(), terrain = Program();
@@ -63,14 +63,10 @@ int main()
 void addShaders(Program &prog, char const *vert, char const *frag)
 {
     // Add vertex shader
-    std::string *vertexSource = io::read(vert);
-    prog.addShader(vertexSource->c_str(), Program::Shader::VERTEX);
-    delete vertexSource;
+    prog.addShader(io::read(vert)->c_str(), Program::Shader::VERTEX);
 
     // Add fragment shader
-    std::string *fragmentSource = io::read(frag);
-    prog.addShader(fragmentSource->c_str(), Program::Shader::FRAGMENT);
-    delete fragmentSource;
+    prog.addShader(io::read(frag)->c_str(), Program::Shader::FRAGMENT);
 
     // Link shaders into program
     prog.link();
