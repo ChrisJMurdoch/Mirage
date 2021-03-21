@@ -16,7 +16,7 @@ private:
 	unsigned int VBO, VAO, EBO;
 	Program *prog;
 public:
-	Model(VertexArray *vertexArray, IndexArray *indexArray, Program *prog);
+	Model(VertexArray const *vertexArray, IndexArray const *indexArray, Program *prog);
 	void render(glm::mat4 const &model, glm::mat4 const &view, glm::mat4 const &projection) const;
 	~Model();
 };

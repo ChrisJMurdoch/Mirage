@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-Model::Model(VertexArray *vertexArray, IndexArray *indexArray, Program *prog)
+Model::Model(VertexArray const *vertexArray, IndexArray const *indexArray, Program *prog)
 {
     nVertices = vertexArray->getNVertices();
     nIndices = indexArray->getNIndices();

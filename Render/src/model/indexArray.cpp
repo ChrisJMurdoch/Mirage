@@ -10,7 +10,7 @@ IndexArray::IndexArray(int nTriangles) : nIndices(nTriangles*3)
 }
 
 // Triangle access
-int IndexArray::getNTriangles()
+int IndexArray::getNTriangles() const
 {
 	return nIndices/3;
 }
@@ -18,13 +18,21 @@ unsigned int *IndexArray::operator[](int i)
 {
 	return &indices[i*3];
 }
+unsigned int const *IndexArray::operator[](int i) const
+{
+	return &indices[i*3];
+}
 
 // Index access
-int IndexArray::getNIndices()
+int IndexArray::getNIndices() const
 {
 	return nIndices;
 }
 unsigned int *IndexArray::getArrayPointer()
+{
+	return indices;
+}
+unsigned int const *IndexArray::getArrayPointer() const
 {
 	return indices;
 }

@@ -18,14 +18,8 @@
     <ClInclude Include="include\generate\noise.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\generate\mesh.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\generate\mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\generate\noise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -2,42 +2,30 @@
 #include "engine/main.hpp"
 
 #include "render/display.hpp"
-#include "utility/io.hpp"
-#include "generate/mesh.hpp"
-#include "generate/noise.hpp"
-#include "model/virtualVector.hpp"
 #include "model/instance.hpp"
 #include "engine/planet.hpp"
 
-#include <chrono>
 #include <iostream>
 #include <exception>
-#include <unordered_map>
 
 int main()
 {
     try
     {
-        // Create display
-        Display display = Display(1000, 600, "WorldEngine");
+        // Create display and opengl context
+        Display display(1000, 600, "WorldEngine");
 
         // Create programs
-        Program post = Program("shaders\\post.vert", "shaders\\post.frag");
-        Program terrain = Program("shaders\\terrain.vert", "shaders\\terrain.frag");
+        Program post("shaders\\post.vert", "shaders\\post.frag");
+        Program terrain("shaders\\terrain.vert", "shaders\\terrain.frag");
 
         // Add post-processing to display
         display.addPostProgram(&post);
 
         // Create planet
-        Planet planet(10);
-        const int terrainVertices = 600;
-        VertexArray terrainVertexArray(mesh::vertexCount(terrainVertices));
-        IndexArray terrainIndexArray(mesh::triangleCount(terrainVertices));
-        mesh::generateCube(terrainVertices, terrainVertexArray, terrainIndexArray);
-        mesh::setPositions(terrainVertexArray, &planet, 16);
-        mesh::fixNormals(terrainVertexArray, terrainIndexArray);
-        mesh::setColours(terrainVertexArray, &planet, 16);
-        Model terrainModel(&terrainVertexArray, &terrainIndexArray, &terrain);
+        const int terrainVertices = 600, noiseOctaves = 10;
+        Planet planet(terrainVertices, noiseOctaves);
+        Model terrainModel(&planet.getVertices(), &planet.getIndices(), &terrain);
 
         // Add instances
         Instance planetInstance = Instance(terrainModel);

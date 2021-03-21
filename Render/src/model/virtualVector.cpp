@@ -30,22 +30,22 @@ void VirtualVector::setZ(float value)
 	ptr[2] = value;
 }
 
-float VirtualVector::getX()
+float VirtualVector::getX() const
 {
 	return ptr[0];
 }
 
-float VirtualVector::getY()
+float VirtualVector::getY() const
 {
 	return ptr[1];
 }
 
-float VirtualVector::getZ()
+float VirtualVector::getZ() const
 {
 	return ptr[2];
 }
 
-float VirtualVector::getMagnitude()
+float VirtualVector::getMagnitude() const
 {
 	return (float)sqrt(pow(ptr[0], 2) + pow(ptr[1], 2) + pow(ptr[2], 2));
 }
@@ -67,7 +67,7 @@ void VirtualVector::multiply(float value)
 	set(getX()*value, getY()*value, getZ()*value);
 }
 
-glm::vec3 VirtualVector::asVec3()
+glm::vec3 VirtualVector::asVec3() const
 {
 	return glm::vec3(ptr[0], ptr[1], ptr[2]);
 }

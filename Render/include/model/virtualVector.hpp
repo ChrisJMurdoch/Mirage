@@ -17,10 +17,10 @@ public:
 	void setZ(float value);
 
 	// Getters
-	float getX();
-	float getY();
-	float getZ();
-	float getMagnitude();
+	float getX() const;
+	float getY() const;
+	float getZ() const;
+	float getMagnitude() const;
 
 	// Manipulators
 	void normalise();
@@ -28,5 +28,5 @@ public:
 	void multiply(float value);
 
 	// Export
-	glm::vec3 asVec3();
+	glm::vec3 asVec3() const;
 };

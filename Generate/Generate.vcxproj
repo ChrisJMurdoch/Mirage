@@ -146,11 +146,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\generate\mesh.hpp" />
     <ClInclude Include="include\generate\noise.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\generate\mesh.cpp" />
     <ClCompile Include="src\generate\noise.cpp" />
   </ItemGroup>
   <ItemGroup>

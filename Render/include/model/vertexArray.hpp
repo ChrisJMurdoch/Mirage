@@ -12,14 +12,18 @@ public:
 	VertexArray(int nVertices);
 
 	// Vertex access
-	int getNVertices();
+	int getNVertices() const;
+	VirtualVector const position(int i) const;
+	VirtualVector const normal(int i) const;
+	VirtualVector const colour(int i) const;
 	VirtualVector position(int i);
 	VirtualVector normal(int i);
 	VirtualVector colour(int i);
 
 	// Raw access
-	int getArrayLength();
+	int getArrayLength() const;
 	float *getArrayPointer();
+	float const *getArrayPointer() const;
 
 	~VertexArray();
 };
