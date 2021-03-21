@@ -11,7 +11,7 @@ private:
 	struct Coord { float x, y, z; };
 
 private:
-	int const octaves;
+	int const octaves, seed;
 	VertexArray vertices;
 	IndexArray indices;
 
@@ -22,7 +22,7 @@ private:
 	virtual void setColour(VirtualVector position, VirtualVector normal, VirtualVector colour);
 
 public:
-	Planet(int edgevertices, int octaves);
+	Planet(int edgevertices, int octaves, int seed);
 	void generateCube(int edgeVertices);
 	void generatePlane(int edgeVertices, int verticesOffset, int indicesOffset, Planet::Coord origin, Planet::Coord delta, bool wind);
 

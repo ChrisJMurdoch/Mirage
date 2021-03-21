@@ -24,7 +24,7 @@ int main()
 
         // Create planet
         const int terrainVertices = 600, noiseOctaves = 10;
-        Planet planet(terrainVertices, noiseOctaves);
+        Planet planet(terrainVertices, noiseOctaves, 2);
         Model terrainModel(&planet.getVertices(), &planet.getIndices(), &terrain);
 
         // Add instances

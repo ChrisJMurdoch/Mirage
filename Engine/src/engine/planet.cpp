@@ -24,7 +24,7 @@ static float const FINE_MAGNITUDE = 0.005f, FINE_PERIOD = 0.01f;
 static float const MMASK_PERIOD = 0.25f, MMASK_BIAS = 1.00f;
 static int const MMASK_OCTAVES = 2, MMASK_PASSES = 3;
 
-Planet::Planet(int edgeVertices, int octaves) : octaves(octaves), vertices( edgeVertices*edgeVertices*CUBE_FACES ), indices( (edgeVertices-1)*(edgeVertices-1)*TRIANGLES_PER_QUAD*CUBE_FACES )
+Planet::Planet(int edgeVertices, int octaves, int seed) : octaves(octaves), seed(seed), vertices( edgeVertices*edgeVertices*CUBE_FACES ), indices( (edgeVertices-1)*(edgeVertices-1)*TRIANGLES_PER_QUAD*CUBE_FACES )
 {
     generateCube(edgeVertices);
     setPositions(16);
@@ -152,7 +152,7 @@ void Planet::setPosition(VirtualVector position)
     float x=position.getX(), y=position.getY(), z=position.getZ();
 
     // Seed hashes
-    int seed = 0;
+    int seed = this->seed;
 
     // Domain warp
     x += WARP_MAGNITUDE * noise::perlinSample(x, y, z, WARP_PERIOD, seed++);
