@@ -1,6 +1,8 @@
 
 #include "render/program.hpp"
 
+#include "utility/io.hpp"
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -8,9 +10,12 @@
 #include <iostream>
 #include <exception>
 
-Program::Program()
+Program::Program(char const *vertexSourcePath, char const *fragmentSourcePath)
 {
 	id = glCreateProgram();
+	addShader(io::read(vertexSourcePath)->c_str(), Program::Shader::VERTEX);
+	addShader(io::read(fragmentSourcePath)->c_str(), Program::Shader::FRAGMENT);
+	link();
 	std::cout << "+Program" << std::endl;
 }
 

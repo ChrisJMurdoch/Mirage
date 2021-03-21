@@ -22,9 +22,8 @@ int main()
         Display display = Display(1000, 600, "WorldEngine");
 
         // Create programs
-        Program post = Program(), terrain = Program();
-        addShaders(post, "shaders\\post.vert", "shaders\\post.frag");
-        addShaders(terrain, "shaders\\terrain.vert", "shaders\\terrain.frag");
+        Program post = Program("shaders\\post.vert", "shaders\\post.frag");
+        Program terrain = Program("shaders\\terrain.vert", "shaders\\terrain.frag");
 
         // Add post-processing to display
         display.addPostProgram(&post);
@@ -58,16 +57,4 @@ int main()
         std::cout << e.what() << std::endl;
         return -1;
     }
-}
-
-void addShaders(Program &prog, char const *vert, char const *frag)
-{
-    // Add vertex shader
-    prog.addShader(io::read(vert)->c_str(), Program::Shader::VERTEX);
-
-    // Add fragment shader
-    prog.addShader(io::read(frag)->c_str(), Program::Shader::FRAGMENT);
-
-    // Link shaders into program
-    prog.link();
 }
