@@ -4,7 +4,6 @@
 uniform sampler2D colour;
 uniform sampler2D depth;
 
-uniform vec3 camera_position;
 uniform vec3 planet_centre;
 uniform mat4 projection_inverse;
 uniform mat4 view_inverse;
@@ -33,6 +32,7 @@ void main()
     const float WATER_HEIGHT = 1.0;
 
     // Calculate water depth
+    vec3 camera_position = (view_inverse*vec4(0,0,0,1)).xyz;
     vec3 direction = worldspace.xyz-camera_position;
     vec3 intersections = raysphere(planet_centre, WATER_HEIGHT, camera_position, direction);
     float water;

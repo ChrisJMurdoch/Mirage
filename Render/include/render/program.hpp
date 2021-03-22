@@ -7,7 +7,7 @@
 
 class Program
 {
-public:
+private:
 	enum class Shader { VERTEX, FRAGMENT };
 private:
 	unsigned int id;

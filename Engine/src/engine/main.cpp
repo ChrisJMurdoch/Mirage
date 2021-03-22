@@ -34,6 +34,7 @@ int main()
         // Run display
         while (!display.shouldClose())
         {
+            post.setUniform3fv("planet_centre", glm::vec3(0.0f, 0.0f, 0.0f));
             planetInstance.physics();
             display.render();
         }
