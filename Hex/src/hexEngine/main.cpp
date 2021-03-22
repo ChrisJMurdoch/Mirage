@@ -1,9 +1,9 @@
 
-#include "engine/main.hpp"
+#include "hexEngine/main.hpp"
 
 #include "render/display.hpp"
 #include "model/instance.hpp"
-#include "engine/planet.hpp"
+#include "hexEngine/hexCell.hpp"
 
 #include <iostream>
 #include <exception>
@@ -17,25 +17,23 @@ int main()
 
         // Create programs
         Program post("shaders\\post.vert", "shaders\\post.frag");
-        Program terrain("shaders\\terrain.vert", "shaders\\terrain.frag");
+        Program hex("shaders\\hex.vert", "shaders\\hex.frag");
 
         // Add post-processing to display
         display.addPostProgram(&post);
 
-        // Create planet
-        const int terrainVertices = 600, noiseOctaves = 10;
-        Planet planet(terrainVertices, noiseOctaves, 2);
-        Model terrainModel(&planet.getVertices(), &planet.getIndices(), &terrain);
+        // Create hex cell
+        HexCell cell = HexCell();
+        Model hexModel(&cell.getVertices(), &cell.getIndices(), &hex);
 
         // Add instances
-        Instance planetInstance = Instance(terrainModel);
-        display.addInstance(&planetInstance);
+        Instance hexInstance = Instance(hexModel);
+        display.addInstance(&hexInstance);
 
         // Run display
         while (!display.shouldClose())
         {
-            post.setUniform3fv("planet_centre", glm::vec3(0.0f, 0.0f, 0.0f));
-            planetInstance.physics();
+            hexInstance.rotate(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
             display.render();
         }
 

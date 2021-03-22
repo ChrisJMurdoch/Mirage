@@ -16,5 +16,5 @@ private:
 public:
 	Instance(Model const &model);
 	void render(glm::mat4 const &view, glm::mat4 const  &projection) const;
-	void physics();
+	void rotate(glm::vec3 axis, float radians);
 };

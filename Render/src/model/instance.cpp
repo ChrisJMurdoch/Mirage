@@ -17,10 +17,10 @@ void Instance::render(glm::mat4 const &view, glm::mat4 const &projection)const
     model.render(modelMatrix, view, projection);
 }
 
-void Instance::physics()
+void Instance::rotate(glm::vec3 axis, float radians)
 {
     // Rotate
-    orientation = glm::rotate(orientation, 0.007f, glm::vec3(-0.5f, 1.0f, 0.0f));
+    orientation = glm::rotate(orientation, radians, axis);
 
     // Clear accumulated error
     orientation = glm::normalize(orientation);

@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{2601623c-70be-4767-adc7-6f8f6b663a96}</ProjectGuid>
-    <RootNamespace>Engine</RootNamespace>
+    <ProjectGuid>{b9899427-7bbc-4390-b7bc-042f5ca2366d}</ProjectGuid>
+    <RootNamespace>Hex</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Redshift</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -80,12 +79,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\vendor\glad\include;$(SolutionDir)\vendor\glfw-3.3.2\include;$(SolutionDir)\vendor\glm;</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\vendor\glfw-3.3.2\build\src\Debug</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\vendor\glad\include;$(SolutionDir)\vendor\glfw-3.3.2\include;$(SolutionDir)\vendor\glm;</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\vendor\glfw-3.3.2\build\src\Debug</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,13 +118,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\include;$(SolutionDir)\Generate\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Hex\include;$(SolutionDir)\Generate\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalOptions>/NODEFAULTLIB:MSVCRTD %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,7 +133,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\include;$(SolutionDir)\Generate\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Hex\include;$(SolutionDir)\Generate\include;$(SolutionDir)\Render\include;$(SolutionDir)\Utility\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,12 +143,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\redshiftEngine\main.hpp" />
-    <ClInclude Include="include\redshiftEngine\planet.hpp" />
+    <ClInclude Include="include\hexEngine\hexCell.hpp" />
+    <ClInclude Include="include\hexEngine\main.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\redshiftEngine\main.cpp" />
-    <ClCompile Include="src\redshiftEngine\planet.cpp" />
+    <None Include="shaders\post.frag" />
+    <None Include="shaders\post.vert" />
+    <None Include="shaders\hex.frag" />
+    <None Include="shaders\hex.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\hexEngine\hexCell.cpp" />
+    <ClCompile Include="src\hexEngine\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Generate\Generate.vcxproj">
@@ -162,15 +163,12 @@
     <ProjectReference Include="..\Render\Render.vcxproj">
       <Project>{901b51fa-3004-4c10-a595-59ed6a74b011}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Tools\Tools.vcxproj">
+      <Project>{041a6322-44e0-420a-a538-1c8d5e3b09c4}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Utility\Utility.vcxproj">
       <Project>{5cec7417-55f8-4bf8-b492-f04a6f37c6fe}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\post.frag" />
-    <None Include="shaders\post.vert" />
-    <None Include="shaders\terrain.frag" />
-    <None Include="shaders\terrain.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
