@@ -1,18 +1,17 @@
 
 #pragma once
 
-#include "model/vertexArray.hpp"
-#include "model/indexArray.hpp"
+#include "arrayBuffer/vertexBuffer.hpp"
 
 class HexCell
 {
 private:
-	VertexArray vertices;
-	IndexArray indices;
+	PNC vertices;
+	Tri indices;
 
 public:
 	HexCell();
 
-	VertexArray const &getVertices() const;
-	IndexArray const &getIndices() const;
+	PNC const &getVertices() const;
+	Tri const &getIndices() const;
 };

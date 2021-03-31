@@ -6,41 +6,16 @@
 
 #include <iostream>
 
-Model::Model(VertexArray const *vertexArray, IndexArray const *indexArray, Program *prog)
+Model::Model(VertexBuffer<float> const *vertexBuffer, VertexBuffer<int> const *indexBuffer, Program *prog)
 {
-    nVertices = vertexArray->getNVertices();
-    nIndices = indexArray->getNIndices();
+    nIndices = indexBuffer->getLength();
     this->prog = prog;
 
-    // Generate buffers
+    // Bind data to VAO and buffer
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    // Bind data to VAO
     glBindVertexArray(VAO);
-    {
-        // Buffer vertex data
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, (long long)nVertices*STRIDE*sizeof(float), vertexArray->getArrayPointer(), GL_STATIC_DRAW);
-
-        // Buffer index data
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices*sizeof(unsigned int), indexArray->getArrayPointer(), GL_STATIC_DRAW);
-
-        // Position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void *)(POSITION_INDEX*sizeof(float)));
-        glEnableVertexAttribArray(0);
-
-        // Normal attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void *)(NORMAL_INDEX*sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        // Colour attribute
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, STRIDE*sizeof(float), (void *)(COLOUR_INDEX*sizeof(float)));
-        glEnableVertexAttribArray(2);
-    }
-    glBindVertexArray(0);
+    indexBuffer->bufferData();
+    vertexBuffer->bufferData();
 
     std::cout << "+Model" << std::endl;
 }
@@ -62,7 +37,5 @@ void Model::render(glm::mat4 const &model, glm::mat4 const &view, glm::mat4 cons
 Model::~Model()
 {
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
     std::cout << "~Model" << std::endl;
 }

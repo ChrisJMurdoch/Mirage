@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include "model/vertexArray.hpp"
-
 #include <glm/glm.hpp>
 
 namespace noise

@@ -144,7 +144,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\hexEngine\hexCell.hpp" />
-    <ClInclude Include="include\hexEngine\main.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\post.frag" />
