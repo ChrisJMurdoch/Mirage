@@ -152,6 +152,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\arrayBuffer\arrayBuffer.hpp" />
     <ClInclude Include="include\model\indexArray.hpp" />
     <ClInclude Include="include\model\instance.hpp" />
     <ClInclude Include="include\model\vertexArray.hpp" />
@@ -162,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\glad\src\glad.c" />
+    <ClCompile Include="src\arrayBuffer\arrayBuffer.cpp" />
     <ClCompile Include="src\model\indexArray.cpp" />
     <ClCompile Include="src\model\instance.cpp" />
     <ClCompile Include="src\model\vertexArray.cpp" />
