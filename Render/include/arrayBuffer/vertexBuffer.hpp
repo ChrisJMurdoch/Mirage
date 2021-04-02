@@ -44,9 +44,9 @@ protected:
 	}
 
 	/* Bind relevant VAO and VBO before calling. */
-	void setAttribute(int index, int size, int stride, int ptr) const
+	void setAttribute(int index, int size, int type, int stride, int ptr) const
 	{
-		glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride*sizeof(float), (void *)(ptr*sizeof(float)));
+		glVertexAttribPointer(index, size, type, GL_FALSE, stride*sizeof(float), (void *)(ptr*sizeof(float)));
 		glEnableVertexAttribArray(index);
 	}
 
