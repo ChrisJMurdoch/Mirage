@@ -31,5 +31,5 @@ void Tri::bufferData() const
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (long long)length*sizeof(unsigned int), data, GL_STATIC_DRAW);
 }
-Vec3<int> *Tri::tri(int index) { return (Vec3<int> *)&data[(index*STRIDE)+TRI_PTR]; }
-Vec3<int> const *Tri::tri(int index) const { return (Vec3<int> *)&data[(index*STRIDE)+TRI_PTR]; }
+Vec3<unsigned int> *Tri::tri(int index) { return (Vec3<unsigned int> *)&data[(index*STRIDE)+TRI_PTR]; }
+Vec3<unsigned int> const *Tri::tri(int index) const { return (Vec3<unsigned int> *)&data[(index*STRIDE)+TRI_PTR]; }

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-Model::Model(VertexBuffer<float> const *vertexBuffer, VertexBuffer<int> const *indexBuffer, Program *prog)
+Model::Model(VertexBuffer<float> const *vertexBuffer, VertexBuffer<unsigned int> const *indexBuffer, Program *prog)
 {
     nIndices = indexBuffer->getLength();
     this->prog = prog;

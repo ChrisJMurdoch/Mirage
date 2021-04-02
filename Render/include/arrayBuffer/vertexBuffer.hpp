@@ -51,13 +51,18 @@ protected:
 	}
 
 public:
+	/* Bind relevant VAO before calling. */
+	virtual void bufferData() const = 0;
+
 	int getLength() const
 	{
 		return length;
 	}
 
-	/* Bind relevant VAO before calling. */
-	virtual void bufferData() const = 0;
+	~VertexBuffer()
+	{
+		delete[] data;
+	}
 };
 
 /* 9-float VertexBuffer implementation for: position, normal, colour */
@@ -67,25 +72,27 @@ private:
 	static int const POS_PTR = 0, NOR_PTR = 3, COL_PTR = 6, STRIDE = 9;
 public:
 	PNC(int length);
+	/* Bind relevant VAO before calling. */
+	virtual void bufferData() const;
+
 	Vec3<float> *position(int index);
 	Vec3<float> *normal(int index);
 	Vec3<float> *colour(int index);
 	Vec3<float> const *position(int index) const;
 	Vec3<float> const *normal(int index) const;
 	Vec3<float> const *colour(int index) const;
-	/* Bind relevant VAO before calling. */
-	virtual void bufferData() const;
 };
 
 /* 3-int VertexBuffer implementation for: index, index, index */
-class Tri : public VertexBuffer<int>
+class Tri : public VertexBuffer<unsigned int>
 {
 private:
 	static int const TRI_PTR = 0, STRIDE = 3;
 public:
 	Tri(int length);
-	Vec3<int> *tri(int index);
-	Vec3<int> const *tri(int index) const;
 	/* Bind relevant VAO before calling. */
 	virtual void bufferData() const;
+
+	Vec3<unsigned int> *tri(int index);
+	Vec3<unsigned int> const *tri(int index) const;
 };
