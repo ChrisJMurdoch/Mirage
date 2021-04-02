@@ -4,9 +4,8 @@
 #include <iostream>
 
 // PNC : VertexBuffer
-PNC::PNC(int length) : VertexBuffer(length *STRIDE)
+PNC::PNC(int length) : VertexBuffer(length*STRIDE)
 {
-    std::cout << "+PNC" << std::endl;
 }
 void PNC::bufferData() const
 {
@@ -24,9 +23,8 @@ Vec3<float> const *PNC::normal(int index)   const { return (Vec3<float> *)&data[
 Vec3<float> const *PNC::colour(int index)   const { return (Vec3<float> *)&data[(index*STRIDE)+COL_PTR]; }
 
 // Tri : VertexBuffer
-Tri::Tri(int length) : VertexBuffer(length *STRIDE)
+Tri::Tri(int length) : VertexBuffer(length*STRIDE)
 {
-    std::cout << "+Tri" << std::endl;
 }
 void Tri::bufferData() const
 {

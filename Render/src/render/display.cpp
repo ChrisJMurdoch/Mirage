@@ -85,8 +85,6 @@ Display::Display(int width, int height, const char *title)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-
-    std::cout << "+Display" << std::endl;
 }
 
 void Display::addPostProgram(Program *prog)
@@ -158,7 +156,6 @@ Display::~Display()
 {
     glDeleteFramebuffers(1, &backbuffer);
     glfwTerminate();
-    std::cout << "~Display" << std::endl;
 }
 
 void Display::resizeCallback(GLFWwindow *window, int width, int height)

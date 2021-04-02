@@ -16,8 +16,6 @@ Model::Model(VertexBuffer<float> const *vertexBuffer, VertexBuffer<int> const *i
     glBindVertexArray(VAO);
     indexBuffer->bufferData();
     vertexBuffer->bufferData();
-
-    std::cout << "+Model" << std::endl;
 }
 
 void Model::render(glm::mat4 const &model, glm::mat4 const &view, glm::mat4 const &projection) const
@@ -37,5 +35,4 @@ void Model::render(glm::mat4 const &model, glm::mat4 const &view, glm::mat4 cons
 Model::~Model()
 {
     glDeleteVertexArrays(1, &VAO);
-    std::cout << "~Model" << std::endl;
 }

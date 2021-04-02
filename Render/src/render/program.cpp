@@ -16,7 +16,6 @@ Program::Program(char const *vertexSourcePath, char const *fragmentSourcePath)
 	addShader(io::read(vertexSourcePath)->c_str(), Program::Shader::VERTEX);
 	addShader(io::read(fragmentSourcePath)->c_str(), Program::Shader::FRAGMENT);
 	link();
-	std::cout << "+Program" << std::endl;
 }
 
 void Program::addShader(const char *source, Shader type)
@@ -97,5 +96,4 @@ void Program::use()
 Program::~Program()
 {
 	glDeleteProgram(id);
-	std::cout << "~Program" << std::endl;
 }
