@@ -2,6 +2,7 @@
 #include "render/display.hpp"
 #include "model/instance.hpp"
 #include "hexEngine/hexCell.hpp"
+#include "arrayBuffer/vertexBuffer.hpp"
 
 #include <iostream>
 #include <exception>
@@ -20,9 +21,15 @@ int main()
         // Add post-processing to display
         display.addPostProgram(&post);
 
+        // Create instances
+        PO instances(3);
+        instances.position(0)->xyz(0.0f, 0.0f,  0.0f);
+        instances.position(1)->xyz(0.0f, 0.0f,  1.0f);
+        instances.position(2)->xyz(0.0f, 0.0f, -1.0f);
+
         // Create hex cell
         HexCell cell = HexCell();
-        Model hexModel(&cell.getVertices(), &cell.getIndices(), &hex);
+        Model hexModel(&cell.getVertices(), &cell.getIndices(), &instances, &hex);
 
         // Add instances
         Instance hexInstance = Instance(hexModel);
