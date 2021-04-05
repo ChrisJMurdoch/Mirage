@@ -154,7 +154,6 @@
   <ItemGroup>
     <ClInclude Include="include\arrayBuffer\vertexBuffer.hpp" />
     <ClInclude Include="include\model\instance.hpp" />
-    <ClInclude Include="include\model\virtualVector.hpp" />
     <ClInclude Include="include\render\display.hpp" />
     <ClInclude Include="include\model\model.hpp" />
     <ClInclude Include="include\render\program.hpp" />
@@ -163,7 +162,6 @@
     <ClCompile Include="..\vendor\glad\src\glad.c" />
     <ClCompile Include="src\arrayBuffer\vertexBuffer.cpp" />
     <ClCompile Include="src\model\instance.cpp" />
-    <ClCompile Include="src\model\virtualVector.cpp" />
     <ClCompile Include="src\render\display.cpp" />
     <ClCompile Include="src\model\model.cpp" />
     <ClCompile Include="src\render\program.cpp" />

@@ -2,15 +2,9 @@
 #include "model/model.hpp"
 
 #include <glad/glad.h>
-#include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
-
-Model::Model(VertexBuffer<float> const *vertexBuffer, VertexBuffer<unsigned int> const *indexBuffer, Program *prog)
+Model::Model(VertexBuffer<float> const *vertexBuffer, VertexBuffer<unsigned int> const *indexBuffer, Program *prog) : vertexBuffer(vertexBuffer), indexBuffer(indexBuffer), prog(prog)
 {
-    nIndices = indexBuffer->getLength();
-    this->prog = prog;
-
     // Bind data to VAO and buffer
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -28,8 +22,7 @@ void Model::render(glm::mat4 const &model, glm::mat4 const &view, glm::mat4 cons
     // Draw
     prog->use();
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, nIndices, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    glDrawElements(GL_TRIANGLES, indexBuffer->getLength(), GL_UNSIGNED_INT, 0);
 }
 
 Model::~Model()

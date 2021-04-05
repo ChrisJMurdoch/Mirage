@@ -1,18 +1,17 @@
 
 #pragma once
 
-#include "render/program.hpp"
 #include "arrayBuffer/vertexBuffer.hpp"
+#include "render/program.hpp"
 
 #include <glm/glm.hpp>
 
 class Model
 {
-public:
-	static const int STRIDE=9, POSITION_INDEX=0, NORMAL_INDEX=3, COLOUR_INDEX=6;
 private:
-	int nIndices;
 	unsigned int VAO;
+	VertexBuffer<float> const *vertexBuffer;
+	VertexBuffer<unsigned int> const *indexBuffer;
 	Program *prog;
 public:
 	Model(VertexBuffer<float> const *vertexBuffer, VertexBuffer<unsigned int> const *indexBuffer, Program *prog);

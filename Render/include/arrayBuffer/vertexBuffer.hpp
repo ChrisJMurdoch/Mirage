@@ -46,7 +46,7 @@ protected:
 	/* Bind relevant VAO and VBO before calling. */
 	void setAttribute(int index, int size, int type, int stride, int ptr) const
 	{
-		glVertexAttribPointer(index, size, type, GL_FALSE, stride*sizeof(float), (void *)(ptr*sizeof(float)));
+		glVertexAttribPointer(index, size, type, GL_FALSE, stride*sizeof(T), (void *)(ptr*sizeof(T)));
 		glEnableVertexAttribArray(index);
 	}
 
@@ -62,6 +62,7 @@ public:
 	~VertexBuffer()
 	{
 		delete[] data;
+		glDeleteBuffers(1, &id);
 	}
 };
 
