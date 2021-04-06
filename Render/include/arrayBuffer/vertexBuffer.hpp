@@ -109,19 +109,17 @@ public:
 	Vec3<unsigned int> const *tri(int index) const;
 };
 
-/* 7-float VertexBuffer implementation for instanced: position, orientation */
-class PO : public VertexBuffer<float>
+/* 3-float VertexBuffer implementation for instanced: position */
+class Pos : public VertexBuffer<float>
 {
 private:
-	static int const POS_PTR = 0, ORI_PTR = 3, STRIDE = 7;
+	static int const POS_PTR = 0, ORI_PTR = 3, STRIDE = 3;
 public:
-	PO(int length);
+	Pos(int length);
 	/* Bind relevant VAO before calling. */
 	virtual void bufferData() const;
 	virtual int getElementLength() const;
 
 	Vec3<float> *position(int index);
-	float *orientation(int index);
 	Vec3<float> const *position(int index) const;
-	float const *orientation(int index) const;
 };

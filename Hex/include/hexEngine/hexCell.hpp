@@ -5,6 +5,9 @@
 
 class HexCell
 {
+public:
+	static float const APOTHEM, RADIUS;
+
 private:
 	PNC vertices;
 	Tri indices;

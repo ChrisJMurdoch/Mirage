@@ -6,6 +6,11 @@
 
 #include <iostream>
 #include <exception>
+#include <random>
+
+static std::random_device device;
+static std::mt19937 twister(device());
+static std::uniform_real_distribution<float> uniform(0.0f, 0.1f);
 
 int main()
 {
@@ -22,10 +27,20 @@ int main()
         display.addPostProgram(&post);
 
         // Create instances
-        PO instances(3);
-        instances.position(0)->xyz(0.0f, 0.0f,  0.0f);
-        instances.position(1)->xyz(0.0f, 0.0f,  1.0f);
-        instances.position(2)->xyz(0.0f, 0.0f, -1.0f);
+        int const gridDepth = 3, gridHeight = 3;
+        Pos instances(gridDepth*gridHeight);
+        float const xOrigin = -(gridDepth-1)/2.0f, yOrigin = -(gridHeight-1)/2.0f;
+        for (int z=0; z<gridHeight; z++)
+        {
+            for (int x=0; x<gridDepth; x++)
+            {
+                int const index = (z*gridDepth)+x;
+                float const xVal = (xOrigin+x)*1.5f*HexCell::RADIUS;
+                float const zVal = (x%2==0) ? (yOrigin+z+0.5f)*2*HexCell::APOTHEM : (yOrigin+z)*2*HexCell::APOTHEM;
+                instances.position(index)->xyz(xVal, uniform(twister), zVal);
+                std::cout << index << ", " << xVal << ", " << zVal << std::endl;
+            }
+        }
 
         // Create hex cell
         HexCell cell = HexCell();

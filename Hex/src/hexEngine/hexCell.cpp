@@ -5,26 +5,26 @@
 #include <math.h>
 #include <iostream>
 
+float const HexCell::APOTHEM = 0.5f, HexCell::RADIUS = APOTHEM * 2.0f / sqrt(3.0f);
+
 HexCell::HexCell() : vertices(12), indices(16)
 {
-	static float const APOTHEM = 0.5f, RADIUS = (2.0f * APOTHEM) / sqrt(3.0f), HEIGHT = 0.25f;
-	
 	// Top
-	vertices.position(0)->xyz( -RADIUS/2.0f, HEIGHT,  APOTHEM );
-	vertices.position(0)->xyz( -RADIUS/2.0f, HEIGHT,  APOTHEM );
-	vertices.position(1)->xyz(  RADIUS/2.0f, HEIGHT,  APOTHEM );
-	vertices.position(2)->xyz(  RADIUS,      HEIGHT,  0.0f    );
-	vertices.position(3)->xyz(  RADIUS/2.0f, HEIGHT, -APOTHEM );
-	vertices.position(4)->xyz( -RADIUS/2.0f, HEIGHT, -APOTHEM );
-	vertices.position(5)->xyz( -RADIUS,      HEIGHT,  0.0f    );
+	vertices.position(0)->xyz( -RADIUS/2.0f, APOTHEM / 2,  APOTHEM );
+	vertices.position(0)->xyz( -RADIUS/2.0f, APOTHEM / 2,  APOTHEM );
+	vertices.position(1)->xyz(  RADIUS/2.0f, APOTHEM / 2,  APOTHEM );
+	vertices.position(2)->xyz(  RADIUS,      APOTHEM / 2,  0.0f    );
+	vertices.position(3)->xyz(  RADIUS/2.0f, APOTHEM / 2, -APOTHEM );
+	vertices.position(4)->xyz( -RADIUS/2.0f, APOTHEM / 2, -APOTHEM );
+	vertices.position(5)->xyz( -RADIUS,      APOTHEM / 2,  0.0f    );
 
 	// Bottom
-	vertices.position(6 )->xyz( -RADIUS/2.0f, HEIGHT+1.0f, APOTHEM  );
-	vertices.position(7 )->xyz(  RADIUS/2.0f, HEIGHT+1.0f, APOTHEM  );
-	vertices.position(8 )->xyz(  RADIUS,      HEIGHT+1.0f, 0.0f     );
-	vertices.position(9 )->xyz(  RADIUS/2.0f, HEIGHT+1.0f, -APOTHEM );
-	vertices.position(10)->xyz( -RADIUS/2.0f, HEIGHT+1.0f, -APOTHEM );
-	vertices.position(11)->xyz( -RADIUS,      HEIGHT+1.0f, 0.0f     );
+	vertices.position(6 )->xyz( -RADIUS/2.0f, APOTHEM / 2+1.0f, APOTHEM  );
+	vertices.position(7 )->xyz(  RADIUS/2.0f, APOTHEM / 2+1.0f, APOTHEM  );
+	vertices.position(8 )->xyz(  RADIUS,      APOTHEM / 2+1.0f, 0.0f     );
+	vertices.position(9 )->xyz(  RADIUS/2.0f, APOTHEM / 2+1.0f, -APOTHEM );
+	vertices.position(10)->xyz( -RADIUS/2.0f, APOTHEM / 2+1.0f, -APOTHEM );
+	vertices.position(11)->xyz( -RADIUS,      APOTHEM / 2+1.0f, 0.0f     );
 
 	// Top
 	indices.tri(0)->xyz(2, 1, 0);
