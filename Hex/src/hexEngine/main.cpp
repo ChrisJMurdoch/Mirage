@@ -3,6 +3,7 @@
 #include "model/instance.hpp"
 #include "hexEngine/hexCell.hpp"
 #include "arrayBuffer/vertexBuffer.hpp"
+#include "generate/noise.hpp"
 
 #include <iostream>
 #include <exception>
@@ -10,7 +11,7 @@
 
 static std::random_device device;
 static std::mt19937 twister(device());
-static std::uniform_real_distribution<float> uniform(0.0f, 0.1f);
+static std::uniform_real_distribution<float> uniform(1.0f, 1.3f);
 
 int main()
 {
@@ -27,18 +28,19 @@ int main()
         display.addPostProgram(&post);
 
         // Create instances
-        int const gridDepth = 3, gridHeight = 3;
-        Pos instances(gridDepth*gridHeight);
-        float const xOrigin = -(gridDepth-1)/2.0f, yOrigin = -(gridHeight-1)/2.0f;
-        for (int z=0; z<gridHeight; z++)
+        int const gridWidth = 100, gridDepth = 100;
+        Pos instances(gridWidth*gridDepth);
+        float const xOrigin = -(gridWidth-1)/2.0f, zOrigin = -(gridDepth-1)/2.0f;
+        std::cout << xOrigin << ", " << zOrigin << std::endl << std::endl;
+        for (int z=0; z<gridDepth; z++)
         {
-            for (int x=0; x<gridDepth; x++)
+            for (int x=0; x<gridWidth; x++)
             {
-                int const index = (z*gridDepth)+x;
+                int const index = (z*gridWidth)+x;
                 float const xVal = (xOrigin+x)*1.5f*HexCell::RADIUS;
-                float const zVal = (x%2==0) ? (yOrigin+z+0.5f)*2*HexCell::APOTHEM : (yOrigin+z)*2*HexCell::APOTHEM;
-                instances.position(index)->xyz(xVal, uniform(twister), zVal);
-                std::cout << index << ", " << xVal << ", " << zVal << std::endl;
+                float const zVal = (x%2==0) ? (zOrigin+z)*2*HexCell::APOTHEM : (zOrigin+z+0.5f)*2*HexCell::APOTHEM;
+                float const yVal = (noise::fractalSample(xVal, 0, zVal, 10.0f, 10, 0)+1)*5;
+                instances.position(index)->xyz(xVal, yVal, zVal);
             }
         }
 

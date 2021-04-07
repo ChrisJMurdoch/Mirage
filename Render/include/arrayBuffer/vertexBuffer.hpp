@@ -2,6 +2,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include <string>
 
@@ -25,7 +26,9 @@ public:
 	void yz(T y, T z) { this->yv = y; this->zv = z; }
 	void xz(T x, T z) { this->xv = x; this->zv = z; }
 	void xyz(T x, T y, T z) { this->xv = x; this->yv = y; this->zv = z; }
+
 	std::string s() const { return "["+std::to_string(xv)+"|"+std::to_string(yv)+"|"+std::to_string(zv)+"]"; }
+	glm::vec3 glm() const { return glm::vec3(xv, yv, zv); }
 };
 
 /* Abstract vertex buffer object */

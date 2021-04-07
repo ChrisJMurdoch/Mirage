@@ -17,4 +17,6 @@ public:
 
 	PNC const &getVertices() const;
 	Tri const &getIndices() const;
+
+	void fixNormals();
 };
