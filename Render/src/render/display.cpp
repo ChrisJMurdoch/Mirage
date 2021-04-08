@@ -107,7 +107,7 @@ void Display::render()
 
     // Transform matrices
     static glm::mat4 const view = glm::lookAt( glm::vec3(0.0f, 0.0f, 1.7f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), aspect, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), aspect, 0.1f, 100.0f);
 
     // Input
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -116,7 +116,7 @@ void Display::render()
     // Render scene onto buffer
     glBindFramebuffer(GL_FRAMEBUFFER, backbuffer);
     glViewport(0, 0, windowWidth, windowHeight);
-    glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+    glClearColor(0.4f, 0.7f, 0.9f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     for (Instance const *const instance : instances)
     {

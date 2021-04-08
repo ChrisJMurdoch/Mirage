@@ -1,7 +1,7 @@
 
 #version 460 core
 
-const vec3 lightPosition = vec3(3,5,3);
+const vec3 lightPosition = vec3(30,50,30);
 
 in vec3 position;
 in vec3 normal;

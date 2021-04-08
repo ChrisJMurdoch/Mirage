@@ -37,9 +37,26 @@ int main()
             for (int x=0; x<gridWidth; x++)
             {
                 int const index = (z*gridWidth)+x;
+
+                // Procedural noise
+                float const noise = noise::fractalSample(x, 0, z, 4.0f, 10, 0);
+
+                // Coords
                 float const xVal = (xOrigin+x)*1.5f*HexCell::RADIUS;
                 float const zVal = (x%2==0) ? (zOrigin+z)*2*HexCell::APOTHEM : (zOrigin+z+0.5f)*2*HexCell::APOTHEM;
-                float const yVal = (noise::fractalSample(xVal, 0, zVal, 10.0f, 10, 0)+1)*5;
+                float yVal;
+                if (noise < -0.10f)
+                {
+                    yVal = 1.6f;
+                }
+                else if (noise < 0.10f)
+                {
+                    yVal = 1.3f;
+                }
+                else
+                {
+                    yVal = 1.0f;
+                }
                 instances.position(index)->xyz(xVal, yVal, zVal);
             }
         }

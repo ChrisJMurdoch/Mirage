@@ -79,7 +79,7 @@ void HexCell::fixNormals()
 			b = vertices.position(tri->y())->glm(),
 			c = vertices.position(tri->z())->glm();
 
-		// Calculate normal
+		// Calculate normal of tri
 		glm::vec3 normal = glm::cross((c-b), (a-b));
 
 		// Increment occurrences
