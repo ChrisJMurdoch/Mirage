@@ -24,7 +24,7 @@ void main()
     position = vec3(model * vec4(l_position+i_position, 1.0));
     normal = mat3(transpose(inverse(model))) * l_normal;
     float dither = floatHash(int(i_position.x+(1000*i_position.z)));
-    colour = ( i_position.y <= 1.0f ? vec3(0.4f,0.4f,0.4f) : i_position.y <= 1.5f ? vec3(0.3f,0.6f,0.1f) : vec3(0.8f,0.8f,0.6f) ) + dither * vec3(0.1f, 0.1f, 0.1f);
+    colour = ( i_position.y <= 1.1f ? vec3(0.4f,0.4f,0.4f) : i_position.y <= 1.5f ? vec3(0.3f,0.6f,0.1f) : vec3(0.8f,0.8f,0.6f) ) + dither * vec3(0.1f, 0.1f, 0.1f);
 }
 
 /* Quick hashing function */

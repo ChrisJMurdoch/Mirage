@@ -42,21 +42,34 @@ int main()
                 float const noise = noise::fractalSample(x, 0, z, 4.0f, 10, 0);
 
                 // Coords
-                float const xVal = (xOrigin+x)*1.5f*HexCell::RADIUS;
-                float const zVal = (x%2==0) ? (zOrigin+z)*2*HexCell::APOTHEM : (zOrigin+z+0.5f)*2*HexCell::APOTHEM;
+                float xVal = (xOrigin+x)*1.5f*HexCell::RADIUS;
+                float zVal = (x%2==0) ? (zOrigin+z)*2*HexCell::APOTHEM : (zOrigin+z+0.5f)*2*HexCell::APOTHEM;
                 float yVal;
                 if (noise < -0.10f)
                 {
                     yVal = 1.6f;
                 }
-                else if (noise < 0.10f)
+                else if (noise < -0.05f)
+                {
+                    yVal = 1.45f;
+                }
+                else if (noise < 0.00f)
                 {
                     yVal = 1.3f;
+                }
+                else if (noise < 0.05f)
+                {
+                    yVal = 1.15f;
                 }
                 else
                 {
                     yVal = 1.0f;
                 }
+
+                // Gap
+                xVal *= 1.05f, zVal *= 1.05f;
+
+                // Set
                 instances.position(index)->xyz(xVal, yVal, zVal);
             }
         }
