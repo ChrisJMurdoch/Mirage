@@ -28,7 +28,7 @@ int main()
         display.addPostProgram(&post);
 
         // Create instances
-        int const gridWidth = 100, gridDepth = 100;
+        int const gridWidth = 500, gridDepth = 500;
         Pos instances(gridWidth*gridDepth);
         float const xOrigin = -(gridWidth-1)/2.0f, zOrigin = -(gridDepth-1)/2.0f;
         std::cout << xOrigin << ", " << zOrigin << std::endl << std::endl;

@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+int const SAMPLES = 16; // Change in shader
+
 Display::Display(int width, int height, const char *title)
 {
     // Initialise GLFW
@@ -41,30 +43,27 @@ Display::Display(int width, int height, const char *title)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Backbuffer colour texture
-    glGenTextures(1, &backbufferColour);
-    glBindTexture(GL_TEXTURE_2D, backbufferColour);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    
-    // Backbuffer depth texture
-    glGenTextures(1, &backbufferDepth);
-    glBindTexture(GL_TEXTURE_2D, backbufferDepth);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    
-    // Create backbuffer
+    // Create framebuffer
     glGenFramebuffers(1, &backbuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, backbuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, backbufferColour, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, backbufferDepth, 0);
-    debug::zeroThrow(glCheckFramebufferStatus(GL_FRAMEBUFFER)==GL_FRAMEBUFFER_COMPLETE, "Failed to create backbuffer");
+
+    // Backbuffer depth texture
+    glGenRenderbuffers(1, &backbufferDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, backbufferDepth);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, SAMPLES, GL_DEPTH24_STENCIL8, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, backbufferDepth);
+
+    debug::zeroThrow(glCheckFramebufferStatus(GL_FRAMEBUFFER)==GL_FRAMEBUFFER_COMPLETE, "Not complete 1");
+
+    // Backbuffer colour texture
+    glGenTextures(1, &backbufferColour);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, backbufferColour);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, width, height, GL_TRUE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, backbufferColour, 0);
+
+    debug::zeroThrow(glCheckFramebufferStatus(GL_FRAMEBUFFER)==GL_FRAMEBUFFER_COMPLETE, "Not complete 2");
 
     // Generate screen quad
     float quadVertices[] ={
@@ -106,8 +105,8 @@ void Display::render()
     debug::nullThrow(post, "Must call addPostProgram() before render()");
 
     // Transform matrices
-    static glm::mat4 const view = glm::lookAt( glm::vec3(0.0f, 0.0f, 1.7f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
-    glm::mat4 projection = glm::perspective(glm::radians(60.0f), aspect, 0.1f, 100.0f);
+    static glm::mat4 const view = glm::lookAt( glm::vec3(0.0f, 1.0f, 1.7f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), aspect, 0.1f, 1000.0f);
 
     // Input
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -136,7 +135,7 @@ void Display::render()
 
     // Textures
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, backbufferColour);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, backbufferColour);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, backbufferDepth);
     glBindVertexArray(screenQuadVAO);
@@ -161,11 +160,12 @@ Display::~Display()
 void Display::resizeCallback(GLFWwindow *window, int width, int height)
 {
     Display *display = (Display *)glfwGetWindowUserPointer(window);
+
     display->aspect = (float)width / height;
     display->windowWidth = width, display->windowHeight = height;
 
-    glBindTexture(GL_TEXTURE_2D, display->backbufferColour);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glBindTexture(GL_TEXTURE_2D, display->backbufferDepth);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, display->backbufferColour);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, width, height, GL_TRUE);
+    glBindRenderbuffer(GL_RENDERBUFFER, display->backbufferDepth);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, SAMPLES, GL_DEPTH24_STENCIL8, width, height);
 }

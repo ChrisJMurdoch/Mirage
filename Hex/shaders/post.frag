@@ -1,8 +1,10 @@
 
 #version 460 core
 
-uniform sampler2D colour;
-uniform sampler2D depth;
+const int SAMPLES = 16; // Change in src
+
+uniform sampler2DMS colour;
+uniform sampler2DMS depth;
 
 uniform mat4 projection_inverse;
 uniform mat4 view_inverse;
@@ -14,5 +16,15 @@ out vec4 fragColour;
 
 void main()
 {
-    fragColour = texture(colour, texPosition);
+    // Get texture coords
+    ivec2 texSize = textureSize(colour);
+    ivec2 iTexPos = ivec2(texSize.x*texPosition.x, texSize.y*texPosition.y);
+
+    // Multisample
+    vec4 acc = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    for (int i=0; i<SAMPLES; i++)
+        acc += texelFetch(colour, iTexPos, i);
+    acc /= float(SAMPLES);
+
+    fragColour = acc;
 }
