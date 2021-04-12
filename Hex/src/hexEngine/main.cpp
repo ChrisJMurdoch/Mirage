@@ -8,6 +8,7 @@
 #include <iostream>
 #include <exception>
 #include <random>
+#include <algorithm>
 
 static std::random_device device;
 static std::mt19937 twister(device());
@@ -28,7 +29,7 @@ int main()
         display.addPostProgram(&post);
 
         // Create instances
-        int const gridWidth = 500, gridDepth = 500;
+        int const gridWidth = 50, gridDepth = 50;
         Pos instances(gridWidth*gridDepth);
         float const xOrigin = -(gridWidth-1)/2.0f, zOrigin = -(gridDepth-1)/2.0f;
         std::cout << xOrigin << ", " << zOrigin << std::endl << std::endl;
@@ -39,24 +40,31 @@ int main()
                 int const index = (z*gridWidth)+x;
 
                 // Procedural noise
-                float const noise = noise::fractalSample(x, 0, z, 10.0f, 10, 0);
+                int seed = 0;
+                float const continent = noise::perlinSample(x, 0, z, 5.0f, seed++)+0.15f;
+                float const land = continent;
 
-                // Coords
+                // X & Z
                 float xVal = (xOrigin+x)*1.5f*HexCell::RADIUS;
                 float zVal = (x%2==0) ? (zOrigin+z)*2*HexCell::APOTHEM : (zOrigin+z+0.5f)*2*HexCell::APOTHEM;
+
+                // Y
                 float yVal;
-                static float const WATER_DEV = 0.03f;
-                if (noise < -WATER_DEV)
+                if (land < -0.03f)
                 {
                     yVal = 0.0f; // Water
                 }
-                else if (noise < WATER_DEV)
+                else if (land < 0.03f)
                 {
-                    yVal = 0.1f; // Grass
+                    yVal = 0.1f; // Sand
+                }
+                else if (land < 0.35f)
+                {
+                    yVal = 0.2f; // Grass
                 }
                 else
                 {
-                    yVal = 0.2f; // Sand
+                    yVal = 0.3f; // Rock
                 }
 
                 // Gap

@@ -29,7 +29,7 @@ void main()
     normal = mat3(transpose(inverse(model))) * l_normal;
     
     // Colour
-    vec3 dither = floatHash( int(i_position.x*1000+i_position.z*10) ) * vec3(0.15f);
+    vec3 dither = floatHash( int(i_position.x*1000+i_position.z*10) ) * vec3(0.1f);
     colour = l_position.y>0.0f ? vec3(1.0f) : vec3(0.0f);
     switch (int(i_position.y*10))
     {
@@ -41,6 +41,9 @@ void main()
         break;
     case 2:
         colour = vec3(0.3f, 0.6f, 0.0f) + dither;
+        break;
+    case 3:
+        colour = vec3(0.3f, 0.3f, 0.3f) + dither;
         break;
     default:
         colour = vec3(1.0f, 0.0f, 0.0f) + dither;
