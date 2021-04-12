@@ -19,12 +19,32 @@ float floatHash(int x);
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(l_position+i_position, 1.0);
-
+    // World space
     position = vec3(model * vec4(l_position+i_position, 1.0));
+
+    // Clip space
+    gl_Position = projection * view * vec4(position, 1.0);
+
+    // Normal
     normal = mat3(transpose(inverse(model))) * l_normal;
-    float dither = floatHash(int(i_position.x+(1000*i_position.z)));
-    colour = ( i_position.y <= 1.1f ? vec3(0.4f,0.4f,0.4f) : i_position.y <= 1.5f ? vec3(0.3f,0.6f,0.1f) : vec3(0.8f,0.8f,0.6f) ) + dither * vec3(0.1f, 0.1f, 0.1f);
+    
+    // Colour
+    vec3 dither = floatHash( int(i_position.x*1000+i_position.z*10) ) * vec3(0.15f);
+    colour = l_position.y>0.0f ? vec3(1.0f) : vec3(0.0f);
+    switch (int(i_position.y*10))
+    {
+    case 0:
+        colour = vec3(0.0f, 0.5f, 0.8f) + dither;
+        break;
+    case 1:
+        colour = vec3(0.8f, 0.8f, 0.6f) + dither;
+        break;
+    case 2:
+        colour = vec3(0.3f, 0.6f, 0.0f) + dither;
+        break;
+    default:
+        colour = vec3(1.0f, 0.0f, 0.0f) + dither;
+    }
 }
 
 /* Quick hashing function */

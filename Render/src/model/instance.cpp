@@ -3,7 +3,7 @@
 
 static glm::mat4 const IDENTITY = glm::mat4(1.0f);
 
-Instance::Instance(Model const &model) : model(model), position(0.0f, 0.0f, 0.0f), orientation(0.0f, 0.0f, 0.0f, 1.0f)
+Instance::Instance(Model const &model) : model(model), position(0.0f, 0.0f, 0.0f), orientation()
 {
 }
 

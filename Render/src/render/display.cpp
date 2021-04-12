@@ -105,7 +105,7 @@ void Display::render()
     debug::nullThrow(post, "Must call addPostProgram() before render()");
 
     // Transform matrices
-    static glm::mat4 const view = glm::lookAt( glm::vec3(0.0f, 2.1f, 1.7f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
+    static glm::mat4 const view = glm::lookAt( glm::vec3(0.0f, 10.0f, 15.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), aspect, 0.1f, 1000.0f);
 
     // Input

@@ -8,7 +8,7 @@
 #include <iostream>
 #include <unordered_map>
 
-float const HexCell::APOTHEM = 0.5f, HexCell::RADIUS = APOTHEM * 2.0f / sqrt(3.0f);
+float const HexCell::APOTHEM = 0.5f, HexCell::RADIUS = APOTHEM * 2.0f / sqrt(3.0f), HexCell::SLOPE = 5.0f;
 
 HexCell::HexCell() : vertices(30), indices(16)
 {
@@ -25,22 +25,22 @@ HexCell::HexCell() : vertices(30), indices(16)
 	// Top
 	for (int i=0; i<6; i++)
 		vertices.position(i)->xyz( x[i], 0.5f, z[i] );
-	indices.tri(0)->xyz(2, 1, 0);
-	indices.tri(1)->xyz(4, 3, 2);
-	indices.tri(2)->xyz(0, 5, 4);
-	indices.tri(3)->xyz(4, 2, 0);
+	indices.tri(0)->xyz(0, 1, 2);
+	indices.tri(1)->xyz(2, 3, 4);
+	indices.tri(2)->xyz(4, 5, 0);
+	indices.tri(3)->xyz(0, 2, 4);
 
 	// Sides
 	for (int i=0; i<6; i++)
 	{
 		int v_i = 6+(i*4);
 		int i_i = 4+(i*2);
-		vertices.position(v_i+0)->xyz(x[(i+0)%6], 1.5f, z[(i+0)%6]);
-		vertices.position(v_i+1)->xyz(x[(i+1)%6], 1.5f, z[(i+1)%6]);
-		vertices.position(v_i+2)->xyz(x[(i+1)%6], 0.5f, z[(i+1)%6]);
-		vertices.position(v_i+3)->xyz(x[(i+0)%6], 0.5f, z[(i+0)%6]);
-		indices.tri(i_i+0)->xyz(v_i+2, v_i+1, v_i+0);
-		indices.tri(i_i+1)->xyz(v_i+0, v_i+3, v_i+2);
+		vertices.position(v_i+0)->xyz( x[(i+0)%6]*SLOPE, -0.5f, z[(i+0)%6]*SLOPE );
+		vertices.position(v_i+1)->xyz( x[(i+1)%6]*SLOPE, -0.5f, z[(i+1)%6]*SLOPE );
+		vertices.position(v_i+2)->xyz( x[(i+1)%6],  0.5f, z[(i+1)%6] );
+		vertices.position(v_i+3)->xyz( x[(i+0)%6],  0.5f, z[(i+0)%6] );
+		indices.tri(i_i+0)->xyz(v_i+0, v_i+1, v_i+2);
+		indices.tri(i_i+1)->xyz(v_i+2, v_i+3, v_i+0);
 	}
 
 	// Colour

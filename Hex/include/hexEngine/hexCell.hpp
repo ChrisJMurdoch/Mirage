@@ -6,7 +6,7 @@
 class HexCell
 {
 public:
-	static float const APOTHEM, RADIUS;
+	static float const APOTHEM, RADIUS, SLOPE;
 
 private:
 	PNC vertices;

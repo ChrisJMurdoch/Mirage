@@ -39,35 +39,28 @@ int main()
                 int const index = (z*gridWidth)+x;
 
                 // Procedural noise
-                float const noise = noise::fractalSample(x, 0, z, 4.0f, 10, 0);
+                float const noise = noise::fractalSample(x, 0, z, 10.0f, 10, 0);
 
                 // Coords
                 float xVal = (xOrigin+x)*1.5f*HexCell::RADIUS;
                 float zVal = (x%2==0) ? (zOrigin+z)*2*HexCell::APOTHEM : (zOrigin+z+0.5f)*2*HexCell::APOTHEM;
                 float yVal;
-                if (noise < -0.10f)
+                static float const WATER_DEV = 0.03f;
+                if (noise < -WATER_DEV)
                 {
-                    yVal = 1.6f;
+                    yVal = 0.0f; // Water
                 }
-                else if (noise < -0.05f)
+                else if (noise < WATER_DEV)
                 {
-                    yVal = 1.45f;
-                }
-                else if (noise < 0.00f)
-                {
-                    yVal = 1.3f;
-                }
-                else if (noise < 0.05f)
-                {
-                    yVal = 1.15f;
+                    yVal = 0.1f; // Grass
                 }
                 else
                 {
-                    yVal = 1.0f;
+                    yVal = 0.2f; // Sand
                 }
 
                 // Gap
-                xVal *= 1.05f, zVal *= 1.05f;
+                xVal *= 1.00f, zVal *= 1.00f;
 
                 // Set
                 instances.position(index)->xyz(xVal, yVal, zVal);
