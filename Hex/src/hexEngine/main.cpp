@@ -41,7 +41,7 @@ int main()
 
                 // Procedural noise
                 int seed = 0;
-                float const continent = noise::perlinSample(x, 0, z, 5.0f, seed++)+0.15f;
+                float const continent = noise::perlinSample(static_cast<float>(x), 0.0f, static_cast<float>(z), 5.0f, seed++)+0.15f;
                 float const land = continent;
 
                 // X & Z
