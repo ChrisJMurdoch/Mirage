@@ -15,12 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\generate\noise.hpp">
+    <None Include="shaders\terrain.vert" />
+    <None Include="shaders\post.frag" />
+    <None Include="shaders\post.vert" />
+    <None Include="shaders\terrain.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\redshift\planet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\redshift\main.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\generate\noise.cpp">
+    <ClCompile Include="src\redshift\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\redshift\planet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

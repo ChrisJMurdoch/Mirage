@@ -1,5 +1,5 @@
 
-#include "redshiftEngine/planet.hpp"
+#include "redshift/planet.hpp"
 
 #include "utility/math.hpp"
 #include "generate/noise.hpp"

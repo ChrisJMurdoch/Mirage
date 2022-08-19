@@ -1,9 +1,9 @@
 
-#include "redshiftEngine/main.hpp"
+#include "redshift/main.hpp"
 
 #include "render/display.hpp"
 #include "model/instance.hpp"
-#include "redshiftEngine/planet.hpp"
+#include "redshift/planet.hpp"
 
 #include <iostream>
 #include <exception>
