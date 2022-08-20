@@ -22,6 +22,7 @@ Builds of all necessary third-party libraries are already included under the ven
 Included at the root of the project is a CMakeLists.txt file that can be used to build the project and required libraries from source:
 
 > cmake -B ./[BUILD_DIR]/
+
 > cmake --build ./[BUILD_DIR]/
 
 Then run the program with:
