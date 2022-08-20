@@ -15,6 +15,25 @@ C++ libraries focused on procedural world generation, simulation, and rendering.
 
 ## Building from source
 
-**GLFW** and **GLAD** are required to build this project and should be acquired separately.
-- Include the **GLFW** headers and link its glfw3.lib file.
-- Include the **GLAD** header add its glad.c file to the compilation.
+Builds of all necessary third-party libraries are already included under the vendor/ directory.  Feel free to swap them out for newer or custom-built versions.
+
+### With CMake
+
+Included at the root of the project is a CMakeLists.txt file that can be used to build the project and required libraries from source:
+
+> cmake -B ./[BUILD_DIR]/
+> cmake --build ./[BUILD_DIR]/
+
+Then run the program with:
+
+> .\[BUILD_DIR]\Debug\Hex.exe
+
+### With _
+
+Alternatively, the project can be built and run using the [_ build script](https://github.com/ChrisJMurdoch/_).  After setting the APP_NAME to 'Hex', the project can be built and run with:
+
+> _ init build run
+
+Subsequent runs can be started with:
+
+> _ run
