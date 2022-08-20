@@ -3,8 +3,6 @@
 /.vs/
 *.vcxproj.user
 
-# Build
-**/x64/
-
-# Output
-/Tools/ToolData/*
+# Build Tool
+/_.bat
+/_/

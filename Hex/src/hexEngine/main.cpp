@@ -22,8 +22,8 @@ int main()
         Display display(1000, 600, "WorldEngine");
 
         // Create programs
-        Program post("shaders\\post.vert", "shaders\\post.frag");
-        Program hex("shaders\\hex.vert", "shaders\\hex.frag");
+        Program post("Hex\\shaders\\post.vert", "Hex\\shaders\\post.frag");
+        Program hex("Hex\\shaders\\hex.vert", "Hex\\shaders\\hex.frag");
 
         // Add post-processing to display
         display.addPostProgram(&post);
