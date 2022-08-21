@@ -1,8 +1,11 @@
 
 # ===== PARAMETERS =====
 
-# App name
-set(APP_NAME "WorldEngine")
+# CMake version
+cmake_minimum_required(VERSION 3.23)
+
+# Project
+project("WorldEngine" VERSION 0.2.0)
 
 # C++ version
 set(CMAKE_CXX_STANDARD 20)
@@ -10,9 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # MSVC
 set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDebug)
-
-# CMake version
-cmake_minimum_required(VERSION 3.23)
 
 # ===== VENDOR RESOURCE PATHS =====
 
@@ -25,9 +25,6 @@ set(GLFW_INCLUDE vendor/glfw/include)
 set(GLM_INCLUDE  vendor/glm/include)
 
 # ===== BUILDSCRIPT =====
-
-# Project
-project(${APP_NAME} VERSION 0.2.0)
 
 # --- Utility Library ---
 
