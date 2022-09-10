@@ -1,10 +1,12 @@
 
 #include "display/display.hpp"
 
+#include "model/model.hpp"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <iostream>
+#include <exception>
 
 void resizeCallback(GLFWwindow *window, int width, int height)
 {
@@ -35,7 +37,7 @@ Display::Display(char const *title, int width, int height)
     }
 
     // Size OpenGL viewport to window and setup resize callback
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, resizeCallback);
 }
 
@@ -49,17 +51,31 @@ bool Display::shouldClose() const
     return glfwWindowShouldClose(window);
 }
 
-void Display::frame()
+void Display::render()
 {
     // Poll events
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
-    // Render
+    
+    // Clear viewport
     glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // Render each model
+    for (Model const *model : models)
+        model->draw();
 
     // Display image
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+
+void Display::registerModel(Model const *model)
+{
+    models.insert(model);
+}
+
+void Display::deregisterModel(Model const *model)
+{
+    models.erase(model);
 }

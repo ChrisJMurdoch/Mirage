@@ -29,7 +29,9 @@ set(GLFW_BIN     vendor/glfw-3.3.8/bin/x64/debug)
 add_library(Render STATIC)
 target_sources(Render
     PRIVATE # Internal
-        Render/src/display/display.cpp
+    Render/src/display/display.cpp
+    Render/src/model/model.cpp
+    Render/src/shader/program.cpp
     PRIVATE # Vendor
         ${GLAD_SRC}/glad.c
 )

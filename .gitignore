@@ -1,4 +1,7 @@
 
+# Editor
+/.vscode/
+
 # _ Build
 /_.bat
 /_/
