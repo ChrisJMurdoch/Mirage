@@ -27,11 +27,11 @@ Included at the root of the project is a CMakeLists.txt file that can be used to
 
 Then run the program with:
 
-> .\[BUILD_DIR]\Debug\Hex.exe
+> .\[BUILD_DIR]\Debug\Redshift.exe
 
 ### With _
 
-Alternatively, the project can be built and run using the [_ build script](https://github.com/ChrisJMurdoch/_).  After setting the APP_NAME to 'Hex', the project can be built and run with:
+Alternatively, the project can be built and run using the [_ build script](https://github.com/ChrisJMurdoch/_).  After setting the APP_NAME to 'Redshift', the project can be built and run with:
 
 > _ init build run
 

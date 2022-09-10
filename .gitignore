@@ -1,8 +1,4 @@
 
-# Visual Studio
-/.vs/
-*.vcxproj.user
-
-# Build Tool
+# _ Build
 /_.bat
 /_/
