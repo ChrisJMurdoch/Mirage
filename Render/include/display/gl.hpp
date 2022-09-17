@@ -3,39 +3,29 @@
 
 #include <glad/glad.h>
 
-#define DISABLE_CACHING 0
+// PARAMETERS
+#define ENABLE_CACHING 1         // Injects a runtime check to ignore duplicate calls to state-setting gl functions
+#define ENABLE_UNBIND_OMISSION 0 // Injects a runtime check to ignore calls to unbind objects
 
-/** Abstraction over specific OpenGL function calls to avoid redundant state changes */
+// Caching
+#if ENABLE_CACHING!=0
+    #define CACHE_ESCAPE static unsigned int cachedHandle=0; if (handle==cachedHandle) return; cachedHandle=handle;
+#else
+    #define CACHE_ESCAPE
+#endif
+
+// Unbind omission
+#if ENABLE_UNBIND_OMISSION!=0
+    #define UNBIND_ESCAPE if (handle==0) return;
+#else
+    #define UNBIND_ESCAPE
+#endif
+
+/** Abstractions over specific OpenGL function calls to avoid redundant state changes */
 namespace gl
 {
-    // Template state-caching functions so they can be constructed and potentially inlined at compile time
-    #if DISABLE_CACHING == 1
-        #define cachedCall(glFunction,functionName) static inline void functionName(unsigned int handle)    \
-        {                                                                                                   \
-            glFunction(handle);                                                                             \
-        }
-        #define boundArgCachedCall(glFunction,boundArg,functionName) static inline void functionName(unsigned int handle)   \
-        {                                                                                                                   \
-            glFunction(boundArg,handle);                                                                                    \
-        }
-    #else
-        #define cachedCall(glFunction,functionName) static inline void functionName(unsigned int handle)    \
-        {                                                                                                   \
-            static int cachedHandle = 0;                                                                    \
-            if (handle!=cachedHandle)                                                                       \
-                glFunction(cachedHandle=handle);                                                            \
-        }
-        #define boundArgCachedCall(glFunction,boundArg,functionName) static inline void functionName(unsigned int handle)   \
-        {                                                                                                                   \
-            static int cachedHandle = 0;                                                                                    \
-            if (handle!=cachedHandle)                                                                                       \
-                glFunction(boundArg,cachedHandle=handle);                                                                   \
-        }
-    #endif
-
-    // Create template instances
-    cachedCall(glUseProgram, useProgram);
-    cachedCall(glBindVertexArray, bindVertexArray);
-    boundArgCachedCall(glBindBuffer, GL_ARRAY_BUFFER, bindArrayBuffer);
-    boundArgCachedCall(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, bindElementArrayBuffer);
+    static inline void useProgram(unsigned int handle)             { UNBIND_ESCAPE CACHE_ESCAPE glUseProgram(handle);                          }
+    static inline void bindVertexArray(unsigned int handle)        { UNBIND_ESCAPE CACHE_ESCAPE glBindVertexArray(handle);                     }
+    static inline void bindArrayBuffer(unsigned int handle)        { UNBIND_ESCAPE CACHE_ESCAPE glBindBuffer(GL_ARRAY_BUFFER, handle);         }
+    static inline void bindElementArrayBuffer(unsigned int handle) { UNBIND_ESCAPE CACHE_ESCAPE glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle); }
 }

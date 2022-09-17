@@ -35,8 +35,19 @@ int main()
         display.registerModel(&square);
 
         // Render loop
+        long long sMicro=0, nFrames=0;
         while(!display.shouldClose())
+        {
+            // Render
+            auto start = std::chrono::system_clock::now();
             display.render();
+            auto end = std::chrono::system_clock::now();
+
+            // Calculate and display duration
+            nFrames++;
+            sMicro += std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
+            std::cout << "Avg. microseconds: " << sMicro/nFrames << std::endl;
+        }
     }
     catch(const std::exception &e)
     {
