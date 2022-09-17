@@ -1,11 +1,11 @@
 
 #version 460 core
-
-uniform vec3 uniformColour;
+ 
+in vec3 colour;
 
 out vec4 fragColour;
 
 void main()
 {
-    fragColour = vec4(uniformColour, 1.0f);
+    fragColour = vec4(colour, 1.0);
 }

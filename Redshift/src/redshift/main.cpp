@@ -9,17 +9,15 @@
 #include <chrono>
 #include <math.h>
 
-std::vector<Vec3> vertices
+std::vector<Vertex> vertices
 {
-    Vec3{ 0.5f,  0.5f, 0.0f},
-    Vec3{ 0.5f, -0.5f, 0.0f},
-    Vec3{-0.5f, -0.5f, 0.0f},
-    Vec3{-0.5f,  0.5f, 0.0f}
+    Vertex{ Vec3{ 0.5f, -0.5f, 0.0f},  Vec3{1.0f, 0.0f, 0.0f} },
+    Vertex{ Vec3{-0.5f, -0.5f, 0.0f},  Vec3{0.0f, 1.0f, 0.0f} },
+    Vertex{ Vec3{ 0.0f,  0.5f, 0.0f},  Vec3{0.0f, 0.0f, 1.0f} }
 };
 std::vector<unsigned int> indices
 {
-    0, 1, 3,
-    1, 2, 3
+    0, 1, 2,
 };
 
 int main()
@@ -38,12 +36,7 @@ int main()
 
         // Render loop
         while(!display.shouldClose())
-        {
-            long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            float blue = (sin(ms*0.001)+1) / 2;
-            program.setUniformVec3("uniformColour", Vec3{1-blue, 0.0f, blue});
             display.render();
-        }
     }
     catch(const std::exception &e)
     {
