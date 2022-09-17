@@ -1,5 +1,5 @@
 
-#include "texture/texture.hpp"
+#include "display/texture.hpp"
 
 #include "display/gl.hpp"
 

@@ -1,14 +1,14 @@
 
 #include "display/display.hpp"
-#include "shader/program.hpp"
-#include "texture/texture.hpp"
-#include "model/model.hpp"
+#include "display/geometry.hpp"
+#include "display/program.hpp"
+#include "display/texture.hpp"
+#include "display/model.hpp"
 
 #include <vector>
 #include <iostream>
 #include <exception>
 #include <chrono>
-#include <math.h>
 
 std::vector<Vertex> vertices
 {
@@ -41,19 +41,8 @@ int main()
         display.registerModel(&square);
 
         // Render loop
-        long long sMicro=0, nFrames=0;
         while(!display.shouldClose())
-        {
-            // Render
-            auto start = std::chrono::system_clock::now();
             display.render();
-            auto end = std::chrono::system_clock::now();
-
-            // Calculate and display duration
-            nFrames++;
-            sMicro += std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
-            std::cout << "Avg. microseconds: " << sMicro/nFrames << std::endl;
-        }
     }
     catch(const std::exception &e)
     {

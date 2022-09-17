@@ -1,22 +1,12 @@
 
-#include "model/model.hpp"
+#include "display/model.hpp"
 
 #include "display/gl.hpp"
-#include "shader/program.hpp"
-#include "texture/texture.hpp"
+#include "display/program.hpp"
+#include "display/texture.hpp"
+#include "display/geometry.hpp"
 
 #include <iostream>
-
-void Vertex::setAttributes()
-{
-    // Position (vec3)
-    glVertexAttribPointer( 0, sizeof(position)/sizeof(float),        GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, position))        );
-    glEnableVertexAttribArray(0);
-
-    // Texture Position (vec2)
-    glVertexAttribPointer( 1, sizeof(texturePosition)/sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, texturePosition)) );
-    glEnableVertexAttribArray(1);
-}
 
 Model::Model(Program const &program, Texture const &texture, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices) : program(program), texture(texture), nIndices(indices.size())
 {

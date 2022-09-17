@@ -32,9 +32,10 @@ add_library(Render STATIC)
 target_sources(Render
     PRIVATE # Internal
     Render/src/display/display.cpp
-    Render/src/model/model.cpp
-    Render/src/shader/program.cpp
-    Render/src/texture/texture.cpp
+    Render/src/display/model.cpp
+    Render/src/display/program.cpp
+    Render/src/display/texture.cpp
+    Render/src/display/geometry.cpp
     PRIVATE # Vendor
         ${GLAD_SRC}/glad.c
 )

@@ -1,8 +1,9 @@
 
-#include "shader/program.hpp"
+#include "display/program.hpp"
 
 #include "display/gl.hpp"
-#include "model/model.hpp"
+#include "display/model.hpp"
+#include "display/geometry.hpp"
 
 #include <exception>
 #include <fstream>
@@ -75,9 +76,10 @@ Program::~Program()
 
 void Program::setUniformVec3(char const *name, Vec3 const &vec3)
 {
-    gl::useProgram(handle);
-    glUniform3f(glGetUniformLocation(handle, name), vec3.x, vec3.y, vec3.z);
-    gl::useProgram(0);
+    use([&]()
+    {
+        glUniform3f(glGetUniformLocation(handle, name), vec3.x, vec3.y, vec3.z);
+    });
 }
 
 void Program::use(std::function<void()> operation) const
