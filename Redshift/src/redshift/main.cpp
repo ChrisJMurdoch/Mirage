@@ -31,10 +31,10 @@ int main()
         Display display{"Redshift", 1000, 600};
 
         // Compile shaders into program
-        Program program{"shaders/model.vert", "shaders/model.frag"};
+        Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
         // Load texture
-        Texture texture{"textures/concrete.jpg"};
+        Texture texture{"resources/textures/concrete.jpg"};
 
         // Create model and add to display
         Model square{program, texture, vertices, indices};
