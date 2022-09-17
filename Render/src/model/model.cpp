@@ -1,23 +1,24 @@
 
 #include "model/model.hpp"
 
-#include "shader/program.hpp"
 #include "display/gl.hpp"
+#include "shader/program.hpp"
+#include "texture/texture.hpp"
 
 #include <iostream>
 
 void Vertex::setAttributes()
 {
     // Position (vec3)
-    glVertexAttribPointer( 0, sizeof(position)/sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(0) );
+    glVertexAttribPointer( 0, sizeof(position)/sizeof(float),        GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, position))        );
     glEnableVertexAttribArray(0);
 
-    // Colour (vec3)
-    glVertexAttribPointer( 1, sizeof(colour)/sizeof(float),   GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(sizeof(position)) );
+    // Texture Position (vec2)
+    glVertexAttribPointer( 1, sizeof(texturePosition)/sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, texturePosition)) );
     glEnableVertexAttribArray(1);
 }
 
-Model::Model(Program const &program, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices) : program(program), nVertices(vertices.size())
+Model::Model(Program const &program, Texture const &texture, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices) : program(program), texture(texture), nIndices(indices.size())
 {
     // Generate buffers
     glGenVertexArrays(1, &vao);
@@ -42,7 +43,7 @@ Model::Model(Program const &program, std::vector<Vertex> const &vertices, std::v
     gl::bindVertexArray(0);
 }
 
-Model::Model(Model &&other) : program(other.program), nVertices(other.nVertices), vao(other.vao), vbo(other.vbo), ebo(other.ebo)
+Model::Model(Model &&other) : program(other.program), texture(texture), nIndices(other.nIndices), vao(other.vao), vbo(other.vbo), ebo(other.ebo)
 {
     other.vao = 0;
     other.vbo = 0;
@@ -60,8 +61,11 @@ void Model::draw() const
 {
     program.use([&]()
     {
-        gl::bindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, nVertices, GL_UNSIGNED_INT, 0);
-        gl::bindVertexArray(0);
+        texture.use(GL_TEXTURE0, [&]()
+        {
+            gl::bindVertexArray(vao);
+            glDrawElements(GL_TRIANGLES, nIndices, GL_UNSIGNED_INT, 0);
+            gl::bindVertexArray(0);
+        });
     });
 }

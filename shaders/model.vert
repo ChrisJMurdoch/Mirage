@@ -1,13 +1,13 @@
 
 #version 460 core
 
-layout (location = 0) in vec3 vertPosition;
-layout (location = 1) in vec3 vertColor;
+layout (location = 0) in vec3 lPos;
+layout (location = 1) in vec2 lTexPos;
 
-out vec3 colour;
+out vec2 vTexPos;
 
 void main()
 {
-    gl_Position = vec4(vertPosition, 1.0);
-    colour = vertColor;
+    gl_Position = vec4(lPos, 1.0);
+    vTexPos = lTexPos;
 }

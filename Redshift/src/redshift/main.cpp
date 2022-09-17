@@ -1,6 +1,7 @@
 
 #include "display/display.hpp"
 #include "shader/program.hpp"
+#include "texture/texture.hpp"
 #include "model/model.hpp"
 
 #include <vector>
@@ -11,13 +12,15 @@
 
 std::vector<Vertex> vertices
 {
-    Vertex{ Vec3{ 0.5f, -0.5f, 0.0f},  Vec3{1.0f, 0.0f, 0.0f} },
-    Vertex{ Vec3{-0.5f, -0.5f, 0.0f},  Vec3{0.0f, 1.0f, 0.0f} },
-    Vertex{ Vec3{ 0.0f,  0.5f, 0.0f},  Vec3{0.0f, 0.0f, 1.0f} }
+    Vertex{ Vec3{-0.9f, -0.9f, 0.0f},  Vec2{0.0f, 0.0f} },
+    Vertex{ Vec3{ 0.9f, -0.9f, 0.0f},  Vec2{1.0f, 0.0f} },
+    Vertex{ Vec3{ 0.9f,  0.9f, 0.0f},  Vec2{1.0f, 1.0f} },
+    Vertex{ Vec3{-0.9f,  0.9f, 0.0f},  Vec2{0.0f, 1.0f} }
 };
 std::vector<unsigned int> indices
 {
     0, 1, 2,
+    2, 3, 0,
 };
 
 int main()
@@ -30,8 +33,11 @@ int main()
         // Compile shaders into program
         Program program{"shaders/model.vert", "shaders/model.frag"};
 
+        // Load texture
+        Texture texture{"textures/concrete.jpg"};
+
         // Create model and add to display
-        Model square{program, vertices, indices};
+        Model square{program, texture, vertices, indices};
         display.registerModel(&square);
 
         // Render loop

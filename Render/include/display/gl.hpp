@@ -24,8 +24,13 @@
 /** Abstractions over specific OpenGL function calls to avoid redundant state changes */
 namespace gl
 {
+    // Allow caching - bound to global instance
     static inline void useProgram(unsigned int handle)             { UNBIND_ESCAPE CACHE_ESCAPE glUseProgram(handle);                          }
     static inline void bindVertexArray(unsigned int handle)        { UNBIND_ESCAPE CACHE_ESCAPE glBindVertexArray(handle);                     }
     static inline void bindArrayBuffer(unsigned int handle)        { UNBIND_ESCAPE CACHE_ESCAPE glBindBuffer(GL_ARRAY_BUFFER, handle);         }
     static inline void bindElementArrayBuffer(unsigned int handle) { UNBIND_ESCAPE CACHE_ESCAPE glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle); }
+    static inline void activeTexture(unsigned int handle)          { UNBIND_ESCAPE CACHE_ESCAPE glActiveTexture(handle);                       }
+    
+    // Disallow caching - binding environment can change
+    static inline void bindTexture2D(unsigned int handle)          { UNBIND_ESCAPE glBindTexture(GL_TEXTURE_2D, handle); }
 }

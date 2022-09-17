@@ -22,6 +22,8 @@ set(GLAD_INCLUDE vendor/glad-4.6-core/include)
 set(GLFW_INCLUDE vendor/glfw-3.3.8/include)
 set(GLFW_BIN     vendor/glfw-3.3.8/bin/x64/debug)
 
+set(STBI_INCLUDE vendor/stb_image/include)
+
 # ===== BUILDSCRIPT =====
 
 # --- Render Library ---
@@ -32,6 +34,7 @@ target_sources(Render
     Render/src/display/display.cpp
     Render/src/model/model.cpp
     Render/src/shader/program.cpp
+    Render/src/texture/texture.cpp
     PRIVATE # Vendor
         ${GLAD_SRC}/glad.c
 )
@@ -41,6 +44,7 @@ target_include_directories(Render
     PRIVATE # Vendor
         ${GLAD_INCLUDE}
         ${GLFW_INCLUDE}
+        ${STBI_INCLUDE}
 )
 
 # --- Redshift Application ---

@@ -1,11 +1,13 @@
 
 #version 460 core
  
-in vec3 colour;
+uniform sampler2D tex;
+
+in vec2 vTexPos;
 
 out vec4 fragColour;
 
 void main()
 {
-    fragColour = vec4(colour, 1.0);
+    fragColour = texture(tex, vTexPos);
 }
