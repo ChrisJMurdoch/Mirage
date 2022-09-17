@@ -2,8 +2,7 @@
 #include "model/model.hpp"
 
 #include "shader/program.hpp"
-
-#include <glad/glad.h>
+#include "display/gl.hpp"
 
 Model::Model(Program const &program, std::vector<Vec3> const &vertices, std::vector<unsigned int> const &indices) : program(program)
 {
@@ -13,11 +12,11 @@ Model::Model(Program const &program, std::vector<Vec3> const &vertices, std::vec
     glGenBuffers(1, &ebo);
 
     // Bind VAO
-    glBindVertexArray(vao);
+    gl::bindVertexArray(vao);
     
     // Bind buffers to VAO
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    gl::bindArrayBuffer(vbo);
+    gl::bindElementArrayBuffer(ebo);
 
     // Copy over data
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0])*vertices.size(), vertices.data(), GL_STATIC_DRAW);
@@ -28,7 +27,7 @@ Model::Model(Program const &program, std::vector<Vec3> const &vertices, std::vec
     glEnableVertexAttribArray(0);
 
     // Unbind
-    glBindVertexArray(0);
+    gl::bindVertexArray(0);
 }
 
 Model::Model(Model &&other) : program(other.program), vao(other.vao), vbo(other.vbo), ebo(other.ebo)
@@ -49,8 +48,8 @@ void Model::draw() const
 {
     program.use([&]()
     {
-        glBindVertexArray(vao);
+        gl::bindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        gl::bindVertexArray(0);
     });
 }

@@ -1,7 +1,8 @@
 
 #include "shader/program.hpp"
 
-#include <glad/glad.h>
+#include "display/gl.hpp"
+#include "model/model.hpp"
 
 #include <exception>
 #include <fstream>
@@ -72,9 +73,16 @@ Program::~Program()
     glDeleteProgram(handle);
 }
 
+void Program::setUniformVec3(char const *name, Vec3 const &vec3)
+{
+    gl::useProgram(handle);
+    glUniform3f(glGetUniformLocation(handle, name), vec3.x, vec3.y, vec3.z);
+    gl::useProgram(0);
+}
+
 void Program::use(std::function<void()> operation) const
 {
-    glUseProgram(handle);
+    gl::useProgram(handle);
     operation();
-    glUseProgram(0);
+    gl::useProgram(0);
 }

@@ -6,6 +6,8 @@
 #include <vector>
 #include <iostream>
 #include <exception>
+#include <chrono>
+#include <math.h>
 
 std::vector<Vec3> vertices
 {
@@ -36,7 +38,12 @@ int main()
 
         // Render loop
         while(!display.shouldClose())
+        {
+            long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            float blue = (sin(ms*0.001)+1) / 2;
+            program.setUniformVec3("uniformColour", Vec3{1-blue, 0.0f, blue});
             display.render();
+        }
     }
     catch(const std::exception &e)
     {

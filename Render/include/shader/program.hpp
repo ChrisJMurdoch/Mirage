@@ -3,6 +3,8 @@
 
 #include <functional>
 
+class Vec3;
+
 class Program
 {
 private:
@@ -14,5 +16,6 @@ public:
     Program(Program const &other) = delete;
     Program &operator=(Program const &other) = delete;
 
+    void setUniformVec3(char const *name, Vec3 const &vec3);
     void use(std::function<void()> operation) const;
 };
