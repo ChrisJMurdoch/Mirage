@@ -5,7 +5,7 @@
 
 #include <glad/glad.h>
 
-Model::Model(Program const &program, std::vector<Vec3> vertices, std::vector<unsigned int> indices) : program(program)
+Model::Model(Program const &program, std::vector<Vec3> const &vertices, std::vector<unsigned int> const &indices) : program(program)
 {
     // Generate buffers
     glGenVertexArrays(1, &vao);

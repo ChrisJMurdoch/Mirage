@@ -17,7 +17,7 @@ private:
     unsigned int vao, vbo, ebo;
 
 public:
-    Model(Program const &program, std::vector<Vec3> vertices, std::vector<unsigned int> indices);
+    Model(Program const &program, std::vector<Vec3> const &vertices, std::vector<unsigned int> const &indices);
     Model(Model &&other);
     ~Model();
     Model(Model const &other) = delete;
