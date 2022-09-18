@@ -43,6 +43,7 @@ Display::Display(char const *title, int width, int height)
 
 Display::~Display()
 {
+    glfwDestroyWindow(window);
     glfwTerminate();
 }
 

@@ -43,6 +43,8 @@ int main()
         // Render loop
         while(!display.shouldClose())
             display.render();
+        
+        std::cout << "Application shutting down gracefully." << std::endl;
     }
     catch(const std::exception &e)
     {
