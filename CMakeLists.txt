@@ -42,6 +42,7 @@ target_sources(Render
 target_include_directories(Render
     PRIVATE # Internal
         Render/include/
+        Render/src/ # For .inl files
     PRIVATE # Vendor
         ${GLAD_INCLUDE}
         ${GLFW_INCLUDE}
