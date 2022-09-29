@@ -5,6 +5,9 @@
 #include "display/model.hpp"
 #include "display/geometry.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <exception>
 #include <fstream>
 #include <sstream>
@@ -74,11 +77,19 @@ Program::~Program()
     glDeleteProgram(handle);
 }
 
-void Program::setUniformVec3(char const *name, Vec3 const &vec3)
+void Program::setUniformVec3(char const *name, glm::vec3 const &vec)
 {
     use([&]()
     {
-        glUniform3f(glGetUniformLocation(handle, name), vec3.x, vec3.y, vec3.z);
+        glUniform3f(glGetUniformLocation(handle, name), vec.x, vec.y, vec.z);
+    });
+}
+
+void Program::setUniformMat4(char const *name, glm::mat4 const &mat)
+{
+    use([&]()
+    {
+        glUniformMatrix4fv(glGetUniformLocation(handle, name), 1, GL_FALSE, glm::value_ptr(mat));
     });
 }
 

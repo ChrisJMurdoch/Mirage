@@ -22,6 +22,8 @@ set(GLAD_INCLUDE vendor/glad-4.6-core/include)
 set(GLFW_INCLUDE vendor/glfw-3.3.8/include)
 set(GLFW_BIN     vendor/glfw-3.3.8/bin/x64/debug)
 
+set(GLM_INCLUDE  vendor/glm-9.9.9.8/include)
+
 set(STBI_INCLUDE vendor/stb_image/include)
 
 # ===== BUILDSCRIPT =====
@@ -46,6 +48,7 @@ target_include_directories(Render
     PRIVATE # Vendor
         ${GLAD_INCLUDE}
         ${GLFW_INCLUDE}
+        ${GLM_INCLUDE}
         ${STBI_INCLUDE}
 )
 
@@ -61,6 +64,8 @@ target_include_directories(Redshift
         Redshift/include/
     PRIVATE # Project
         Render/include/
+    PRIVATE # Vendor
+        ${GLM_INCLUDE}
 )
 target_link_libraries(Redshift
     PRIVATE # Project

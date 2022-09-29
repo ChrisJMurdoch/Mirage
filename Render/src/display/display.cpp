@@ -36,6 +36,9 @@ Display::Display(char const *title, int width, int height)
         throw std::exception("gladLoadGLLoader failed.");
     }
 
+    // GL Options
+    glEnable(GL_DEPTH_TEST);
+
     // Size OpenGL viewport to window and setup resize callback
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, resizeCallback);
@@ -60,7 +63,7 @@ void Display::render()
     
     // Clear viewport
     glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render each model
     for (Model const *model : models)

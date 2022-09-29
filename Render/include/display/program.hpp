@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <functional>
+#include <glm/fwd.hpp>
 
-class Vec3;
+#include <functional>
 
 class Program
 {
@@ -16,6 +16,7 @@ public:
     Program(Program const &other) = delete;
     Program &operator=(Program const &other) = delete;
 
-    void setUniformVec3(char const *name, Vec3 const &vec3);
+    void setUniformVec3(char const *name, glm::vec3 const &vec);
+    void setUniformMat4(char const *name, glm::mat4 const &mat);
     void use(std::function<void()> operation) const;
 };
