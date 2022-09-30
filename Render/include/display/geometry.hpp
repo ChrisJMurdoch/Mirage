@@ -1,19 +1,11 @@
 
 #pragma once
 
-struct Vec2
-{
-    float x, y;
-};
-
-struct Vec3
-{
-    float x, y, z;
-};
+#include <glm/glm.hpp>
 
 struct Vertex
 {
-    Vec3 position;
-    Vec2 texturePosition;
+    glm::vec3 position;
+    glm::vec2 texturePosition;
     static void setAttributes();
 };

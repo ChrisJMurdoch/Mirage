@@ -35,6 +35,7 @@ target_sources(Render
     PRIVATE # Internal
     Render/src/display/display.cpp
     Render/src/display/model.cpp
+    Render/src/display/objLoader.cpp
     Render/src/display/program.cpp
     Render/src/display/texture.cpp
     Render/src/display/geometry.cpp
