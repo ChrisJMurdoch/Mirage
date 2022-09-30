@@ -13,7 +13,7 @@
 
 struct Index
 {
-    unsigned int vert, tex;
+    unsigned int vert, tex, norm;
 };
 
 struct Face
@@ -36,6 +36,7 @@ void readData
     char const *filepath,
     std::vector<glm::vec3> &vertCoords,
     std::vector<glm::vec2> &texCoords,
+    std::vector<glm::vec3> &normals,
     std::vector<Face> &faces
 )
 {
@@ -62,6 +63,12 @@ void readData
             stream >> tex.x >> tex.y;
             texCoords.push_back(tex);
         }
+        else if (command=="vn") // Parse normal
+        {
+            glm::vec3 norm;
+            stream >> norm.x >> norm.y >> norm.z;
+            normals.push_back(norm);
+        }
         else if (command=="f") // Parse face
         {
             // Read face vertex strings
@@ -73,9 +80,9 @@ void readData
             faces.push_back
             (
                 {
-                    { static_cast<unsigned int>(std::stoi(s1[0])-1), static_cast<unsigned int>(std::stoi(s1[1])-1) },
-                    { static_cast<unsigned int>(std::stoi(s2[0])-1), static_cast<unsigned int>(std::stoi(s2[1])-1) },
-                    { static_cast<unsigned int>(std::stoi(s3[0])-1), static_cast<unsigned int>(std::stoi(s3[1])-1) }
+                    { static_cast<unsigned int>(std::stoi(s1[0])-1), static_cast<unsigned int>(std::stoi(s1[1])-1), static_cast<unsigned int>(std::stoi(s1[2])-1) },
+                    { static_cast<unsigned int>(std::stoi(s2[0])-1), static_cast<unsigned int>(std::stoi(s2[1])-1), static_cast<unsigned int>(std::stoi(s2[2])-1) },
+                    { static_cast<unsigned int>(std::stoi(s3[0])-1), static_cast<unsigned int>(std::stoi(s3[1])-1), static_cast<unsigned int>(std::stoi(s3[2])-1) }
                 }
             );
         }
@@ -89,20 +96,21 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
     // Load raw data from obj
     std::vector<glm::vec3> vertCoords;
     std::vector<glm::vec2> texCoords;
+    std::vector<glm::vec3> normals;
     std::vector<Face> faces;
-    readData(filepath, vertCoords, texCoords, faces);
+    readData(filepath, vertCoords, texCoords, normals, faces);
 
     auto processStart = std::chrono::system_clock::now();
 
     // Map (vertIndex, texIndex) -> generated index
-    std::unordered_map<unsigned int, std::unordered_map<unsigned int, unsigned int>> indexMap;
+    std::unordered_map<unsigned int, std::unordered_map<unsigned int, std::unordered_map<unsigned int, unsigned int>>> indexMap;
 
     // Create placeholder generated index mapping for each index permutation
     for (Face const &face : faces)
     {
-        indexMap[face.a.vert][face.a.tex] = 0;
-        indexMap[face.b.vert][face.b.tex] = 0;
-        indexMap[face.c.vert][face.c.tex] = 0;
+        indexMap[face.a.vert][face.a.tex][face.a.norm] = 0;
+        indexMap[face.b.vert][face.b.tex][face.b.norm] = 0;
+        indexMap[face.c.vert][face.c.tex][face.c.norm] = 0;
     }
 
     // Generate vertex for each unique generated index
@@ -111,8 +119,11 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
     {
         for ( auto &texEntry : indexMap[vertEntry.first] )
         {
-            vertices.push_back( {vertCoords[vertEntry.first], texCoords[texEntry.first]} );
-            texEntry.second = vertices.size() - 1;
+            for ( auto &normEntry : indexMap[vertEntry.first][texEntry.first] )
+            {
+                vertices.push_back( {vertCoords[vertEntry.first], texCoords[texEntry.first], normals[normEntry.first]} );
+                normEntry.second = vertices.size() - 1;
+            }
         }
     }
 
@@ -120,9 +131,9 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
     std::vector<unsigned int> indices;
     for (Face const &face : faces)
     {
-        indices.push_back(indexMap[face.a.vert][face.a.tex]);
-        indices.push_back(indexMap[face.b.vert][face.b.tex]);
-        indices.push_back(indexMap[face.c.vert][face.c.tex]);
+        indices.push_back(indexMap[face.a.vert][face.a.tex][face.a.norm]);
+        indices.push_back(indexMap[face.b.vert][face.b.tex][face.b.norm]);
+        indices.push_back(indexMap[face.c.vert][face.c.tex][face.c.norm]);
     }
 
     auto processEnd = std::chrono::system_clock::now();
@@ -134,7 +145,7 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
         std::cout << " - Duration:   ";
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processStart-loadStart).count() << "ms(reading) + ";
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-processStart).count() << "ms(processing)" << std::endl;
-        std::cout << " - Processing: Converted " << vertCoords.size() <<  "/" << texCoords.size() << " OBJ-format vertices -> ";
+        std::cout << " - Processing: Converted " << vertCoords.size() <<  "/" << texCoords.size()  <<  "/" << normals.size() << " OBJ-format vertices -> ";
         std::cout << vertices.size() << " OpenGL-format vertices" << std::endl << std::endl;
     }
 
