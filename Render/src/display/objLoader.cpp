@@ -9,6 +9,7 @@
 #include <sstream>
 #include <iostream>
 #include <unordered_map>
+#include <chrono>
 
 struct Index
 {
@@ -81,13 +82,17 @@ void readData
     }
 }
 
-std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(char const *filepath)
+std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(char const *filepath, bool const verbose)
 {
+    auto loadStart = std::chrono::system_clock::now();
+
     // Load raw data from obj
     std::vector<glm::vec3> vertCoords;
     std::vector<glm::vec2> texCoords;
     std::vector<Face> faces;
     readData(filepath, vertCoords, texCoords, faces);
+
+    auto processStart = std::chrono::system_clock::now();
 
     // Map (vertIndex, texIndex) -> generated index
     std::unordered_map<unsigned int, std::unordered_map<unsigned int, unsigned int>> indexMap;
@@ -118,6 +123,19 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
         indices.push_back(indexMap[face.a.vert][face.a.tex]);
         indices.push_back(indexMap[face.b.vert][face.b.tex]);
         indices.push_back(indexMap[face.c.vert][face.c.tex]);
+    }
+
+    auto processEnd = std::chrono::system_clock::now();
+
+    // Report load statistics
+    if (verbose)
+    {
+        std::cout << "Loaded " << filepath << ":" << std::endl;
+        std::cout << " - Duration:   ";
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processStart-loadStart).count() << "ms(reading) + ";
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-processStart).count() << "ms(processing)" << std::endl;
+        std::cout << " - Processing: Converted " << vertCoords.size() <<  "/" << texCoords.size() << " OBJ-format vertices -> ";
+        std::cout << vertices.size() << " OpenGL-format vertices" << std::endl << std::endl;
     }
 
     return std::pair{vertices, indices};

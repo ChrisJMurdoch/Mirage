@@ -25,7 +25,7 @@ int main()
         Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
         // Load geometry
-        std::pair<std::vector<Vertex>, std::vector<unsigned int>> objData = objLoader::loadObj("resources/models/shed.obj");
+        std::pair<std::vector<Vertex>, std::vector<unsigned int>> objData = objLoader::loadObj("resources/models/shed.obj", true);
 
         // Load texture
         Texture texture{"resources/textures/concrete.jpg"};
