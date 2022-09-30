@@ -14,7 +14,22 @@
 struct Index
 {
     unsigned int vert, tex, norm;
+    bool operator==(Index const &other) const
+    {
+        return (vert==other.vert && tex==other.tex && norm==other.norm);
+    }
 };
+namespace std
+{
+    template <>
+    struct hash<Index>
+    {
+        std::size_t operator()(Index const &index) const
+        {
+            return ( (hash<unsigned int>()(index.vert) ^ (hash<unsigned int>()(index.tex) << 1)) >> 1) ^ (hash<unsigned int>()(index.norm) << 1 );
+        }
+    };
+}
 
 struct Face
 {
@@ -103,37 +118,31 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
     auto processStart = std::chrono::system_clock::now();
 
     // Map (vertIndex, texIndex) -> generated index
-    std::unordered_map<unsigned int, std::unordered_map<unsigned int, std::unordered_map<unsigned int, unsigned int>>> indexMap;
+    std::unordered_map<Index, unsigned int> indexMap;
 
     // Create placeholder generated index mapping for each index permutation
     for (Face const &face : faces)
     {
-        indexMap[face.a.vert][face.a.tex][face.a.norm] = 0;
-        indexMap[face.b.vert][face.b.tex][face.b.norm] = 0;
-        indexMap[face.c.vert][face.c.tex][face.c.norm] = 0;
+        indexMap[face.a] = 0;
+        indexMap[face.b] = 0;
+        indexMap[face.c] = 0;
     }
 
     // Generate vertex for each unique generated index
     std::vector<Vertex> vertices;
-    for ( auto const &vertEntry : indexMap )
+    for ( auto &entry : indexMap )
     {
-        for ( auto &texEntry : indexMap[vertEntry.first] )
-        {
-            for ( auto &normEntry : indexMap[vertEntry.first][texEntry.first] )
-            {
-                vertices.push_back( {vertCoords[vertEntry.first], texCoords[texEntry.first], normals[normEntry.first]} );
-                normEntry.second = vertices.size() - 1;
-            }
-        }
+        vertices.push_back( {vertCoords[entry.first.vert], texCoords[entry.first.tex], normals[entry.first.norm]} );
+        entry.second = vertices.size() - 1;
     }
 
     // Generate index list using previous mapping
     std::vector<unsigned int> indices;
     for (Face const &face : faces)
     {
-        indices.push_back(indexMap[face.a.vert][face.a.tex][face.a.norm]);
-        indices.push_back(indexMap[face.b.vert][face.b.tex][face.b.norm]);
-        indices.push_back(indexMap[face.c.vert][face.c.tex][face.c.norm]);
+        indices.push_back(indexMap[face.a]);
+        indices.push_back(indexMap[face.b]);
+        indices.push_back(indexMap[face.c]);
     }
 
     auto processEnd = std::chrono::system_clock::now();
