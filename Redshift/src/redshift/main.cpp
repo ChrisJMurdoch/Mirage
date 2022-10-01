@@ -37,13 +37,16 @@ int main()
         display.registerModel(&square);
 
         // Render loop
-        float t = 0;
+        auto lastTick = std::chrono::system_clock::now();
         while(!display.shouldClose())
         {
+            // Seconds since last frame start
+            float deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - lastTick).count() / 1000000.0f;
+
             // Create matrices
-            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(t+=1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(0.8f));
-            glm::mat4 view  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.95f, -3.0f));
+            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(deltaTime*60), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.2f));
+            glm::mat4 view  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -3.0f));
             glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
             // Send to GPU

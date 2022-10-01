@@ -5,3 +5,7 @@
 # _ Build
 /_.bat
 /_/
+
+# Higher-resolution textures
+/resources/models/*/textures/4k/
+/resources/models/*/textures/8k/

@@ -7,15 +7,15 @@
 
 void Vertex::setAttributes()
 {
-    // Position (vec3)
-    glVertexAttribPointer( 0, sizeof(position)/sizeof(float),        GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, position))        );
-    glEnableVertexAttribArray(0);
+    Vertex::setFloatAttr( 0, sizeof(position), offsetof(Vertex, position) );
+    Vertex::setFloatAttr( 1, sizeof(texturePosition), offsetof(Vertex, texturePosition) );
+    Vertex::setFloatAttr( 2, sizeof(normal), offsetof(Vertex, normal) );
+    Vertex::setFloatAttr( 3, sizeof(tangent), offsetof(Vertex, tangent) );
+    Vertex::setFloatAttr( 4, sizeof(bitangent), offsetof(Vertex, bitangent) );
+}
 
-    // Texture Position (vec2)
-    glVertexAttribPointer( 1, sizeof(texturePosition)/sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, texturePosition)) );
-    glEnableVertexAttribArray(1);
-
-    // Normal Position (vec3)
-    glVertexAttribPointer( 2, sizeof(normal)/sizeof(float),          GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, normal))          );
-    glEnableVertexAttribArray(2);
+void Vertex::setFloatAttr(unsigned int position, std::size_t size, std::size_t offset)
+{
+    glVertexAttribPointer(position, size/sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offset));
+    glEnableVertexAttribArray(position);
 }

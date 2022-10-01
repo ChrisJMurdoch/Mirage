@@ -162,11 +162,11 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
         indexMap[triangle.c] = 0;
     }
 
-    // Generate vertex for each unique generated index
+    // Generate vertex for each unique generated index (leave tangents and bitangents for later)
     std::vector<Vertex> vertices;
     for ( auto &entry : indexMap )
     {
-        vertices.push_back( {vertCoords[entry.first.vert], texCoords[entry.first.tex], normals[entry.first.norm]} );
+        vertices.push_back( {vertCoords[entry.first.vert], texCoords[entry.first.tex], normals[entry.first.norm], glm::vec3{}, glm::vec3{}} );
         entry.second = vertices.size() - 1;
     }
 
@@ -177,6 +177,45 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
         indices.push_back(indexMap[triangle.a]);
         indices.push_back(indexMap[triangle.b]);
         indices.push_back(indexMap[triangle.c]);
+    }
+
+    // Calculate tangents and bitangents
+    {
+        std::unordered_map<unsigned int, unsigned int> vertexOccurrences;
+
+        // Accumulate tangents and bitangents
+        for (int i=0; i<indices.size(); i+=3)
+        {
+            // Get triangle corners
+            unsigned int i1=indices[i+0], i2=indices[i+1], i3=indices[i+2];
+            Vertex &v1=vertices[i1], &v2=vertices[i2], &v3=vertices[i3];
+
+            // Increment occurrences
+            vertexOccurrences[i1]++;
+            vertexOccurrences[i2]++;
+            vertexOccurrences[i3]++;
+
+            // Calculate tangent and bitangent
+            glm::vec3 posDelta1 = v2.position - v1.position;
+            glm::vec3 posDelta2 = v3.position - v1.position;
+            glm::vec2 texDelta1 = v2.texturePosition - v1.texturePosition;
+            glm::vec2 texDelta2 = v3.texturePosition - v1.texturePosition;
+            float r = 1.0 / (texDelta1.x * texDelta2.y - texDelta1.y * texDelta2.x);
+            glm::vec3 tangent = (posDelta1 * texDelta2.y - posDelta2 * texDelta1.y) * r;
+            glm::vec3 bitangent = (posDelta2 * texDelta1.x - posDelta1 * texDelta2.x) * r;
+
+            // Increment vertex accumulations
+            v1.tangent += tangent; v2.tangent += tangent; v3.tangent += tangent;
+            v1.bitangent += bitangent; v2.bitangent += bitangent; v3.bitangent += bitangent;
+        }
+
+        // Divide accumulations into averaged values
+        for (int i=0; i<vertices.size(); i++)
+        {
+            int occurrences = vertexOccurrences[i];
+            vertices[i].tangent /= occurrences;
+            vertices[i].bitangent /= occurrences;
+        }
     }
 
     auto processEnd = std::chrono::system_clock::now();
