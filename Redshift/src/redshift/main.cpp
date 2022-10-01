@@ -24,17 +24,21 @@ int main()
         // Compile shaders into program
         Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
-        // Load geometry
-        std::pair<std::vector<Vertex>, std::vector<unsigned int>> objData = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", true);
+        // Load floor model
+        std::pair<std::vector<Vertex>, std::vector<unsigned int>> floorMesh = objLoader::loadObj("resources/models/floor/floor.obj", true);
+        Texture floorAlbedo{"resources/models/floor/textures/2k/albedo.jpg"};
+        Texture floorNormal{"resources/models/floor/textures/2k/normal.jpg"};
+        Texture floorRoughness{"resources/models/floor/textures/2k/roughness.jpg"};
+        Model floor{program, floorMesh.first, floorMesh.second, &floorAlbedo, &floorNormal, &floorRoughness};
+        display.registerModel(&floor);
 
-        // Load texture
-        Texture albedo{"resources/models/gargoyle/textures/2k/albedo.jpg"};
-        Texture normal{"resources/models/gargoyle/textures/2k/normal.jpg"};
-        Texture roughness{"resources/models/gargoyle/textures/2k/roughness.jpg"};
-
-        // Create model and add to display
-        Model square{program, objData.first, objData.second, &albedo, &normal, &roughness};
-        display.registerModel(&square);
+        // Load gargoyle model
+        std::pair<std::vector<Vertex>, std::vector<unsigned int>> gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", true);
+        Texture gargoyleAlbedo{"resources/models/gargoyle/textures/2k/albedo.jpg"};
+        Texture gargoyleNormal{"resources/models/gargoyle/textures/2k/normal.jpg"};
+        Texture gargoyleRoughness{"resources/models/gargoyle/textures/2k/roughness.jpg"};
+        Model gargoyle{program, gargoyleMesh.first, gargoyleMesh.second, &gargoyleAlbedo, &gargoyleNormal, &gargoyleRoughness};
+        display.registerModel(&gargoyle);
 
         // Render loop
         auto lastTick = std::chrono::system_clock::now();
