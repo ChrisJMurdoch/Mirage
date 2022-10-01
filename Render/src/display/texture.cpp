@@ -20,8 +20,8 @@ Texture::Texture(char const *filepath)
     if (data==nullptr)
         throw std::exception("stbi_load failed.");
 
-    // Bind
-    use(GL_TEXTURE0, [&]()
+    // Bind (doesn't matter which channel)
+    use(Channel::Albedo, [&]()
     {
         // Texture options
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -45,11 +45,25 @@ Texture::~Texture()
     glDeleteTextures(1, &handle);
 }
 
-void Texture::use(unsigned int channel, std::function<void()> operation) const
+void Texture::use(Channel channel, std::function<void()> operation) const
 {
     gl::activeTexture(channel);
     gl::bindTexture2D(handle);
     operation();
+    gl::bindTexture2D(0);
+    gl::activeTexture(0);
+}
+
+void Texture::bind(Channel channel) const
+{
+    gl::activeTexture(channel);
+    gl::bindTexture2D(handle);
+    gl::activeTexture(0);
+}
+
+void Texture::unbind(Channel channel) const
+{
+    gl::activeTexture(channel);
     gl::bindTexture2D(0);
     gl::activeTexture(0);
 }

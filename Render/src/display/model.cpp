@@ -8,7 +8,8 @@
 
 #include <iostream>
 
-Model::Model(Program const &program, Texture const &texture, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices) : program(program), texture(texture), nIndices(indices.size())
+Model::Model(Program const &program, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices, Texture const *albedo, Texture const *normal, Texture const *roughness)
+    : program(program), albedo(albedo), normal(normal), roughness(roughness), nIndices(indices.size())
 {
     // Generate buffers
     glGenVertexArrays(1, &vao);
@@ -33,7 +34,8 @@ Model::Model(Program const &program, Texture const &texture, std::vector<Vertex>
     gl::bindVertexArray(0);
 }
 
-Model::Model(Model &&other) : program(other.program), texture(texture), nIndices(other.nIndices), vao(other.vao), vbo(other.vbo), ebo(other.ebo)
+Model::Model(Model &&other)
+    : program(other.program), albedo(other.albedo), normal(other.normal), roughness(other.roughness), nIndices(other.nIndices), vao(other.vao), vbo(other.vbo), ebo(other.ebo)
 {
     other.vao = 0;
     other.vbo = 0;
@@ -51,11 +53,16 @@ void Model::draw() const
 {
     program.use([&]()
     {
-        texture.use(GL_TEXTURE0, [&]()
+        if (albedo) albedo->bind(Texture::Channel::Albedo);
+        if (normal) normal->bind(Texture::Channel::Normal);
+        if (roughness) roughness->bind(Texture::Channel::Roughness);
         {
             gl::bindVertexArray(vao);
             glDrawElements(GL_TRIANGLES, nIndices, GL_UNSIGNED_INT, 0);
             gl::bindVertexArray(0);
-        });
+        }
+        if (roughness) roughness->unbind(Texture::Channel::Roughness);
+        if (normal) normal->unbind(Texture::Channel::Normal);
+        if (albedo) albedo->unbind(Texture::Channel::Albedo);
     });
 }

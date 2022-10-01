@@ -4,6 +4,7 @@
 #include "display/gl.hpp"
 #include "display/model.hpp"
 #include "display/geometry.hpp"
+#include "display/texture.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -69,7 +70,15 @@ Program::Program(char const *vertexShaderPath, char const *fragmentShaderPath)
 
     // Clean up shaders
     glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);  
+    glDeleteShader(fragmentShader);
+
+    // Set up PBR texture unit locations
+    use([&]()
+    {
+        glUniform1i(glGetUniformLocation(handle, "albedo"),    Texture::Channel::Albedo    - Texture::Channel::Albedo);
+        glUniform1i(glGetUniformLocation(handle, "normal"),    Texture::Channel::Normal    - Texture::Channel::Albedo);
+        glUniform1i(glGetUniformLocation(handle, "roughness"), Texture::Channel::Roughness - Texture::Channel::Albedo);
+    });
 }
 
 Program::~Program()
