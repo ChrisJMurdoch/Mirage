@@ -25,10 +25,10 @@ int main()
         Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
         // Load geometry
-        std::pair<std::vector<Vertex>, std::vector<unsigned int>> objData = objLoader::loadObj("resources/models/shed.obj", true);
+        std::pair<std::vector<Vertex>, std::vector<unsigned int>> objData = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", true);
 
         // Load texture
-        Texture texture{"resources/textures/concrete.jpg"};
+        Texture texture{"resources/models/gargoyle/textures/2k/albedo.jpg"};
 
         // Create model and add to display
         Model square{program, texture, objData.first, objData.second};
@@ -39,9 +39,9 @@ int main()
         while(!display.shouldClose())
         {
             // Create matrices
-            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(t+=0.2f), glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(0.1f));
-            glm::mat4 view  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.7f, -3.0f));
+            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(t+=0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(0.8f));
+            glm::mat4 view  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.95f, -3.0f));
             glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
             // Send to GPU

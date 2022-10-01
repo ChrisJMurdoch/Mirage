@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <chrono>
 
+/// Hashkey-compatible struct used for OBJ-style vertex data indices
 struct Index
 {
     unsigned int vert, tex, norm;
@@ -31,21 +32,34 @@ namespace std
     };
 }
 
+/// OBJ-format face
 struct Face
+{
+    std::vector<Index> indices;
+};
+
+/// OpenGL-format triangle
+struct Triangle
 {
     Index a, b, c;
 };
 
-std::vector<std::string> split(std::string const &in, char const delimiter)
+/// Split string/stream into vector using provided delimiter 
+std::vector<std::string> split(std::istringstream &stream, char const delimiter)
 {
     std::vector<std::string> out;
-    std::stringstream stream(in);
     std::string word;
     while(std::getline(stream, word, delimiter))
         out.push_back(word);
     return out;
 }
+std::vector<std::string> split(std::string const &in, char const delimiter)
+{
+    std::istringstream stream(in);
+    return split(stream, delimiter);
+}
 
+/// Read OBJ-format data into vectors
 void readData
 (
     char const *filepath,
@@ -60,7 +74,7 @@ void readData
     std::string line;
     while (std::getline(file, line))
     {
-        // Parse line using string stream
+        // Parse line using stream
         std::istringstream stream(line);
 
         // Switch on first character of line
@@ -86,22 +100,39 @@ void readData
         }
         else if (command=="f") // Parse face
         {
-            // Read face vertex strings
-            std::string f1, f2, f3;
-            stream >> f1 >> f2 >> f3;
-            std::vector<std::string> s1=split(f1, '/'), s2=split(f2, '/'), s3=split(f3, '/');
+            Face face{};
 
-            // Construct face
-            faces.push_back
-            (
-                {
-                    { static_cast<unsigned int>(std::stoi(s1[0])-1), static_cast<unsigned int>(std::stoi(s1[1])-1), static_cast<unsigned int>(std::stoi(s1[2])-1) },
-                    { static_cast<unsigned int>(std::stoi(s2[0])-1), static_cast<unsigned int>(std::stoi(s2[1])-1), static_cast<unsigned int>(std::stoi(s2[2])-1) },
-                    { static_cast<unsigned int>(std::stoi(s3[0])-1), static_cast<unsigned int>(std::stoi(s3[1])-1), static_cast<unsigned int>(std::stoi(s3[2])-1) }
-                }
-            );
+            // Process each index in face
+            for (std::string code : split(stream, ' '))
+            {
+                // Split index into vert/tex/norm components
+                std::vector<std::string> vals=split(code, '/');
+                if (vals.size()<3)
+                    continue;
+                
+                // Add index to face
+                face.indices.push_back( Index
+                    {
+                        static_cast<unsigned int>(std::stoi(vals[0])-1), static_cast<unsigned int>(std::stoi(vals[1])-1), static_cast<unsigned int>(std::stoi(vals[2])-1)
+                    }
+                );
+            }
+
+            // Add face to vector
+            faces.push_back(face);
         }
     }
+}
+
+/// Convert OBJ-format faces into OpenGL-compatible triangles using fan method
+std::vector<Triangle> triangulate(std::vector<Face> const &faces)
+{
+    std::vector<Triangle> triangles;
+    for (Face const &face : faces) // For each face
+        for (int i=1; i<face.indices.size()-1; i++) // Use fan method to split face into individual triangles
+            triangles.push_back( Triangle{ face.indices[i], face.indices[i+1], face.indices[0] } );
+    
+    return triangles;
 }
 
 std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(char const *filepath, bool const verbose)
@@ -117,15 +148,18 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
 
     auto processStart = std::chrono::system_clock::now();
 
+    // Triangulate faces
+    std::vector<Triangle> triangles = triangulate(faces);
+
     // Map (vertIndex, texIndex) -> generated index
     std::unordered_map<Index, unsigned int> indexMap;
 
     // Create placeholder generated index mapping for each index permutation
-    for (Face const &face : faces)
+    for (Triangle const &triangle : triangles)
     {
-        indexMap[face.a] = 0;
-        indexMap[face.b] = 0;
-        indexMap[face.c] = 0;
+        indexMap[triangle.a] = 0;
+        indexMap[triangle.b] = 0;
+        indexMap[triangle.c] = 0;
     }
 
     // Generate vertex for each unique generated index
@@ -138,11 +172,11 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
 
     // Generate index list using previous mapping
     std::vector<unsigned int> indices;
-    for (Face const &face : faces)
+    for (Triangle const &triangle : triangles)
     {
-        indices.push_back(indexMap[face.a]);
-        indices.push_back(indexMap[face.b]);
-        indices.push_back(indexMap[face.c]);
+        indices.push_back(indexMap[triangle.a]);
+        indices.push_back(indexMap[triangle.b]);
+        indices.push_back(indexMap[triangle.c]);
     }
 
     auto processEnd = std::chrono::system_clock::now();
@@ -154,6 +188,8 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
         std::cout << " - Duration:   ";
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processStart-loadStart).count() << "ms(reading) + ";
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-processStart).count() << "ms(processing)" << std::endl;
+        std::cout << " - Processing: Converted " << faces.size() << " OBJ-format faces -> ";
+        std::cout << triangles.size() << " OpenGL-format triangles" << std::endl;
         std::cout << " - Processing: Converted " << vertCoords.size() <<  "/" << texCoords.size()  <<  "/" << normals.size() << " OBJ-format vertices -> ";
         std::cout << vertices.size() << " OpenGL-format vertices" << std::endl << std::endl;
     }
