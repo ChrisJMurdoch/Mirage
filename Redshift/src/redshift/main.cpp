@@ -25,18 +25,18 @@ int main()
         Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
         // Load floor model
-        std::pair<std::vector<Vertex>, std::vector<unsigned int>> floorMesh = objLoader::loadObj("resources/models/floor/floor.obj", true);
-        Texture floorAlbedo{"resources/models/floor/textures/2k/albedo.jpg", true};
-        Texture floorNormal{"resources/models/floor/textures/2k/normal.jpg", true};
-        Texture floorRoughness{"resources/models/floor/textures/2k/roughness.jpg", true};
+        std::pair<std::vector<Vertex>, std::vector<unsigned int>> floorMesh = objLoader::loadObj("resources/models/floor/floor.obj");
+        Texture floorAlbedo{"resources/models/floor/textures/2k/albedo.jpg"};
+        Texture floorNormal{"resources/models/floor/textures/2k/normal.jpg"};
+        Texture floorRoughness{"resources/models/floor/textures/2k/roughness.jpg"};
         Model floor{program, floorMesh.first, floorMesh.second, &floorAlbedo, &floorNormal, &floorRoughness};
         display.registerModel(&floor);
 
         // Load gargoyle model
         std::pair<std::vector<Vertex>, std::vector<unsigned int>> gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", true);
         Texture gargoyleAlbedo{"resources/models/gargoyle/textures/2k/albedo.jpg", true};
-        Texture gargoyleNormal{"resources/models/gargoyle/textures/2k/normal.jpg", true};
-        Texture gargoyleRoughness{"resources/models/gargoyle/textures/2k/roughness.jpg", true};
+        Texture gargoyleNormal{"resources/models/gargoyle/textures/2k/normal.jpg"};
+        Texture gargoyleRoughness{"resources/models/gargoyle/textures/2k/roughness.jpg"};
         Model gargoyle{program, gargoyleMesh.first, gargoyleMesh.second, &gargoyleAlbedo, &gargoyleNormal, &gargoyleRoughness};
         display.registerModel(&gargoyle);
 

@@ -44,19 +44,60 @@ struct Triangle
     Index a, b, c;
 };
 
-/// Split string/stream into vector using provided delimiter 
-std::vector<std::string> split(std::istringstream &stream, char const delimiter)
+glm::vec3 readVec3(char const *line)
 {
-    std::vector<std::string> out;
-    std::string word;
-    while(std::getline(stream, word, delimiter))
-        out.push_back(word);
-    return out;
+    glm::vec3 vec{};
+    char const *next = line;
+
+    vec.x = std::stof(next);
+    next = strchr(next, ' ') + 1;
+    vec.y = std::stof(next);
+    next = strchr(next, ' ') + 1;
+    vec.z = std::stof(next);
+
+    return vec;
 }
-std::vector<std::string> split(std::string const &in, char const delimiter)
+
+glm::vec2 readVec2(char const *line)
 {
-    std::istringstream stream(in);
-    return split(stream, delimiter);
+    glm::vec2 vec{};
+    char const *next = line;
+
+    vec.x = std::stof(next);
+    next = strchr(next, ' ') + 1;
+    vec.y = std::stof(next);
+
+    return vec;
+}
+
+Index readIndex(char const *start)
+{
+    Index index{};
+    char const *next = start;
+
+    index.vert = std::stoi(next) - 1;
+    next = strchr(next, '/') + 1;
+    index.tex = std::stoi(next) - 1;
+    next = strchr(next, '/') + 1;
+    index.norm = std::stoi(next) - 1;
+
+    return index;
+}
+
+Face readFace(char const *line)
+{
+    std::vector<Index> indices;
+    char const *word = line;
+
+    while(word!=nullptr)
+    {
+        indices.push_back( readIndex(word) );
+
+        word = strchr(word, ' ');
+        if (word!=nullptr) word++;
+    }
+
+    return Face{indices};
 }
 
 /// Read OBJ-format data into vectors
@@ -74,53 +115,24 @@ void readData
     std::string line;
     while (std::getline(file, line))
     {
-        // Parse line using stream
-        std::istringstream stream(line);
+        // Get character pointer
+        char const *lPtr = line.c_str();
 
-        // Switch on first character of line
-        std::string command;
-        stream >> command;
-        if (command=="v") // Parse vertex coordinate
-        {
-            glm::vec3 vec;
-            stream >> vec.x >> vec.y >> vec.z;
-            vertCoords.push_back(vec);
-        }
-        else if (command=="vt") // Parse texture coordinate
-        {
-            glm::vec2 tex;
-            stream >> tex.x >> tex.y;
-            texCoords.push_back(tex);
-        }
-        else if (command=="vn") // Parse normal
-        {
-            glm::vec3 norm;
-            stream >> norm.x >> norm.y >> norm.z;
-            normals.push_back(norm);
-        }
-        else if (command=="f") // Parse face
-        {
-            Face face{};
-
-            // Process each index in face
-            for (std::string code : split(stream, ' '))
-            {
-                // Split index into vert/tex/norm components
-                std::vector<std::string> vals=split(code, '/');
-                if (vals.size()<3)
-                    continue;
-                
-                // Add index to face
-                face.indices.push_back( Index
-                    {
-                        static_cast<unsigned int>(std::stoi(vals[0])-1), static_cast<unsigned int>(std::stoi(vals[1])-1), static_cast<unsigned int>(std::stoi(vals[2])-1)
-                    }
-                );
-            }
-
-            // Add face to vector
-            faces.push_back(face);
-        }
+        // Parse vertex coordinate
+        if ( std::strncmp(lPtr, "v ", 2)==0 ) 
+            vertCoords.push_back( readVec3(&lPtr[2]) );
+        
+        // Parse texture coordinate
+        else if ( std::strncmp(lPtr, "vt ", 3)==0 ) 
+            texCoords.push_back( readVec2(&lPtr[3]) );
+        
+        // Parse normal
+        else if ( std::strncmp(lPtr, "vn ", 3)==0 ) 
+            normals.push_back( readVec3(&lPtr[3]) );
+        
+        // Parse face
+        else if ( std::strncmp(lPtr, "f ", 2)==0 ) 
+            faces.push_back( readFace(&lPtr[2]) );
     }
 }
 
