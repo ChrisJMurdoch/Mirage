@@ -16,7 +16,8 @@
 
 float time()
 {
-    return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000000000.0f;
+    static std::chrono::time_point start = std::chrono::system_clock::now();
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start).count() / 1000000.0f;
 }
 
 int main()
@@ -58,10 +59,16 @@ int main()
             float deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - lastTick).count() / 1000000.0f;
 
             // Create matrices
-            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(deltaTime*60), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(1.2f));
-            glm::mat4 view  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -3.0f));
             glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+            // Create matrices
+            float const radius = 5.0f;
+            glm::vec3 cameraPos = glm::vec3( sin(time())*radius, 1.0f, cos(time())*radius );
+            glm::vec3 cameraTarget = glm::vec3(0.0f, 0.5f, 0.0f);
+            glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
+            glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, up);
 
             // Send to GPU
             program.setUniformMat4("model", model);
@@ -72,7 +79,7 @@ int main()
             display.render();
         }
         
-        std::cout << " === ENGINE DOWN === " << std::endl;
+        std::cout << " === ENGINE SHUTTING DOWN === " << std::endl;
     }
     catch(const std::exception &e)
     {
