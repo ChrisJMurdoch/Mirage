@@ -13,13 +13,14 @@ void resizeCallback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-Display::Display(char const *title, int width, int height)
+Display::Display(char const *title, int width, int height) : visible(false)
 {
     // Initialise GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // Create GLFW window
     if ((window = glfwCreateWindow(width, height, title, nullptr, nullptr)) == NULL)
@@ -57,6 +58,13 @@ bool Display::shouldClose() const
 
 void Display::render()
 {
+    // Show window if hidden
+    if (!visible)
+    {
+        visible=true;
+        glfwShowWindow(window);
+    }
+
     // Poll events
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);

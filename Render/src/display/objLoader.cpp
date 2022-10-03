@@ -235,14 +235,8 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
     // Report load statistics
     if (verbose)
     {
-        std::cout << "Loaded model " << filepath << ":" << std::endl;
-        std::cout << " - Duration:   ";
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processStart-loadStart).count() << "ms(reading) + ";
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-processStart).count() << "ms(processing)" << std::endl;
-        std::cout << " - Processing: Converted " << faces.size() << " OBJ-format faces -> ";
-        std::cout << triangles.size() << " OpenGL-format triangles" << std::endl;
-        std::cout << " - Processing: Converted " << vertCoords.size() <<  "/" << texCoords.size()  <<  "/" << normals.size() << " OBJ-format vertices -> ";
-        std::cout << vertices.size() << " OpenGL-format vertices" << std::endl << std::endl;
+        long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-loadStart).count();
+        std::cout << "Loaded model " << filepath << " (" << ms << "ms)" << std::endl;
     }
 
     return std::pair{vertices, indices};

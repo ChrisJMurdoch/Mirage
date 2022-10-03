@@ -11,6 +11,7 @@ class Display
 private:
     GLFWwindow *window;
     std::unordered_set<Model const *> models;
+    bool visible;
 
 public:
     Display(char const *title, int width, int height);

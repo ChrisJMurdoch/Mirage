@@ -14,8 +14,16 @@
 #include <exception>
 #include <chrono>
 
+float time()
+{
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000000000.0f;
+}
+
 int main()
 {
+
+    std::cout << " === ENGINE STARTING === " << std::endl << std::endl;
+
     try
     {
         // Create OpenGL display
@@ -25,20 +33,22 @@ int main()
         Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
         // Load floor model
-        std::pair<std::vector<Vertex>, std::vector<unsigned int>> floorMesh = objLoader::loadObj("resources/models/floor/floor.obj");
-        Texture floorAlbedo{"resources/models/floor/textures/2k/albedo.jpg"};
-        Texture floorNormal{"resources/models/floor/textures/2k/normal.jpg"};
-        Texture floorRoughness{"resources/models/floor/textures/2k/roughness.jpg"};
+        std::pair<std::vector<Vertex>, std::vector<unsigned int>> floorMesh = objLoader::loadObj("resources/models/floor/floor.obj", true);
+        Texture floorAlbedo{"resources/models/floor/textures/2k/albedo.jpg", true};
+        Texture floorNormal{"resources/models/floor/textures/2k/normal.jpg", true};
+        Texture floorRoughness{"resources/models/floor/textures/2k/roughness.jpg", true};
         Model floor{program, floorMesh.first, floorMesh.second, &floorAlbedo, &floorNormal, &floorRoughness};
         display.registerModel(&floor);
 
         // Load gargoyle model
         std::pair<std::vector<Vertex>, std::vector<unsigned int>> gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", true);
         Texture gargoyleAlbedo{"resources/models/gargoyle/textures/2k/albedo.jpg", true};
-        Texture gargoyleNormal{"resources/models/gargoyle/textures/2k/normal.jpg"};
-        Texture gargoyleRoughness{"resources/models/gargoyle/textures/2k/roughness.jpg"};
+        Texture gargoyleNormal{"resources/models/gargoyle/textures/2k/normal.jpg", true};
+        Texture gargoyleRoughness{"resources/models/gargoyle/textures/2k/roughness.jpg", true};
         Model gargoyle{program, gargoyleMesh.first, gargoyleMesh.second, &gargoyleAlbedo, &gargoyleNormal, &gargoyleRoughness};
         display.registerModel(&gargoyle);
+
+        std::cout << std::endl;
 
         // Render loop
         auto lastTick = std::chrono::system_clock::now();
@@ -62,7 +72,7 @@ int main()
             display.render();
         }
         
-        std::cout << "Application shutting down gracefully." << std::endl;
+        std::cout << " === ENGINE DOWN === " << std::endl;
     }
     catch(const std::exception &e)
     {

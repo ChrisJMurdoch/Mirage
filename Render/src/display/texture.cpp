@@ -46,10 +46,8 @@ Texture::Texture(char const *filepath, bool verbose)
 
     if (verbose)
     {
-        std::cout << "Loaded texture " << filepath << ":" << std::endl;
-        std::cout << " - Duration:   ";
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(bufferStart-loadStart).count() << "ms(reading) + ";
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(bufferEnd-bufferStart).count() << "ms(GPU memcpy)" << std::endl << std::endl;
+        long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(bufferEnd-loadStart).count();
+        std::cout << "Loaded texture " << filepath << " (" << ms << "ms)" << std::endl;
     }
 
     // Free image data
