@@ -223,7 +223,7 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
     // Report load statistics
     if (verbose)
     {
-        std::cout << "Loaded " << filepath << ":" << std::endl;
+        std::cout << "Loaded model " << filepath << ":" << std::endl;
         std::cout << " - Duration:   ";
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processStart-loadStart).count() << "ms(reading) + ";
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-processStart).count() << "ms(processing)" << std::endl;

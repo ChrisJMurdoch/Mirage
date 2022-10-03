@@ -18,7 +18,7 @@ private:
     unsigned int handle;
 
 public:
-    Texture(char const *filepath);
+    Texture(char const *filepath, bool verbose=false);
     ~Texture();
     Texture(Texture const &other) = delete;
     Texture &operator=(Texture const &other) = delete;

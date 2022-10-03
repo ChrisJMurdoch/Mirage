@@ -7,11 +7,15 @@
 #include <stb_image.h>
 
 #include <exception>
+#include <iostream>
+#include <chrono>
 
-Texture::Texture(char const *filepath)
+Texture::Texture(char const *filepath, bool verbose)
 {
     // Generate texture
     glGenTextures(1, &handle);
+
+    auto loadStart = std::chrono::system_clock::now();
 
     // Load from file
     int width, height, channels;
@@ -19,6 +23,8 @@ Texture::Texture(char const *filepath)
     unsigned char *data = stbi_load(filepath, &width, &height, &channels, 0);
     if (data==nullptr)
         throw std::exception("stbi_load failed.");
+
+    auto bufferStart = std::chrono::system_clock::now();
 
     // Bind (doesn't matter which channel)
     use(Channel::Albedo, [&]()
@@ -35,6 +41,16 @@ Texture::Texture(char const *filepath)
         // Generate mipmap
         glGenerateMipmap(GL_TEXTURE_2D);
     });
+    
+    auto bufferEnd = std::chrono::system_clock::now();
+
+    if (verbose)
+    {
+        std::cout << "Loaded texture " << filepath << ":" << std::endl;
+        std::cout << " - Duration:   ";
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(bufferStart-loadStart).count() << "ms(reading) + ";
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(bufferEnd-bufferStart).count() << "ms(GPU memcpy)" << std::endl << std::endl;
+    }
 
     // Free image data
     stbi_image_free(data);
