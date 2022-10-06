@@ -1,8 +1,10 @@
 
+
+#include "utility/objLoader.hpp"
+#include "utility/geometry.hpp"
+
 #include "display/display.hpp"
-#include "display/objLoader.hpp"
 #include "display/mtlLoader.hpp"
-#include "display/geometry.hpp"
 #include "display/program.hpp"
 #include "display/texture.hpp"
 #include "display/model.hpp"

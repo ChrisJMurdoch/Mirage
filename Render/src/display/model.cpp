@@ -1,12 +1,21 @@
 
 #include "display/model.hpp"
 
+#define UTILITY_GL_FUNCTIONS
+#include "utility/geometry.hpp"
+
 #include "display/gl.hpp"
 #include "display/program.hpp"
 #include "display/texture.hpp"
-#include "display/geometry.hpp"
 
 #include <iostream>
+#include <cstddef>
+
+void setFloatAttr(unsigned int position, std::size_t size, std::size_t offset)
+{
+    glVertexAttribPointer(position, size/sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offset));
+    glEnableVertexAttribArray(position);
+}
 
 Model::Model(Program const &program, Mesh const &mesh, Material const &material)
     : program(program), material(material), nIndices(mesh.indices.size())
@@ -28,7 +37,11 @@ Model::Model(Program const &program, Mesh const &mesh, Material const &material)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.indices[0])*mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
 
     // Set attributes
-    Vertex::setAttributes();
+    setFloatAttr( 0, sizeof(Vertex::position), offsetof(Vertex, position) );
+    setFloatAttr( 1, sizeof(Vertex::texturePosition), offsetof(Vertex, texturePosition) );
+    setFloatAttr( 2, sizeof(Vertex::normal), offsetof(Vertex, normal) );
+    setFloatAttr( 3, sizeof(Vertex::tangent), offsetof(Vertex, tangent) );
+    setFloatAttr( 4, sizeof(Vertex::bitangent), offsetof(Vertex, bitangent) );
 
     // Unbind
     gl::bindVertexArray(0);

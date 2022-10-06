@@ -3,7 +3,7 @@
 
 #include "display/gl.hpp"
 #include "display/model.hpp"
-#include "display/geometry.hpp"
+#include "utility/geometry.hpp"
 #include "display/texture.hpp"
 
 #include <glm/glm.hpp>

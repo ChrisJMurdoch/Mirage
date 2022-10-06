@@ -1,7 +1,7 @@
 
-#include "display/objLoader.hpp"
+#include "utility/objLoader.hpp"
 
-#include "display/geometry.hpp"
+#include "utility/geometry.hpp"
 
 #include <fstream>
 #include <sstream>

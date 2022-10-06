@@ -28,6 +28,20 @@ set(STBI_INCLUDE vendor/stb_image/include)
 
 # ===== BUILDSCRIPT =====
 
+# --- Utility Library ---
+
+add_library(Utility STATIC)
+target_sources(Utility
+    PRIVATE # Internal
+        Utility/src/utility/objLoader.cpp
+)
+target_include_directories(Utility
+    PRIVATE # Internal
+        Utility/include/
+    PRIVATE # Vendor
+        ${GLM_INCLUDE}
+)
+
 # --- Render Library ---
 
 add_library(Render STATIC)
@@ -36,10 +50,8 @@ target_sources(Render
     Render/src/display/display.cpp
     Render/src/display/model.cpp
     Render/src/display/mtlLoader.cpp
-    Render/src/display/objLoader.cpp
     Render/src/display/program.cpp
     Render/src/display/texture.cpp
-    Render/src/display/geometry.cpp
     PRIVATE # Vendor
         ${GLAD_SRC}/glad.c
 )
@@ -47,6 +59,8 @@ target_include_directories(Render
     PRIVATE # Internal
         Render/include/
         Render/src/ # For .inl files
+    PRIVATE # Project
+        Utility/include/
     PRIVATE # Vendor
         ${GLAD_INCLUDE}
         ${GLFW_INCLUDE}
@@ -65,12 +79,14 @@ target_include_directories(Redshift
     PRIVATE # Internal
         Redshift/include/
     PRIVATE # Project
+        Utility/include/
         Render/include/
     PRIVATE # Vendor
         ${GLM_INCLUDE}
 )
 target_link_libraries(Redshift
     PRIVATE # Project
+        Utility
         Render
     PRIVATE # Vendor
         ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
@@ -88,12 +104,14 @@ target_include_directories(Beam
     PRIVATE # Internal
         Beam/include/
     PRIVATE # Project
+        Utility/include/
         Render/include/
     PRIVATE # Vendor
         ${STBI_INCLUDE}
 )
 target_link_libraries(Beam
     PRIVATE # Project
+        Utility
         Render
     PRIVATE # Vendor
         ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
