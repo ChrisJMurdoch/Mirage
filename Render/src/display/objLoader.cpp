@@ -146,7 +146,7 @@ std::vector<Triangle> triangulate(std::vector<Face> const &faces)
     return triangles;
 }
 
-std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(char const *filepath, bool const verbose)
+Mesh objLoader::loadObj(char const *filepath, bool const verbose)
 {
     auto loadStart = std::chrono::system_clock::now();
 
@@ -238,5 +238,5 @@ std::pair<std::vector<Vertex>, std::vector<unsigned int>> objLoader::loadObj(cha
         std::cout << "Loaded model " << filepath << " (" << ms << "ms)" << std::endl;
     }
 
-    return std::pair{vertices, indices};
+    return Mesh{vertices, indices};
 }

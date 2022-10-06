@@ -3,6 +3,8 @@
 
 #include <glm/glm.hpp>
 
+#include <vector>
+
 struct Vertex
 {
     glm::vec3 position;
@@ -14,4 +16,10 @@ struct Vertex
 
 private:
     static void setFloatAttr(unsigned int position, std::size_t size, std::size_t offset);
+};
+
+struct Mesh
+{
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
 };

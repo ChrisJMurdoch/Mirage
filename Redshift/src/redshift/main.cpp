@@ -34,17 +34,22 @@ int main()
         // Compile shaders into program
         Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
+        auto start = std::chrono::system_clock::now();
+
         // Load floor model
-        std::pair<std::vector<Vertex>, std::vector<unsigned int>> floorMesh = objLoader::loadObj("resources/models/floor/floor.obj", true);
-        Material floorMaterial = mtlLoader::loadMtl("resources/models/floor/floor.mtl", true);
-        Model floor{program, floorMesh.first, floorMesh.second, floorMaterial};
+        Mesh floorMesh = objLoader::loadObj("resources/models/floor/floor.obj");
+        Material floorMaterial = mtlLoader::loadMtl("resources/models/floor/floor.mtl");
+        Model floor{program, floorMesh, floorMaterial};
         display.registerModel(&floor);
 
         // Load gargoyle model
-        std::pair<std::vector<Vertex>, std::vector<unsigned int>> gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", true);
-        Material gargoyleMaterial = mtlLoader::loadMtl("resources/models/gargoyle/gargoyle.mtl", true);
-        Model gargoyle{program, gargoyleMesh.first, gargoyleMesh.second, gargoyleMaterial};
+        Mesh gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj");
+        Material gargoyleMaterial = mtlLoader::loadMtl("resources/models/gargoyle/gargoyle.mtl");
+        Model gargoyle{program, gargoyleMesh, gargoyleMaterial};
         display.registerModel(&gargoyle);
+
+        auto end = std::chrono::system_clock::now();
+        std::cout << "Loaded models (" << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << "ms)" << std::endl;
 
         std::cout << std::endl;
 

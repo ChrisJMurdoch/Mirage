@@ -8,8 +8,8 @@
 
 #include <iostream>
 
-Model::Model(Program const &program, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices, Material const &material)
-    : program(program), material(material), nIndices(indices.size())
+Model::Model(Program const &program, Mesh const &mesh, Material const &material)
+    : program(program), material(material), nIndices(mesh.indices.size())
 {
     // Generate buffers
     glGenVertexArrays(1, &vao);
@@ -24,8 +24,8 @@ Model::Model(Program const &program, std::vector<Vertex> const &vertices, std::v
     gl::bindElementArrayBuffer(ebo);
 
     // Copy over data
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0])*vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0])*indices.size(), indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mesh.vertices[0])*mesh.vertices.size(), mesh.vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.indices[0])*mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
 
     // Set attributes
     Vertex::setAttributes();

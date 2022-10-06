@@ -5,7 +5,7 @@
 
 class Program;
 struct Material;
-struct Vertex;
+struct Mesh;
 
 class Model
 {
@@ -16,7 +16,7 @@ private:
     int const nIndices;
 
 public:
-    Model(Program const &program, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices, Material const &material);
+    Model(Program const &program, Mesh const &mesh, Material const &material);
     Model(Model &&other);
     ~Model();
     Model(Model const &other) = delete;
