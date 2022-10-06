@@ -2,6 +2,7 @@
 #pragma once
 
 #include <functional>
+#include <optional>
 
 class Texture
 {
@@ -26,4 +27,9 @@ public:
     void use(Channel channel, std::function<void()> operation) const;
     void bind(Channel channel) const;
     void unbind(Channel channel) const;
+};
+
+struct Material
+{
+    std::optional<Texture> const albedo, normal, roughness;
 };

@@ -1,0 +1,4 @@
+
+map_Bump textures/2k/normal.jpg
+map_Kd textures/2k/albedo.jpg
+map_Ns textures/2k/roughness.jpg

@@ -1,6 +1,7 @@
 
 #include "display/display.hpp"
 #include "display/objLoader.hpp"
+#include "display/mtlLoader.hpp"
 #include "display/geometry.hpp"
 #include "display/program.hpp"
 #include "display/texture.hpp"
@@ -35,18 +36,14 @@ int main()
 
         // Load floor model
         std::pair<std::vector<Vertex>, std::vector<unsigned int>> floorMesh = objLoader::loadObj("resources/models/floor/floor.obj", true);
-        Texture floorAlbedo{"resources/models/floor/textures/2k/albedo.jpg", true};
-        Texture floorNormal{"resources/models/floor/textures/2k/normal.jpg", true};
-        Texture floorRoughness{"resources/models/floor/textures/2k/roughness.jpg", true};
-        Model floor{program, floorMesh.first, floorMesh.second, &floorAlbedo, &floorNormal, &floorRoughness};
+        Material floorMaterial = mtlLoader::loadMtl("resources/models/floor/floor.mtl", true);
+        Model floor{program, floorMesh.first, floorMesh.second, floorMaterial};
         display.registerModel(&floor);
 
         // Load gargoyle model
         std::pair<std::vector<Vertex>, std::vector<unsigned int>> gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", true);
-        Texture gargoyleAlbedo{"resources/models/gargoyle/textures/2k/albedo.jpg", true};
-        Texture gargoyleNormal{"resources/models/gargoyle/textures/2k/normal.jpg", true};
-        Texture gargoyleRoughness{"resources/models/gargoyle/textures/2k/roughness.jpg", true};
-        Model gargoyle{program, gargoyleMesh.first, gargoyleMesh.second, &gargoyleAlbedo, &gargoyleNormal, &gargoyleRoughness};
+        Material gargoyleMaterial = mtlLoader::loadMtl("resources/models/gargoyle/gargoyle.mtl", true);
+        Model gargoyle{program, gargoyleMesh.first, gargoyleMesh.second, gargoyleMaterial};
         display.registerModel(&gargoyle);
 
         std::cout << std::endl;
@@ -59,14 +56,14 @@ int main()
             float deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - lastTick).count() / 1000000.0f;
 
             // Create matrices
-            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(1.2f));
+            float height = 1.0f;
+            glm::mat4 model = glm::mat4(1.0f);
             glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
             // Create matrices
-            float const radius = 5.0f;
-            glm::vec3 cameraPos = glm::vec3( sin(time())*radius, 1.0f, cos(time())*radius );
-            glm::vec3 cameraTarget = glm::vec3(0.0f, 0.5f, 0.0f);
+            float const radius = 3.0f;
+            glm::vec3 cameraPos = glm::vec3( sin(time())*radius,height, cos(time())*radius );
+            glm::vec3 cameraTarget = glm::vec3(0.0f, height, 0.0f);
             glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
             glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, up);
 

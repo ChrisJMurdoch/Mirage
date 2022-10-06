@@ -4,20 +4,19 @@
 #include <vector>
 
 class Program;
-class Texture;
+struct Material;
 struct Vertex;
 
 class Model
 {
 private:
     Program const &program;
-    Texture const *const albedo, *const normal, *const roughness;
+    Material const &material;
     unsigned int vao, vbo, ebo;
     int const nIndices;
 
 public:
-    Model(Program const &program, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices,
-          Texture const *albedo=nullptr, Texture const *normal=nullptr, Texture const *roughness=nullptr);
+    Model(Program const &program, std::vector<Vertex> const &vertices, std::vector<unsigned int> const &indices, Material const &material);
     Model(Model &&other);
     ~Model();
     Model(Model const &other) = delete;
