@@ -75,3 +75,26 @@ target_link_libraries(Redshift
     PRIVATE # Vendor
         ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
 )
+
+# --- Beam Application ---
+
+add_executable(Beam)
+target_sources(Beam
+    PRIVATE # Internal
+        Beam/src/beam/main.cpp
+        Beam/src/beam/image.cpp
+)
+target_include_directories(Beam
+    PRIVATE # Internal
+        Beam/include/
+    PRIVATE # Project
+        Render/include/
+    PRIVATE # Vendor
+        ${STBI_INCLUDE}
+)
+target_link_libraries(Beam
+    PRIVATE # Project
+        Render
+    PRIVATE # Vendor
+        ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
+)
