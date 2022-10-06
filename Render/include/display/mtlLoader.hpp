@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "display/texture.hpp"
+struct Material;
 
 namespace mtlLoader
 {

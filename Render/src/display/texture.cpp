@@ -61,6 +61,11 @@ Texture::Texture(char const *filepath, bool verbose)
     stbi_image_free(data);
 }
 
+Texture::Texture(Texture &&other) : handle(other.handle)
+{
+    other.handle = 0;
+}
+
 Texture::~Texture()
 {
     glDeleteTextures(1, &handle);
@@ -88,3 +93,7 @@ void Texture::unbind(Channel channel) const
     gl::bindTexture2D(0);
     gl::activeTexture(0);
 }
+
+Material::Material(std::optional<Texture> &&albedo, std::optional<Texture> &&normal, std::optional<Texture> &&roughness)
+    : albedo{std::move(albedo)}, normal{std::move(normal)}, roughness{std::move(roughness)}
+{ }

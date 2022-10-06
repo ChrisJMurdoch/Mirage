@@ -20,6 +20,7 @@ private:
 
 public:
     Texture(char const *filepath, bool verbose=false);
+    Texture(Texture &&other);
     ~Texture();
     Texture(Texture const &other) = delete;
     Texture &operator=(Texture const &other) = delete;
@@ -31,5 +32,9 @@ public:
 
 struct Material
 {
-    std::optional<Texture> const albedo, normal, roughness;
+    std::optional<Texture> albedo, normal, roughness;
+
+    Material(std::optional<Texture> &&albedo, std::optional<Texture> &&normal, std::optional<Texture> &&roughness);
+    Material(Material const &other) = delete;
+    Material &operator=(Material const &other) = delete;
 };

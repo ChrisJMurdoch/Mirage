@@ -1,6 +1,8 @@
 
 #include "display/mtlLoader.hpp"
 
+#include "display/texture.hpp"
+
 #include <fstream>
 #include <sstream>
 #include <string>
