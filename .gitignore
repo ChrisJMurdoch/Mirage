@@ -1,11 +1,14 @@
 
-# Editor
+# VSCode settings
 /.vscode/
 
-# _ Build
+# _ Build script and artefacts
 /_.bat
 /_/
 
 # Higher-resolution textures
 /resources/models/*/textures/4k/
 /resources/models/*/textures/8k/
+
+# Generated textures
+/resources/models/*/generated/

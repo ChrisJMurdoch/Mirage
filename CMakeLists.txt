@@ -107,6 +107,7 @@ target_include_directories(Beam
         Utility/include/
         Render/include/
     PRIVATE # Vendor
+        ${GLM_INCLUDE}
         ${STBI_INCLUDE}
 )
 target_link_libraries(Beam
