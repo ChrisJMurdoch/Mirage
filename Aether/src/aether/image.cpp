@@ -1,5 +1,5 @@
 
-#include "beam/image.hpp"
+#include "aether/image.hpp"
 
 #include <stb_image.h>
 

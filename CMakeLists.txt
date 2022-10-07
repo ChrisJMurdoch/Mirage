@@ -92,17 +92,17 @@ target_link_libraries(Redshift
         ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
 )
 
-# --- Beam Application ---
+# --- Aether Application ---
 
-add_executable(Beam)
-target_sources(Beam
+add_executable(Aether)
+target_sources(Aether
     PRIVATE # Internal
-        Beam/src/beam/main.cpp
-        Beam/src/beam/image.cpp
+        Aether/src/aether/main.cpp
+        Aether/src/aether/image.cpp
 )
-target_include_directories(Beam
+target_include_directories(Aether
     PRIVATE # Internal
-        Beam/include/
+        Aether/include/
     PRIVATE # Project
         Utility/include/
         Render/include/
@@ -110,7 +110,7 @@ target_include_directories(Beam
         ${GLM_INCLUDE}
         ${STBI_INCLUDE}
 )
-target_link_libraries(Beam
+target_link_libraries(Aether
     PRIVATE # Project
         Utility
         Render

@@ -1,13 +1,13 @@
 
 #include "utility/geometry.hpp"
 #include "utility/objLoader.hpp"
-#include "beam/image.hpp"
+#include "aether/image.hpp"
 
 #include <iostream>
 
 int run()
 {
-    std::cout << " // === BEAM === \\\\ " << std::endl << std::endl;
+    std::cout << " // === AETHER === \\\\ " << std::endl << std::endl;
 
     Image image{"resources/models/gargoyle/textures/2k/albedo.jpg"};
 
@@ -17,7 +17,7 @@ int run()
     
     image.save("resources/models/gargoyle/generated/2k/lightmap.jpg");
 
-    std::cout << " \\\\ === BEAM === // " << std::endl;
+    std::cout << " \\\\ === AETHER === // " << std::endl;
 
     return 0;
 }
