@@ -98,6 +98,7 @@ add_executable(Aether)
 target_sources(Aether
     PRIVATE # Internal
         Aether/src/aether/image.cpp
+        Aether/src/aether/kdtree.cpp
         Aether/src/aether/main.cpp
         Aether/src/aether/raytrace.cpp
 )

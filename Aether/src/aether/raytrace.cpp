@@ -2,6 +2,7 @@
 #include "aether/raytrace.hpp"
 
 #include "aether/image.hpp"
+#include "aether/kdtree.hpp"
 
 #include <limits>
 
@@ -90,6 +91,9 @@ raytrace::RayMesh::RayMesh(Mesh const &mesh, Image &lightmap) : lightmap{lightma
     triangles.reserve( mesh.indices.size()/3 );
     for (int i=0; i<mesh.indices.size(); i+=3)
         triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]] } );
+    
+    // Construct KDTree - TODO: move to RayScene
+    KDTree{ triangles };
 }
 
 std::optional<raytrace::TriHit> raytrace::RayMesh::getHit(Ray const &ray, float maxT) const
