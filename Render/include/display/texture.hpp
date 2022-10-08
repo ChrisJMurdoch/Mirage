@@ -13,6 +13,7 @@ public:
         Albedo    = 0x84C0,
         Normal    = 0x84C1,
         Roughness = 0x84C2,
+        Baked     = 0x84C3,
     };
 
 private:
@@ -32,9 +33,9 @@ public:
 
 struct Material
 {
-    std::optional<Texture> albedo, normal, roughness;
+    std::optional<Texture> albedo, normal, roughness, baked;
 
-    Material(std::optional<Texture> &&albedo, std::optional<Texture> &&normal, std::optional<Texture> &&roughness);
+    Material(std::optional<Texture> &&albedo, std::optional<Texture> &&normal, std::optional<Texture> &&roughness, std::optional<Texture> &&baked);
     Material(Material const &other) = delete;
     Material &operator=(Material const &other) = delete;
 };

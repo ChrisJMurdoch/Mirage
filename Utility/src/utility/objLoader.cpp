@@ -207,25 +207,25 @@ Mesh objLoader::loadObj(char const *filepath, bool const verbose)
             vertexOccurrences[i3]++;
 
             // Calculate tangent and bitangent
-            glm::vec3 posDelta1 = v2.position - v1.position;
-            glm::vec3 posDelta2 = v3.position - v1.position;
-            glm::vec2 texDelta1 = v2.texturePosition - v1.texturePosition;
-            glm::vec2 texDelta2 = v3.texturePosition - v1.texturePosition;
+            glm::vec3 posDelta1 = v2.pos - v1.pos;
+            glm::vec3 posDelta2 = v3.pos - v1.pos;
+            glm::vec2 texDelta1 = v2.uv - v1.uv;
+            glm::vec2 texDelta2 = v3.uv - v1.uv;
             float r = 1.0 / (texDelta1.x * texDelta2.y - texDelta1.y * texDelta2.x);
             glm::vec3 tangent = (posDelta1 * texDelta2.y - posDelta2 * texDelta1.y) * r;
             glm::vec3 bitangent = (posDelta2 * texDelta1.x - posDelta1 * texDelta2.x) * r;
 
             // Increment vertex accumulations
-            v1.tangent += tangent; v2.tangent += tangent; v3.tangent += tangent;
-            v1.bitangent += bitangent; v2.bitangent += bitangent; v3.bitangent += bitangent;
+            v1.tan += tangent; v2.tan += tangent; v3.tan += tangent;
+            v1.btan += bitangent; v2.btan += bitangent; v3.btan += bitangent;
         }
 
         // Divide accumulations into averaged values
         for (int i=0; i<vertices.size(); i++)
         {
             int occurrences = vertexOccurrences[i];
-            vertices[i].tangent /= occurrences;
-            vertices[i].bitangent /= occurrences;
+            vertices[i].tan /= occurrences;
+            vertices[i].btan /= occurrences;
         }
     }
 

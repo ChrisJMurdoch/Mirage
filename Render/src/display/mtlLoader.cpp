@@ -32,7 +32,7 @@ Material mtlLoader::loadMtl(char const *filepath, bool const verbose)
     // Get .mtl directory path
     std::string path = std::string{filepath};
     std::string loc = path.substr(0, path.find_last_of('/')+1);
-    std::string albedoPath="", normalPath="", roughnessPath="";
+    std::string albedoPath="", normalPath="", roughnessPath="", bakedPath="";
 
     // Find texture locations
     std::ifstream file(filepath);
@@ -45,9 +45,10 @@ Material mtlLoader::loadMtl(char const *filepath, bool const verbose)
         stream >> first >> second;
 
         // Set path
-        if      ( first=="map_Kd" )   albedoPath    = loc+second;
-        else if ( first=="map_Bump" ) normalPath    = loc+second;
-        else if ( first=="map_Ns" )   roughnessPath = loc+second;
+        if      ( first=="map_Kd" )    albedoPath    = loc+second;
+        else if ( first=="map_Bump" )  normalPath    = loc+second;
+        else if ( first=="map_Ns" )    roughnessPath = loc+second;
+        else if ( first=="map_Baked" ) bakedPath     = loc+second;
     }
 
     // Load textures
@@ -55,6 +56,7 @@ Material mtlLoader::loadMtl(char const *filepath, bool const verbose)
     {
         loadTexture(albedoPath.c_str(), verbose),
         loadTexture(normalPath.c_str(), verbose),
-        loadTexture(roughnessPath.c_str(), verbose)
+        loadTexture(roughnessPath.c_str(), verbose),
+        loadTexture(bakedPath.c_str(), verbose)
     };
 }

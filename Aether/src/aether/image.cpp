@@ -12,6 +12,14 @@
 #include <iostream>
 #include <filesystem>
 
+Image::Image(int width, int height) : width(width), height(height), channels(3)
+{
+    // Create float Pixels
+    pixels.reserve(width*height);
+    for (int i=0; i<width*height; i++)
+        pixels.push_back( Pixel{0.0f, 0.0f, 0.0f} );
+}
+
 Image::Image(char const *filename)
 {
     // Load data
@@ -72,5 +80,6 @@ void Image::save(char const *filename) const
     std::string loc = path.substr(0, path.find_last_of('/'));
 
     std::filesystem::create_directories(loc);
+    stbi_flip_vertically_on_write(true);
     stbi_write_jpg(filename, width, height, channels, data.data(), 90);
 }

@@ -6,6 +6,7 @@ const vec3 cLightPosition = vec3(2,5,1);
 uniform sampler2D albedoMap;
 uniform sampler2D normalMap;
 uniform sampler2D roughnessMap;
+uniform sampler2D bakedMap;
 
 in vec3 vWorldPos;
 in vec2 vTexPos;

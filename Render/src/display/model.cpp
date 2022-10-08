@@ -37,11 +37,11 @@ Model::Model(Program const &program, Mesh const &mesh, Material const &material)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.indices[0])*mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
 
     // Set attributes
-    setFloatAttr( 0, sizeof(Vertex::position), offsetof(Vertex, position) );
-    setFloatAttr( 1, sizeof(Vertex::texturePosition), offsetof(Vertex, texturePosition) );
-    setFloatAttr( 2, sizeof(Vertex::normal), offsetof(Vertex, normal) );
-    setFloatAttr( 3, sizeof(Vertex::tangent), offsetof(Vertex, tangent) );
-    setFloatAttr( 4, sizeof(Vertex::bitangent), offsetof(Vertex, bitangent) );
+    setFloatAttr( 0, sizeof(Vertex::pos), offsetof(Vertex, pos) );
+    setFloatAttr( 1, sizeof(Vertex::uv), offsetof(Vertex, uv) );
+    setFloatAttr( 2, sizeof(Vertex::norm), offsetof(Vertex, norm) );
+    setFloatAttr( 3, sizeof(Vertex::tan), offsetof(Vertex, tan) );
+    setFloatAttr( 4, sizeof(Vertex::btan), offsetof(Vertex, btan) );
 
     // Unbind
     gl::bindVertexArray(0);
@@ -69,11 +69,13 @@ void Model::draw() const
         if (material.albedo) material.albedo->bind(Texture::Channel::Albedo);
         if (material.normal) material.normal->bind(Texture::Channel::Normal);
         if (material.roughness) material.roughness->bind(Texture::Channel::Roughness);
+        if (material.baked) material.baked->bind(Texture::Channel::Baked);
         {
             gl::bindVertexArray(vao);
             glDrawElements(GL_TRIANGLES, nIndices, GL_UNSIGNED_INT, 0);
             gl::bindVertexArray(0);
         }
+        if (material.baked) material.baked->unbind(Texture::Channel::Baked);
         if (material.roughness) material.roughness->unbind(Texture::Channel::Roughness);
         if (material.normal) material.normal->unbind(Texture::Channel::Normal);
         if (material.albedo) material.albedo->unbind(Texture::Channel::Albedo);

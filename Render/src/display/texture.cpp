@@ -94,6 +94,6 @@ void Texture::unbind(Channel channel) const
     gl::activeTexture(0);
 }
 
-Material::Material(std::optional<Texture> &&albedo, std::optional<Texture> &&normal, std::optional<Texture> &&roughness)
-    : albedo{std::move(albedo)}, normal{std::move(normal)}, roughness{std::move(roughness)}
+Material::Material(std::optional<Texture> &&albedo, std::optional<Texture> &&normal, std::optional<Texture> &&roughness, std::optional<Texture> &&baked)
+    : albedo{std::move(albedo)}, normal{std::move(normal)}, roughness{std::move(roughness)}, baked{std::move(baked)}
 { }

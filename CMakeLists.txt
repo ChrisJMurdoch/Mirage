@@ -97,8 +97,9 @@ target_link_libraries(Redshift
 add_executable(Aether)
 target_sources(Aether
     PRIVATE # Internal
-        Aether/src/aether/main.cpp
         Aether/src/aether/image.cpp
+        Aether/src/aether/main.cpp
+        Aether/src/aether/raytrace.cpp
 )
 target_include_directories(Aether
     PRIVATE # Internal

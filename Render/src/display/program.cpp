@@ -78,6 +78,7 @@ Program::Program(char const *vertexShaderPath, char const *fragmentShaderPath)
         glUniform1i(glGetUniformLocation(handle, "albedoMap"),    Texture::Channel::Albedo    - Texture::Channel::Albedo);
         glUniform1i(glGetUniformLocation(handle, "normalMap"),    Texture::Channel::Normal    - Texture::Channel::Albedo);
         glUniform1i(glGetUniformLocation(handle, "roughnessMap"), Texture::Channel::Roughness - Texture::Channel::Albedo);
+        glUniform1i(glGetUniformLocation(handle, "bakedMap"),     Texture::Channel::Baked     - Texture::Channel::Albedo);
     });
 }
 

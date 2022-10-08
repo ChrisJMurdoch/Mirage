@@ -34,7 +34,7 @@ int main()
         Display display{"Redshift", 1000, 600};
 
         // Compile shaders into program
-        Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
+        Program program{"resources/shaders/model.vert", "resources/shaders/aether.frag"};
 
         auto start = std::chrono::system_clock::now();
 
