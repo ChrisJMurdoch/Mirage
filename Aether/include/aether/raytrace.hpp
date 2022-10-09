@@ -10,7 +10,7 @@ class Image;
 namespace raytrace
 {
     struct RayTri;
-    class RayMesh;
+    struct RayMesh;
 
     /// Ray with origin and direction
     struct Ray
@@ -49,40 +49,34 @@ namespace raytrace
     /// Collidable triangle
     struct RayTri
     {
-        // Corner vertices
         Vertex const a, b, c;
+        Image &lightmap;
 
         // Pre-calculated values needed for intersection calculation
         glm::vec3 norm;
         float d;
         glm::vec3 v12, v23, v31;
 
-        RayTri(Vertex const &a, Vertex const &b, Vertex const &c);
+        RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
         Vertex interpolate(glm::vec3 const &point) const;
         std::optional<Hit> getHit(Ray const &ray, float maxT) const;
     };
     
-    /// Collidable mesh
-    class RayMesh
+    /// Tuple of mesh and corresponding lightmap used as argument for RayScene
+    struct RayMesh
     {
-    private:
-        std::vector<RayTri> triangles;
+        Mesh const mesh;
         Image &lightmap;
-
-    public:
-        RayMesh(Mesh const &mesh, Image &lightmap);
-        std::optional<TriHit> getHit(Ray const &ray, float maxT) const;
-        Image &getLightmap() const;
     };
 
     /// Collidable scene
     class RayScene
     {
     private:
-        std::vector<RayMesh> const &rayMeshes;
+        std::vector<RayTri> triangles;
 
     public:
         RayScene(std::vector<RayMesh> const &meshes);
-        std::optional<MeshHit> getHit(Ray const &ray) const;
+        std::optional<TriHit> getHit(Ray const &ray) const;
     };
 }

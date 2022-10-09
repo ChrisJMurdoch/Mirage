@@ -39,19 +39,19 @@ int run()
     {
         // Send out a ray in a random direction
         raytrace::Ray ray{LIGHT_ORIGIN, glm::ballRand(1.0f)};
-        std::optional<raytrace::MeshHit> meshHit = scene.getHit(ray);
+        std::optional<raytrace::TriHit> triHit = scene.getHit(ray);
 
         // If ray hit
-        if (meshHit)
+        if (triHit)
         {
             hits++;
 
             // Find intersections point and interpolated UVs
-            glm::vec3 intersectionPoint = ray.at(meshHit->getT());
-            Vertex interpolatedVertex = meshHit->triHit.triangle->interpolate(intersectionPoint);
+            glm::vec3 intersectionPoint = ray.at(triHit->getT());
+            Vertex interpolatedVertex = triHit->triangle->interpolate(intersectionPoint);
 
             // Get relevant lightmap
-            auto &lightmap = meshHit->mesh->getLightmap();
+            auto &lightmap = triHit->triangle->lightmap;
             int x = interpolatedVertex.uv.x*(lightmap.getWidth()-1);
             int y = interpolatedVertex.uv.y*(lightmap.getHeight()-1);
 

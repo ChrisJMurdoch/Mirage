@@ -13,8 +13,8 @@ float constexpr FLOAT_MAX = std::numeric_limits<float>::max();
 
 // ===== RayTri =====
 
-raytrace::RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c)
-    : a{a}, b{b}, c{c}
+raytrace::RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap)
+    : a{a}, b{b}, c{c}, lightmap{lightmap}
 {
     // Pre-calculate plane normal
     glm::vec3 ab = b.pos-a.pos;
@@ -84,52 +84,28 @@ std::optional<raytrace::Hit> raytrace::RayTri::getHit(Ray const &ray, float maxT
 
 
 
-// ===== RayMesh =====
+// ===== RayScene =====
 
-raytrace::RayMesh::RayMesh(Mesh const &mesh, Image &lightmap) : lightmap{lightmap}
+raytrace::RayScene::RayScene(std::vector<RayMesh> const &meshes)
 {
-    triangles.reserve( mesh.indices.size()/3 );
-    for (int i=0; i<mesh.indices.size(); i+=3)
-        triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]] } );
-    
-    // Construct KDTree - TODO: move to RayScene
+    for (RayMesh const &rayMesh : meshes)
+    {
+        Mesh const &mesh = rayMesh.mesh;
+        for (int i=0; i<mesh.indices.size(); i+=3)
+            triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], rayMesh.lightmap } );
+    }
     KDTree{ triangles };
 }
 
-std::optional<raytrace::TriHit> raytrace::RayMesh::getHit(Ray const &ray, float maxT) const
+std::optional<raytrace::TriHit> raytrace::RayScene::getHit(Ray const &ray) const
 {
     std::optional<TriHit> closestHit = {};
     for (RayTri const &tri : triangles)
     {
-        float mT = closestHit ? std::min(closestHit->getT(), maxT) : maxT;
+        float mT = closestHit ? closestHit->getT() : FLOAT_MAX;
         std::optional<Hit> hit = tri.getHit(ray, mT);
         if ( hit && (!closestHit || hit->getT() < closestHit->getT()) )
             closestHit.emplace( TriHit{*hit, &tri} );
-    }
-    return closestHit;
-}
-
-Image &raytrace::RayMesh::getLightmap() const
-{
-    return lightmap;
-}
-
-
-
-// ===== RayScene =====
-
-raytrace::RayScene::RayScene(std::vector<RayMesh> const &meshes) : rayMeshes{meshes}
-{ }
-
-std::optional<raytrace::MeshHit> raytrace::RayScene::getHit(Ray const &ray) const
-{
-    std::optional<MeshHit> closestHit = {};
-    for (RayMesh const &mesh : rayMeshes)
-    {
-        float mT = closestHit ? closestHit->getT() : FLOAT_MAX;
-        std::optional<TriHit> hit = mesh.getHit(ray, mT);
-        if ( hit && (!closestHit || hit->getT() < closestHit->getT()) )
-            closestHit.emplace( MeshHit{*hit, &mesh} );
     }
     return closestHit;
 }
