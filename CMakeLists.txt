@@ -101,6 +101,7 @@ target_sources(Aether
         Aether/src/aether/kdtree.cpp
         Aether/src/aether/main.cpp
         Aether/src/aether/raytrace.cpp
+        Aether/src/aether/triAABBTest.cpp
 )
 target_include_directories(Aether
     PRIVATE # Internal

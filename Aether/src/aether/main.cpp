@@ -16,8 +16,9 @@ int run()
     std::cout << " // === AETHER === \\\\ " << std::endl << std::endl;
 
     // Create lightmap targets
-    Image floorLightmap{100, 100};
-    Image gargoyleLightmap{100, 100};
+    int const res = 300;
+    Image floorLightmap{res, res};
+    Image gargoyleLightmap{res, res};
 
     // Create raytraceable scene
     std::vector<raytrace::RayMesh> rayMeshes{
@@ -27,9 +28,10 @@ int run()
     raytrace::RayScene scene(rayMeshes);
 
     // Raytracing parameters
-    int constexpr N_RAYS = 5000;
-    Pixel constexpr LIGHT_ALPHA{0.33f, 0.33f, 0.33f};
-    glm::vec3 constexpr LIGHT_ORIGIN{0.7f, 0.2f, 0.7f};
+    int constexpr N_RAYS = 100000;
+    float constexpr A = 1.0f;
+    Pixel constexpr LIGHT_ALPHA{A, A, A};
+    glm::vec3 constexpr LIGHT_ORIGIN{0.01f, 0.75f, 0.75f};
 
     auto start = std::chrono::system_clock::now();
 
@@ -38,7 +40,7 @@ int run()
     for (int i=0; i<N_RAYS; i++)
     {
         // Send out a ray in a random direction
-        raytrace::Ray ray{LIGHT_ORIGIN, glm::ballRand(1.0f)};
+        raytrace::Ray ray{LIGHT_ORIGIN, glm::normalize(glm::ballRand(1.0f))};
         std::optional<raytrace::TriHit> triHit = scene.getHit(ray);
 
         // If ray hit

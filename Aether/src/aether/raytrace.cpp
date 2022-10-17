@@ -5,6 +5,7 @@
 #include "aether/kdtree.hpp"
 
 #include <limits>
+#include <iostream>
 
 float constexpr FLOAT_MIN = std::numeric_limits<float>::min();
 float constexpr FLOAT_MAX = std::numeric_limits<float>::max();
@@ -24,26 +25,10 @@ raytrace::RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Imag
     // Pre-calculate distance from origin
     d = -glm::dot(norm, a.pos);
 
-    // Pre-calculate edges
+    // Pre-calculate edges 
     v12 = b.pos-a.pos;
     v23 = c.pos-b.pos;
     v31 = a.pos-c.pos;
-}
-
-Vertex raytrace::RayTri::interpolate(glm::vec3 const &p) const
-{
-    // Barycentric coordinate interpolation from: https://gamedev.stackexchange.com/a/23745
-    glm::vec3 v2=c.pos-a.pos, v3=p-a.pos;
-    float d00 = glm::dot(v12, v12);
-    float d01 = glm::dot(v12, v2);
-    float d11 = glm::dot(v2, v2);
-    float d20 = glm::dot(v3, v12);
-    float d21 = glm::dot(v3, v2);
-    float denom = d00 * d11 - d01 * d01;
-    float v = (d11 * d20 - d01 * d21) / denom;
-    float w = (d00 * d21 - d01 * d20) / denom;
-    float u = 1 - v - w;
-    return a*u + b*v + c*w;
 }
 
 std::optional<raytrace::Hit> raytrace::RayTri::getHit(Ray const &ray, float maxT) const
@@ -82,30 +67,47 @@ std::optional<raytrace::Hit> raytrace::RayTri::getHit(Ray const &ray, float maxT
     return Hit{t};
 }
 
+Vertex raytrace::RayTri::interpolate(glm::vec3 const &p) const
+{
+    // Barycentric coordinate interpolation from: https://gamedev.stackexchange.com/a/23745
+    glm::vec3 v2=c.pos-a.pos, v3=p-a.pos;
+    float d00 = glm::dot(v12, v12);
+    float d01 = glm::dot(v12, v2);
+    float d11 = glm::dot(v2, v2);
+    float d20 = glm::dot(v3, v12);
+    float d21 = glm::dot(v3, v2);
+    float denom = d00 * d11 - d01 * d01;
+    float v = (d11 * d20 - d01 * d21) / denom;
+    float w = (d00 * d21 - d01 * d20) / denom;
+    float u = 1 - v - w;
+    return a*u + b*v + c*w;
+}
+
 
 
 // ===== RayScene =====
 
-raytrace::RayScene::RayScene(std::vector<RayMesh> const &meshes)
+std::vector<raytrace::RayTri> getTriangles(std::vector<raytrace::RayMesh> const &meshes)
 {
-    for (RayMesh const &rayMesh : meshes)
+    std::vector<raytrace::RayTri> triangles;
+    for (raytrace::RayMesh const &rayMesh : meshes)
     {
         Mesh const &mesh = rayMesh.mesh;
         for (int i=0; i<mesh.indices.size(); i+=3)
-            triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], rayMesh.lightmap } );
+            triangles.push_back( raytrace::RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], rayMesh.lightmap } );
     }
-    KDTree{ triangles };
+    return triangles;
+}
+
+raytrace::RayScene::RayScene(std::vector<RayMesh> const &meshes) : kdtree{ new KDTree(getTriangles(meshes)) }
+{ }
+
+raytrace::RayScene::~RayScene()
+{
+    delete kdtree; // TODO: Change to unique_ptr/composition
 }
 
 std::optional<raytrace::TriHit> raytrace::RayScene::getHit(Ray const &ray) const
 {
-    std::optional<TriHit> closestHit = {};
-    for (RayTri const &tri : triangles)
-    {
-        float mT = closestHit ? closestHit->getT() : FLOAT_MAX;
-        std::optional<Hit> hit = tri.getHit(ray, mT);
-        if ( hit && (!closestHit || hit->getT() < closestHit->getT()) )
-            closestHit.emplace( TriHit{*hit, &tri} );
-    }
-    return closestHit;
+    return kdtree->getHit(ray);
 }

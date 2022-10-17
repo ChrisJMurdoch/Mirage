@@ -4,8 +4,11 @@
 #include "utility/geometry.hpp"
 
 #include <optional>
+#include <memory>
 
 class Image;
+
+class KDTree;
 
 namespace raytrace
 {
@@ -38,14 +41,6 @@ namespace raytrace
         float &getT() { return hit.getT(); }
     };
 
-    /// Represents a triangle collision and stores the mesh collided with
-    struct MeshHit
-    {
-        TriHit triHit;
-        RayMesh const *mesh;
-        float &getT() { return triHit.getT(); }
-    };
-
     /// Collidable triangle
     struct RayTri
     {
@@ -58,8 +53,8 @@ namespace raytrace
         glm::vec3 v12, v23, v31;
 
         RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
-        Vertex interpolate(glm::vec3 const &point) const;
         std::optional<Hit> getHit(Ray const &ray, float maxT) const;
+        Vertex interpolate(glm::vec3 const &point) const;
     };
     
     /// Tuple of mesh and corresponding lightmap used as argument for RayScene
@@ -73,10 +68,11 @@ namespace raytrace
     class RayScene
     {
     private:
-        std::vector<RayTri> triangles;
+        KDTree *kdtree;
 
     public:
         RayScene(std::vector<RayMesh> const &meshes);
+        ~RayScene();
         std::optional<TriHit> getHit(Ray const &ray) const;
     };
 }
