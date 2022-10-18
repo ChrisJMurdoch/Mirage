@@ -22,7 +22,7 @@ public:
 
     std::pair<float, float> tRange(Ray const &ray) const;
     std::optional<float> intersect(Ray const &ray) const;
-    virtual std::optional<TriHit> getHit(Ray const &ray, float tMin) const = 0;
+    virtual std::optional<Hit> getHit(Ray const &ray, float tMin) const = 0;
 };
 
 
@@ -37,7 +37,7 @@ public:
 
 public:
     static std::unique_ptr<KDNodeLeaf> construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles);
-    virtual std::optional<TriHit> getHit(Ray const &, float tMin) const override;
+    virtual std::optional<Hit> getHit(Ray const &, float tMin) const override;
 };
 
 
@@ -52,7 +52,7 @@ public:
 
 public:
     static std::unique_ptr<KDNodeParent> construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles);
-    virtual std::optional<TriHit> getHit(Ray const &ray, float tMin) const override;
+    virtual std::optional<Hit> getHit(Ray const &ray, float tMin) const override;
 };
 
 
@@ -64,5 +64,5 @@ private:
 
 public:
     KDTree(std::vector<RayTri> const &triangles);
-    std::optional<TriHit> getHit(Ray const &ray) const;
+    std::optional<Hit> getHit(Ray const &ray) const;
 };

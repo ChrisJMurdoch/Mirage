@@ -119,14 +119,14 @@ std::unique_ptr<KDNodeLeaf> KDNodeLeaf::construct(glm::vec3 const &min, glm::vec
     return std::make_unique<KDNodeLeaf>(min, max, triangles);
 }
 
-std::optional<TriHit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
+std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
 {
     auto bounds = this->tRange(ray); // TODO: Optimise by passing bounds into tri calc for early termination
-    std::optional<TriHit> closestHit = {};
+    std::optional<Hit> closestHit = {};
     for (RayTri const &tri : triangles)
     {
         float mT = closestHit ? closestHit->getT() : tMin;
-        std::optional<TriHit> hit = tri.getHit(ray, mT);
+        std::optional<Hit> hit = tri.getHit(ray, mT);
         if ( hit && (hit->getT()>bounds.first && hit->getT()<bounds.second) && (!closestHit || hit->getT() < closestHit->getT()) )
             closestHit.emplace( *hit );
     }
@@ -179,7 +179,7 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
     return std::make_unique<KDNodeParent>( min, max, KDNode::construct(min, pivotMax, leftTriangles), KDNode::construct(pivotMin, max, rightTriangles) );
 }
 
-std::optional<TriHit> KDNodeParent::getHit(Ray const &ray, float tMin) const
+std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tMin) const
 {
     // Get child box intersections (minimum tval)
     std::optional<float> leftIntersect = left->intersect(ray);
@@ -195,7 +195,7 @@ std::optional<TriHit> KDNodeParent::getHit(Ray const &ray, float tMin) const
     std::unique_ptr<KDNode> const &far   = leftCloser ? right : left;
 
     // Check for collision in close box
-    std::optional<TriHit> closeHit = close->getHit(ray, tMin);
+    std::optional<Hit> closeHit = close->getHit(ray, tMin);
     if (closeHit)
         return closeHit;
 
@@ -212,7 +212,7 @@ KDTree::KDTree(std::vector<RayTri> const &triangles)
     : root{KDNode::construct(triangles)}
 { }
 
-std::optional<TriHit> KDTree::getHit(Ray const &ray) const
+std::optional<Hit> KDTree::getHit(Ray const &ray) const
 {
     return root->getHit(ray, FLOAT_MAX);
 }

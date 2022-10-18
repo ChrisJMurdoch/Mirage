@@ -9,7 +9,6 @@
 class Image;
 class KDTree;
 struct RayTri;
-struct RayMesh;
 
 /// Ray with origin and direction
 struct Ray
@@ -23,7 +22,7 @@ struct Ray
 };
 
 /// Represents a ray collision and stores the triangle collided with
-struct TriHit
+struct Hit
 {
     float t;
     RayTri const *triangle;
@@ -42,15 +41,8 @@ struct RayTri
     glm::vec3 v12, v23, v31;
 
     RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
-    std::optional<TriHit> getHit(Ray const &ray, float maxT) const;
+    std::optional<Hit> getHit(Ray const &ray, float maxT) const;
     Vertex interpolate(glm::vec3 const &point) const;
-};
-
-/// Tuple of mesh and corresponding lightmap used as argument for RayScene
-struct RayMesh
-{
-    Mesh const mesh;
-    Image &lightmap;
 };
 
 /// Collidable scene
@@ -60,7 +52,7 @@ private:
     KDTree *kdtree;
 
 public:
-    RayScene(std::vector<RayMesh> const &meshes);
+    RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes);
     ~RayScene();
-    std::optional<TriHit> getHit(Ray const &ray) const;
+    std::optional<Hit> getHit(Ray const &ray) const;
 };

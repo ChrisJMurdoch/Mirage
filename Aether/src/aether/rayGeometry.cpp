@@ -30,7 +30,7 @@ RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightma
     v31 = a.pos-c.pos;
 }
 
-std::optional<TriHit> RayTri::getHit(Ray const &ray, float maxT) const
+std::optional<Hit> RayTri::getHit(Ray const &ray, float maxT) const
 {
     // Return if plane and ray are parallel
     float normDotRayDir = glm::dot(norm, ray.dir);
@@ -63,7 +63,7 @@ std::optional<TriHit> RayTri::getHit(Ray const &ray, float maxT) const
         return {};
     
     // Hit
-    return TriHit{t, this};
+    return Hit{t, this};
 }
 
 Vertex RayTri::interpolate(glm::vec3 const &p) const
@@ -86,19 +86,20 @@ Vertex RayTri::interpolate(glm::vec3 const &p) const
 
 // ===== RayScene =====
 
-std::vector<RayTri> getTriangles(std::vector<RayMesh> const &meshes)
+std::vector<RayTri> getTriangles(std::vector<std::pair<Mesh const, Image &>> const &meshes)
 {
     std::vector<RayTri> triangles;
-    for (RayMesh const &rayMesh : meshes)
+    for (std::pair<Mesh const, Image &> const &pair : meshes)
     {
-        Mesh const &mesh = rayMesh.mesh;
+        Mesh const &mesh = pair.first;
+        Image &image = pair.second;
         for (int i=0; i<mesh.indices.size(); i+=3)
-            triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], rayMesh.lightmap } );
+            triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], image } );
     }
     return triangles;
 }
 
-RayScene::RayScene(std::vector<RayMesh> const &meshes) : kdtree{ new KDTree(getTriangles(meshes)) }
+RayScene::RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes) : kdtree{ new KDTree(getTriangles(meshes)) }
 { }
 
 RayScene::~RayScene()
@@ -106,7 +107,7 @@ RayScene::~RayScene()
     delete kdtree; // TODO: Change to unique_ptr/composition
 }
 
-std::optional<TriHit> RayScene::getHit(Ray const &ray) const
+std::optional<Hit> RayScene::getHit(Ray const &ray) const
 {
     return kdtree->getHit(ray);
 }
