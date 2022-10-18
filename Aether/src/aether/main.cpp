@@ -3,7 +3,7 @@
 #include "utility/objLoader.hpp"
 
 #include "aether/image.hpp"
-#include "aether/raytrace.hpp"
+#include "aether/rayGeometry.hpp"
 
 #include <glm/gtc/random.hpp>
 
