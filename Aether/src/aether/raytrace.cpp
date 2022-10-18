@@ -14,7 +14,7 @@ float constexpr FLOAT_MAX = std::numeric_limits<float>::max();
 
 // ===== RayTri =====
 
-raytrace::RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap)
+RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap)
     : a{a}, b{b}, c{c}, lightmap{lightmap}
 {
     // Pre-calculate plane normal
@@ -31,7 +31,7 @@ raytrace::RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Imag
     v31 = a.pos-c.pos;
 }
 
-std::optional<raytrace::Hit> raytrace::RayTri::getHit(Ray const &ray, float maxT) const
+std::optional<Hit> RayTri::getHit(Ray const &ray, float maxT) const
 {
     // Return if plane and ray are parallel
     float normDotRayDir = glm::dot(norm, ray.dir);
@@ -67,7 +67,7 @@ std::optional<raytrace::Hit> raytrace::RayTri::getHit(Ray const &ray, float maxT
     return Hit{t};
 }
 
-Vertex raytrace::RayTri::interpolate(glm::vec3 const &p) const
+Vertex RayTri::interpolate(glm::vec3 const &p) const
 {
     // Barycentric coordinate interpolation from: https://gamedev.stackexchange.com/a/23745
     glm::vec3 v2=c.pos-a.pos, v3=p-a.pos;
@@ -87,27 +87,27 @@ Vertex raytrace::RayTri::interpolate(glm::vec3 const &p) const
 
 // ===== RayScene =====
 
-std::vector<raytrace::RayTri> getTriangles(std::vector<raytrace::RayMesh> const &meshes)
+std::vector<RayTri> getTriangles(std::vector<RayMesh> const &meshes)
 {
-    std::vector<raytrace::RayTri> triangles;
-    for (raytrace::RayMesh const &rayMesh : meshes)
+    std::vector<RayTri> triangles;
+    for (RayMesh const &rayMesh : meshes)
     {
         Mesh const &mesh = rayMesh.mesh;
         for (int i=0; i<mesh.indices.size(); i+=3)
-            triangles.push_back( raytrace::RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], rayMesh.lightmap } );
+            triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], rayMesh.lightmap } );
     }
     return triangles;
 }
 
-raytrace::RayScene::RayScene(std::vector<RayMesh> const &meshes) : kdtree{ new KDTree(getTriangles(meshes)) }
+RayScene::RayScene(std::vector<RayMesh> const &meshes) : kdtree{ new KDTree(getTriangles(meshes)) }
 { }
 
-raytrace::RayScene::~RayScene()
+RayScene::~RayScene()
 {
     delete kdtree; // TODO: Change to unique_ptr/composition
 }
 
-std::optional<raytrace::TriHit> raytrace::RayScene::getHit(Ray const &ray) const
+std::optional<TriHit> RayScene::getHit(Ray const &ray) const
 {
     return kdtree->getHit(ray);
 }

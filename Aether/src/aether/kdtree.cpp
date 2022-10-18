@@ -25,7 +25,7 @@ glm::vec3 componentMax(glm::vec3 a, glm::vec3 b)
 }
 
 /// Tests if triangle and cuboid overlap.
-bool overlaps(glm::vec3 const &min, glm::vec3 const &max, raytrace::RayTri const &triangle)
+bool overlaps(glm::vec3 const &min, glm::vec3 const &max, RayTri const &triangle)
 {
     glm::vec3 centre = (min+max)/2.0f;
     glm::vec3 halfSize = centre-min;
@@ -48,18 +48,18 @@ KDNode::KDNode(glm::vec3 const &min, glm::vec3 const &max)
     : min{min}, max{max}
 { }
 
-std::unique_ptr<KDNode> KDNode::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<raytrace::RayTri> const &triangles)
+std::unique_ptr<KDNode> KDNode::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles)
 {
     return (triangles.size() > MAX_LEAF_SIZE) ?
         static_cast<std::unique_ptr<KDNode>>( KDNodeParent::construct(min, max, triangles) ) :
         static_cast<std::unique_ptr<KDNode>>( KDNodeLeaf::construct(min, max, triangles) );
 }
 
-std::unique_ptr<KDNode> KDNode::construct(std::vector<raytrace::RayTri> const &triangles)
+std::unique_ptr<KDNode> KDNode::construct(std::vector<RayTri> const &triangles)
 {
     // Calculate min and max
     glm::vec3 min{FLOAT_MAX}, max{FLOAT_MIN};
-    for (raytrace::RayTri const &tri : triangles)
+    for (RayTri const &tri : triangles)
     {
         min = componentMin( componentMin(min, tri.a.pos), componentMin(tri.b.pos, tri.c.pos) );
         max = componentMax( componentMax(max, tri.a.pos), componentMax(tri.b.pos, tri.c.pos) );
@@ -69,7 +69,7 @@ std::unique_ptr<KDNode> KDNode::construct(std::vector<raytrace::RayTri> const &t
     return KDNode::construct(min, max, triangles);
 }
 
-std::pair<float, float> KDNode::tRange(raytrace::Ray const &ray) const
+std::pair<float, float> KDNode::tRange(Ray const &ray) const
 {
     glm::vec3 inv = 1.0f / ray.dir;
     float tmin, tmax;
@@ -92,7 +92,7 @@ std::pair<float, float> KDNode::tRange(raytrace::Ray const &ray) const
     return {tmin, tmax};
 }
 
-std::optional<float> KDNode::intersect(raytrace::Ray const &ray) const
+std::optional<float> KDNode::intersect(Ray const &ray) const
 {
     auto bounds = tRange(ray);
     float tmin = bounds.first, tmax = bounds.second;
@@ -110,26 +110,26 @@ std::optional<float> KDNode::intersect(raytrace::Ray const &ray) const
 
 // ===== KDNodeLeaf =====
 
-KDNodeLeaf::KDNodeLeaf(glm::vec3 const &min, glm::vec3 const &max, std::vector<raytrace::RayTri> const &triangles)
+KDNodeLeaf::KDNodeLeaf(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles)
     : KDNode{min, max}, triangles{triangles}
 { }
 
-std::unique_ptr<KDNodeLeaf> KDNodeLeaf::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<raytrace::RayTri> const &triangles)
+std::unique_ptr<KDNodeLeaf> KDNodeLeaf::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles)
 {
     return std::make_unique<KDNodeLeaf>(min, max, triangles);
 }
 
 
-std::optional<raytrace::TriHit> KDNodeLeaf::getHit(raytrace::Ray const &ray, float tMin) const
+std::optional<TriHit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
 {
     auto bounds = this->tRange(ray); // TODO: Optimise by passing bounds into tri calc for early termination
-    std::optional<raytrace::TriHit> closestHit = {};
-    for (raytrace::RayTri const &tri : triangles)
+    std::optional<TriHit> closestHit = {};
+    for (RayTri const &tri : triangles)
     {
         float mT = closestHit ? closestHit->getT() : tMin;
-        std::optional<raytrace::Hit> hit = tri.getHit(ray, mT);
+        std::optional<Hit> hit = tri.getHit(ray, mT);
         if ( hit && (hit->getT()>bounds.first && hit->getT()<bounds.second) && (!closestHit || hit->getT() < closestHit->getT()) )
-            closestHit.emplace( raytrace::TriHit{*hit, &tri} );
+            closestHit.emplace( TriHit{*hit, &tri} );
     }
     return closestHit;
 }
@@ -142,7 +142,7 @@ KDNodeParent::KDNodeParent(glm::vec3 const &min, glm::vec3 const &max, std::uniq
     : KDNode{min, max}, left{std::move(left)}, right{std::move(right)}
 { }
 
-std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<raytrace::RayTri> const &triangles)
+std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles)
 {
     // Get bounding box dimension
     glm::vec3 dim = max-min;
@@ -167,8 +167,8 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
     }
 
     // Partition triangles
-    std::vector<raytrace::RayTri> leftTriangles, rightTriangles;
-    for (raytrace::RayTri const &tri : triangles)
+    std::vector<RayTri> leftTriangles, rightTriangles;
+    for (RayTri const &tri : triangles)
     {
         if (overlaps(min, pivotMax, tri))
             leftTriangles.push_back(tri);
@@ -180,7 +180,7 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
     return std::make_unique<KDNodeParent>( min, max, KDNode::construct(min, pivotMax, leftTriangles), KDNode::construct(pivotMin, max, rightTriangles) );
 }
 
-std::optional<raytrace::TriHit> KDNodeParent::getHit(raytrace::Ray const &ray, float tMin) const
+std::optional<TriHit> KDNodeParent::getHit(Ray const &ray, float tMin) const
 {
     // Get child box intersections (minimum tval)
     std::optional<float> leftIntersect = left->intersect(ray);
@@ -196,7 +196,7 @@ std::optional<raytrace::TriHit> KDNodeParent::getHit(raytrace::Ray const &ray, f
     std::unique_ptr<KDNode> const &far   = leftCloser ? right : left;
 
     // Check for collision in close box
-    std::optional<raytrace::TriHit> closeHit = close->getHit(ray, tMin);
+    std::optional<TriHit> closeHit = close->getHit(ray, tMin);
     if (closeHit)
         return closeHit;
 
@@ -209,11 +209,11 @@ std::optional<raytrace::TriHit> KDNodeParent::getHit(raytrace::Ray const &ray, f
 
 // ===== KDTree =====
 
-KDTree::KDTree(std::vector<raytrace::RayTri> const &triangles)
+KDTree::KDTree(std::vector<RayTri> const &triangles)
     : root{KDNode::construct(triangles)}
 { }
 
-std::optional<raytrace::TriHit> KDTree::getHit(raytrace::Ray const &ray) const
+std::optional<TriHit> KDTree::getHit(Ray const &ray) const
 {
     return root->getHit(ray, FLOAT_MAX);
 }

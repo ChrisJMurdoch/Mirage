@@ -7,72 +7,67 @@
 #include <memory>
 
 class Image;
-
 class KDTree;
+struct RayTri;
+struct RayMesh;
 
-namespace raytrace
+/// Ray with origin and direction
+struct Ray
 {
-    struct RayTri;
-    struct RayMesh;
+    glm::vec3 const origin, dir;
 
-    /// Ray with origin and direction
-    struct Ray
+    glm::vec3 at(float t) const
     {
-        glm::vec3 const origin, dir;
+        return origin + dir*t;
+    }
+};
 
-        glm::vec3 at(float t) const
-        {
-            return origin + dir*t;
-        }
-    };
+/// Represents a ray collision
+struct Hit
+{
+    float t;
+    float &getT() { return t; }
+};
 
-    /// Represents a ray collision
-    struct Hit
-    {
-        float t;
-        float &getT() { return t; }
-    };
+/// Represents a ray collision and stores the triangle collided with
+struct TriHit
+{
+    Hit hit;
+    RayTri const *triangle;
+    float &getT() { return hit.getT(); }
+};
 
-    /// Represents a ray collision and stores the triangle collided with
-    struct TriHit
-    {
-        Hit hit;
-        RayTri const *triangle;
-        float &getT() { return hit.getT(); }
-    };
+/// Collidable triangle
+struct RayTri
+{
+    Vertex const a, b, c;
+    Image &lightmap;
 
-    /// Collidable triangle
-    struct RayTri
-    {
-        Vertex const a, b, c;
-        Image &lightmap;
+    // Pre-calculated values needed for intersection calculation
+    glm::vec3 norm;
+    float d;
+    glm::vec3 v12, v23, v31;
 
-        // Pre-calculated values needed for intersection calculation
-        glm::vec3 norm;
-        float d;
-        glm::vec3 v12, v23, v31;
+    RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
+    std::optional<Hit> getHit(Ray const &ray, float maxT) const;
+    Vertex interpolate(glm::vec3 const &point) const;
+};
 
-        RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
-        std::optional<Hit> getHit(Ray const &ray, float maxT) const;
-        Vertex interpolate(glm::vec3 const &point) const;
-    };
-    
-    /// Tuple of mesh and corresponding lightmap used as argument for RayScene
-    struct RayMesh
-    {
-        Mesh const mesh;
-        Image &lightmap;
-    };
+/// Tuple of mesh and corresponding lightmap used as argument for RayScene
+struct RayMesh
+{
+    Mesh const mesh;
+    Image &lightmap;
+};
 
-    /// Collidable scene
-    class RayScene
-    {
-    private:
-        KDTree *kdtree;
+/// Collidable scene
+class RayScene
+{
+private:
+    KDTree *kdtree;
 
-    public:
-        RayScene(std::vector<RayMesh> const &meshes);
-        ~RayScene();
-        std::optional<TriHit> getHit(Ray const &ray) const;
-    };
-}
+public:
+    RayScene(std::vector<RayMesh> const &meshes);
+    ~RayScene();
+    std::optional<TriHit> getHit(Ray const &ray) const;
+};

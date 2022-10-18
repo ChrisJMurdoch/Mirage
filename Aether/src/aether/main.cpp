@@ -21,11 +21,11 @@ int run()
     Image gargoyleLightmap{res, res};
 
     // Create raytraceable scene
-    std::vector<raytrace::RayMesh> rayMeshes{
-        raytrace::RayMesh{ objLoader::loadObj("resources/models/floor/floor.obj"), floorLightmap },
-        raytrace::RayMesh{ objLoader::loadObj("resources/models/gargoyle/gargoyle.obj"), gargoyleLightmap }
+    std::vector<RayMesh> rayMeshes{
+        RayMesh{ objLoader::loadObj("resources/models/floor/floor.obj"), floorLightmap },
+        RayMesh{ objLoader::loadObj("resources/models/gargoyle/gargoyle.obj"), gargoyleLightmap }
     };
-    raytrace::RayScene scene(rayMeshes);
+    RayScene scene(rayMeshes);
 
     // Raytracing parameters
     int constexpr N_RAYS = 100000;
@@ -40,8 +40,8 @@ int run()
     for (int i=0; i<N_RAYS; i++)
     {
         // Send out a ray in a random direction
-        raytrace::Ray ray{LIGHT_ORIGIN, glm::normalize(glm::ballRand(1.0f))};
-        std::optional<raytrace::TriHit> triHit = scene.getHit(ray);
+        Ray ray{LIGHT_ORIGIN, glm::normalize(glm::ballRand(1.0f))};
+        std::optional<TriHit> triHit = scene.getHit(ray);
 
         // If ray hit
         if (triHit)
