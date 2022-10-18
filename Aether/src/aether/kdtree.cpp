@@ -119,7 +119,6 @@ std::unique_ptr<KDNodeLeaf> KDNodeLeaf::construct(glm::vec3 const &min, glm::vec
     return std::make_unique<KDNodeLeaf>(min, max, triangles);
 }
 
-
 std::optional<TriHit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
 {
     auto bounds = this->tRange(ray); // TODO: Optimise by passing bounds into tri calc for early termination
@@ -127,9 +126,9 @@ std::optional<TriHit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
     for (RayTri const &tri : triangles)
     {
         float mT = closestHit ? closestHit->getT() : tMin;
-        std::optional<Hit> hit = tri.getHit(ray, mT);
+        std::optional<TriHit> hit = tri.getHit(ray, mT);
         if ( hit && (hit->getT()>bounds.first && hit->getT()<bounds.second) && (!closestHit || hit->getT() < closestHit->getT()) )
-            closestHit.emplace( TriHit{*hit, &tri} );
+            closestHit.emplace( *hit );
     }
     return closestHit;
 }

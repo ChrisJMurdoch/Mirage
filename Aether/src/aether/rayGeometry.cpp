@@ -30,7 +30,7 @@ RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightma
     v31 = a.pos-c.pos;
 }
 
-std::optional<Hit> RayTri::getHit(Ray const &ray, float maxT) const
+std::optional<TriHit> RayTri::getHit(Ray const &ray, float maxT) const
 {
     // Return if plane and ray are parallel
     float normDotRayDir = glm::dot(norm, ray.dir);
@@ -63,7 +63,7 @@ std::optional<Hit> RayTri::getHit(Ray const &ray, float maxT) const
         return {};
     
     // Hit
-    return Hit{t};
+    return TriHit{t, this};
 }
 
 Vertex RayTri::interpolate(glm::vec3 const &p) const

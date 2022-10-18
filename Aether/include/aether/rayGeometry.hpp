@@ -22,19 +22,12 @@ struct Ray
     }
 };
 
-/// Represents a ray collision
-struct Hit
-{
-    float t;
-    float &getT() { return t; }
-};
-
 /// Represents a ray collision and stores the triangle collided with
 struct TriHit
 {
-    Hit hit;
+    float t;
     RayTri const *triangle;
-    float &getT() { return hit.getT(); }
+    float &getT() { return t; }
 };
 
 /// Collidable triangle
@@ -49,7 +42,7 @@ struct RayTri
     glm::vec3 v12, v23, v31;
 
     RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
-    std::optional<Hit> getHit(Ray const &ray, float maxT) const;
+    std::optional<TriHit> getHit(Ray const &ray, float maxT) const;
     Vertex interpolate(glm::vec3 const &point) const;
 };
 
