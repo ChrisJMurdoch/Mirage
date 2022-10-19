@@ -4,6 +4,7 @@
 
 #include "aether/image.hpp"
 #include "aether/rayGeometry.hpp"
+#include "aether/rayscene.hpp"
 
 #include <glm/gtc/random.hpp>
 

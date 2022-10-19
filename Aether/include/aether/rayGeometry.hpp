@@ -43,15 +43,3 @@ struct RayTri
     RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
     Vertex interpolate(glm::vec3 const &point) const;
 };
-
-/// Collidable scene
-class RayScene
-{
-private:
-    KDTree *kdtree;
-
-public:
-    RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes);
-    ~RayScene();
-    std::optional<Hit> getHit(Ray const &ray) const;
-};
