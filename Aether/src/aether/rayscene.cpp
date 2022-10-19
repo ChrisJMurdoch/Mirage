@@ -18,15 +18,10 @@ std::vector<RayTri> getTriangles(std::vector<std::pair<Mesh const, Image &>> con
     return triangles;
 }
 
-RayScene::RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes) : kdtree{ new KDTree(getTriangles(meshes)) }
+RayScene::RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes) : kdtree{ KDTree(getTriangles(meshes)) }
 { }
-
-RayScene::~RayScene()
-{
-    delete kdtree; // TODO: Change to unique_ptr/composition
-}
 
 std::optional<Hit> RayScene::getHit(Ray const &ray) const
 {
-    return kdtree->getHit(ray);
+    return kdtree.getHit(ray);
 }

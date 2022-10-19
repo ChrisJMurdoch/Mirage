@@ -12,10 +12,9 @@ struct Ray;
 class RayScene
 {
 private:
-    KDTree *kdtree;
+    KDTree kdtree;
 
 public:
     RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes);
-    ~RayScene();
     std::optional<Hit> getHit(Ray const &ray) const;
 };
