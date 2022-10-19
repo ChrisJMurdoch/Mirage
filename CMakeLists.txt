@@ -102,11 +102,11 @@ target_sources(Aether
         Aether/src/aether/main.cpp
         Aether/src/aether/rayGeometry.cpp
         Aether/src/aether/rayscene.cpp
-        Aether/src/aether/triAABBTest.cpp
 )
 target_include_directories(Aether
     PRIVATE # Internal
         Aether/include/
+        Aether/src/ # For .inl files
     PRIVATE # Project
         Utility/include/
         Render/include/

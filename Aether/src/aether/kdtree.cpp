@@ -1,7 +1,7 @@
 
 #include "aether/kdtree.hpp"
 
-#include "aether/trAABBTest.hpp"
+#include "aether/triAABBTest.hpp"
 
 #include <limits>
 #include <utility>
