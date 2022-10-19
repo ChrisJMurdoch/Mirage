@@ -106,7 +106,7 @@ std::unique_ptr<KDNode> KDNode::construct(std::vector<RayTri> const &triangles)
 }
 
 /// Find min and max t value for ray-AABB intersection.  Adapted from 2D implementation: https://tavianator.com/2011/ray_box.html
-std::pair<float, float> KDNode::tRange(Ray const &ray) const
+std::optional<std::pair<float, float>> KDNode::intersection(Ray const &ray) const
 {
     glm::vec3 inv = 1.0f / ray.dir; // TODO pre-calculate
 
@@ -127,21 +127,13 @@ std::pair<float, float> KDNode::tRange(Ray const &ray) const
     tmin = std::max(tmin, std::min(tz1, tz2));
     tmax = std::min(tmax, std::max(tz1, tz2));
 
-    return {tmin, tmax};
-}
-
-std::optional<float> KDNode::intersection(Ray const &ray) const
-{
-    auto bounds = tRange(ray);
-    float tmin = bounds.first, tmax = bounds.second;
-
     if (tmax < tmin)
         return {};
     
     if (tmax < 0.0f)
         return {};
     
-    return std::max(0.0f, tmin);
+    return {{std::max(0.0f, tmin), tmax}};
 }
 
 
@@ -157,15 +149,14 @@ std::unique_ptr<KDNodeLeaf> KDNodeLeaf::construct(glm::vec3 const &min, glm::vec
     return std::make_unique<KDNodeLeaf>(min, max, triangles);
 }
 
-std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
+std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, float tMin, std::pair<float, float> tBounds) const
 {
-    auto bounds = this->tRange(ray); // TODO: Optimise by passing bounds into tri calc for early termination
     std::optional<Hit> closestHit = {};
     for (RayTri const &tri : triangles)
     {
         float mT = closestHit ? closestHit->t : tMin;
         std::optional<Hit> hit = getRayTriHit(tri, ray, mT);
-        if ( hit && (hit->t>bounds.first && hit->t<bounds.second) && (!closestHit || hit->t < closestHit->t) )
+        if ( hit && (hit->t>tBounds.first && hit->t<tBounds.second) && (!closestHit || hit->t < closestHit->t) )
             closestHit.emplace( *hit );
     }
     return closestHit;
@@ -217,11 +208,11 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
     return std::make_unique<KDNodeParent>( min, max, KDNode::construct(min, pivotMax, leftTriangles), KDNode::construct(pivotMin, max, rightTriangles) );
 }
 
-std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tMin) const
+std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tMin, std::pair<float, float> tBounds) const
 {
     // Get child box intersections (minimum tval)
-    std::optional<float> leftIntersect = left->intersection(ray); // TODO: Optimise by saving this value for later bounds check
-    std::optional<float> rightIntersect = right->intersection(ray);
+    std::optional<std::pair<float, float>> leftIntersect = left->intersection(ray); // TODO: Optimise by saving this value for later bounds check
+    std::optional<std::pair<float, float>> rightIntersect = right->intersection(ray);
 
     // No intersections
     if (!leftIntersect && !rightIntersect)
@@ -233,13 +224,14 @@ std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tMin) const
     std::unique_ptr<KDNode> const &far   = leftCloser ? right : left;
 
     // Check for collision in close box
-    std::optional<Hit> closeHit = close->getHit(ray, tMin);
+    std::optional<std::pair<float, float>> const &closeIntersect = leftCloser ? leftIntersect : rightIntersect;
+    std::optional<Hit> closeHit = close->getHit(ray, tMin, *closeIntersect);
     if (closeHit)
         return closeHit;
 
     // Check for collision in far box
-    std::optional<float> const &farIntersect = leftCloser ? rightIntersect : leftIntersect;
-    return farIntersect ? far->getHit(ray, tMin) : std::nullopt;
+    std::optional<std::pair<float, float>> const &farIntersect = leftCloser ? rightIntersect : leftIntersect;
+    return farIntersect ? far->getHit(ray, tMin, *farIntersect) : std::nullopt;
 }
 
 
@@ -252,5 +244,5 @@ KDTree::KDTree(std::vector<RayTri> const &triangles)
 
 std::optional<Hit> KDTree::getHit(Ray const &ray) const
 {
-    return root->getHit(ray, FLOAT_MAX);
+    return root->getHit(ray, FLOAT_MAX, {FLOAT_MIN, FLOAT_MAX});
 }

@@ -29,7 +29,7 @@ int run()
     RayScene scene(rayMeshes);
 
     // Raytracing parameters
-    int constexpr N_RAYS = 100000;
+    int constexpr N_RAYS = 1500000;
     float constexpr A = 1.0f;
     Pixel constexpr LIGHT_ALPHA{A, A, A};
     glm::vec3 constexpr LIGHT_ORIGIN{0.01f, 0.75f, 0.75f};

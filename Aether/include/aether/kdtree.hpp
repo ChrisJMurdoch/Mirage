@@ -20,9 +20,8 @@ public:
     static std::unique_ptr<KDNode> construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles);
     static std::unique_ptr<KDNode> construct(std::vector<RayTri> const &triangles);
 
-    std::pair<float, float> tRange(Ray const &ray) const;
-    std::optional<float> intersection(Ray const &ray) const;
-    virtual std::optional<Hit> getHit(Ray const &ray, float tMin) const = 0;
+    std::optional<std::pair<float, float>> intersection(Ray const &ray) const;
+    virtual std::optional<Hit> getHit(Ray const &ray, float tMin, std::pair<float, float> tBounds) const = 0;
 };
 
 
@@ -37,7 +36,7 @@ public:
 
 public:
     static std::unique_ptr<KDNodeLeaf> construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles);
-    virtual std::optional<Hit> getHit(Ray const &, float tMin) const override;
+    virtual std::optional<Hit> getHit(Ray const &, float tMin, std::pair<float, float> tBounds) const override;
 };
 
 
@@ -52,7 +51,7 @@ public:
 
 public:
     static std::unique_ptr<KDNodeParent> construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles);
-    virtual std::optional<Hit> getHit(Ray const &ray, float tMin) const override;
+    virtual std::optional<Hit> getHit(Ray const &ray, float tMin, std::pair<float, float> tBounds) const override;
 };
 
 
