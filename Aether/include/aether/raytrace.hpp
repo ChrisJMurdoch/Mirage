@@ -40,7 +40,6 @@ struct Hit
 {
     float t;
     RayTri const *triangle;
-    float &getT() { return t; }
 };
 
 /// Collidable scene
@@ -52,5 +51,7 @@ private:
 public:
     RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes);
     ~RayScene();
+    RayScene(RayScene const &other) = delete;
+    RayScene &operator=(RayScene const &other) = delete;
     std::optional<Hit> getHit(Ray const &ray) const;
 };

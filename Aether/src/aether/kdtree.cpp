@@ -161,9 +161,9 @@ std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
     std::optional<Hit> closestHit = {};
     for (RayTri const &tri : triangles)
     {
-        float mT = closestHit ? closestHit->getT() : tMin;
+        float mT = closestHit ? closestHit->t : tMin;
         std::optional<Hit> hit = getRayTriHit(tri, ray, mT);
-        if ( hit && (hit->getT()>bounds.first && hit->getT()<bounds.second) && (!closestHit || hit->getT() < closestHit->getT()) )
+        if ( hit && (hit->t>bounds.first && hit->t<bounds.second) && (!closestHit || hit->t < closestHit->t) )
             closestHit.emplace( *hit );
     }
     return closestHit;

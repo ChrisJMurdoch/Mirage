@@ -1,7 +1,6 @@
 
 #include "aether/raytrace.hpp"
 
-#include "utility/geometry.hpp"
 #include "aether/image.hpp"
 #include "aether/kdtree.hpp"
 

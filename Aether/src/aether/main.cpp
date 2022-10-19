@@ -50,7 +50,7 @@ int run()
             hits++;
 
             // Find intersections point and interpolated UVs
-            glm::vec3 intersectionPoint = ray.at(triHit->getT());
+            glm::vec3 intersectionPoint = ray.at(triHit->t);
             Vertex interpolatedVertex = triHit->triangle->interpolate(intersectionPoint);
 
             // Get relevant lightmap
