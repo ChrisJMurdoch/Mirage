@@ -108,22 +108,20 @@ std::unique_ptr<KDNode> KDNode::construct(std::vector<RayTri> const &triangles)
 /// Find min and max t value for ray-AABB intersection.  Adapted from 2D implementation: https://tavianator.com/2011/ray_box.html
 std::optional<std::pair<float, float>> KDNode::intersection(Ray const &ray) const
 {
-    glm::vec3 inv = 1.0f / ray.dir; // TODO pre-calculate
-
     float tmin, tmax;
 
-    float tx1 = (min.x - ray.origin.x)*inv.x;
-    float tx2 = (max.x - ray.origin.x)*inv.x;
+    float tx1 = (min.x - ray.origin.x)*ray.dirInv.x;
+    float tx2 = (max.x - ray.origin.x)*ray.dirInv.x;
     tmin = std::min(tx1, tx2);
     tmax = std::max(tx1, tx2);
 
-    float ty1 = (min.y - ray.origin.y)*inv.y;
-    float ty2 = (max.y - ray.origin.y)*inv.y;
+    float ty1 = (min.y - ray.origin.y)*ray.dirInv.y;
+    float ty2 = (max.y - ray.origin.y)*ray.dirInv.y;
     tmin = std::max(tmin, std::min(ty1, ty2));
     tmax = std::min(tmax, std::max(ty1, ty2));
 
-    float tz1 = (min.z - ray.origin.z)*inv.z;
-    float tz2 = (max.z - ray.origin.z)*inv.z;
+    float tz1 = (min.z - ray.origin.z)*ray.dirInv.z;
+    float tz2 = (max.z - ray.origin.z)*ray.dirInv.z;
     tmin = std::max(tmin, std::min(tz1, tz2));
     tmax = std::min(tmax, std::max(tz1, tz2));
 

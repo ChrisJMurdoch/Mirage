@@ -12,7 +12,10 @@ class KDTree;
 /// Ray with origin and direction
 struct Ray
 {
-    glm::vec3 const origin, dir;
+    glm::vec3 const origin, dir, dirInv;
+
+    Ray(glm::vec3 origin, glm::vec3 dir) : origin{origin}, dir{dir}, dirInv{1.0f/dir}
+    { }
 
     glm::vec3 at(float t) const
     {
