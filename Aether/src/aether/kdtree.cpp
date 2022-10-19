@@ -40,6 +40,42 @@ bool overlaps(glm::vec3 const &min, glm::vec3 const &max, RayTri const &triangle
     return triBoxOverlap(boxcenter, boxhalfsize, triverts);
 }
 
+std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, float maxT)
+{
+    // Return if plane and ray are parallel
+    float normDotRayDir = glm::dot(rayTri.norm, ray.dir);
+    if (fabs(normDotRayDir) < FLOAT_MIN)
+        return {};
+    
+    // Compute t
+    float t = -(glm::dot(rayTri.norm, ray.origin) + rayTri.d) / normDotRayDir;
+ 
+    // Return if point is behind origin or is more than maxT (short-circuit if would be behind previously calculated triangle)
+    if (t < 0 || t >= maxT)
+        return {};
+ 
+    // Compute intersection point
+    glm::vec3 p = ray.at(t);
+
+    // Check if correct side of edge AB
+    glm::vec3 vp0 = p - rayTri.a.pos;
+    if (glm::dot(rayTri.norm, glm::cross(rayTri.v12, vp0)) < 0)
+        return {};
+ 
+    // Check if correct side of edge BC
+    glm::vec3 vp1 = p - rayTri.b.pos;
+    if (glm::dot(rayTri.norm, glm::cross(rayTri.v23, vp1)) < 0)
+        return {};
+ 
+    // Check if correct side of edge CA
+    glm::vec3 vp2 = p - rayTri.c.pos;
+    if (glm::dot(rayTri.norm, glm::cross(rayTri.v31, vp2)) < 0)
+        return {};
+    
+    // Hit
+    return Hit{t, &rayTri};
+}
+
 
 
 // ===== KDNode =====
@@ -126,7 +162,7 @@ std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, float tMin) const
     for (RayTri const &tri : triangles)
     {
         float mT = closestHit ? closestHit->getT() : tMin;
-        std::optional<Hit> hit = tri.getHit(ray, mT);
+        std::optional<Hit> hit = getRayTriHit(tri, ray, mT);
         if ( hit && (hit->getT()>bounds.first && hit->getT()<bounds.second) && (!closestHit || hit->getT() < closestHit->getT()) )
             closestHit.emplace( *hit );
     }

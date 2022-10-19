@@ -41,7 +41,6 @@ struct RayTri
     glm::vec3 v12, v23, v31;
 
     RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
-    std::optional<Hit> getHit(Ray const &ray, float maxT) const;
     Vertex interpolate(glm::vec3 const &point) const;
 };
 

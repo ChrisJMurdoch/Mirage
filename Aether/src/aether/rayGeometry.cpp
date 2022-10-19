@@ -30,42 +30,6 @@ RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightma
     v31 = a.pos-c.pos;
 }
 
-std::optional<Hit> RayTri::getHit(Ray const &ray, float maxT) const
-{
-    // Return if plane and ray are parallel
-    float normDotRayDir = glm::dot(norm, ray.dir);
-    if (fabs(normDotRayDir) < FLOAT_MIN)
-        return {};
-    
-    // Compute t
-    float t = -(glm::dot(norm, ray.origin) + d) / normDotRayDir;
- 
-    // Return if point is behind origin or is more than maxT (short-circuit if would be behind previously calculated triangle)
-    if (t < 0 || t >= maxT)
-        return {};
- 
-    // Compute intersection point
-    glm::vec3 p = ray.at(t);
-
-    // Check if correct side of edge AB
-    glm::vec3 vp0 = p - a.pos;
-    if (glm::dot(norm, glm::cross(v12, vp0)) < 0)
-        return {};
- 
-    // Check if correct side of edge BC
-    glm::vec3 vp1 = p - b.pos;
-    if (glm::dot(norm, glm::cross(v23, vp1)) < 0)
-        return {};
- 
-    // Check if correct side of edge CA
-    glm::vec3 vp2 = p - c.pos;
-    if (glm::dot(norm, glm::cross(v31, vp2)) < 0)
-        return {};
-    
-    // Hit
-    return Hit{t, this};
-}
-
 Vertex RayTri::interpolate(glm::vec3 const &p) const
 {
     // Barycentric coordinate interpolation from: https://gamedev.stackexchange.com/a/23745
