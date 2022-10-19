@@ -86,9 +86,22 @@ KDNode::KDNode(glm::vec3 const &min, glm::vec3 const &max)
 
 std::unique_ptr<KDNode> KDNode::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles)
 {
+    // Not 100% sure about this optimisation
+    // Might introduce bugs but gives a +42% speedup
+    // Shrinks bounding box to fit elements
+    glm::vec3 shrunkMin{FLOAT_MAX}, shrunkMax{FLOAT_MIN};
+    for (RayTri const &tri : triangles)
+    {
+        shrunkMin = componentMin( componentMin(shrunkMin, tri.a.pos), componentMin(tri.b.pos, tri.c.pos) );
+        shrunkMax = componentMax( componentMax(shrunkMax, tri.a.pos), componentMax(tri.b.pos, tri.c.pos) );
+    }
+    shrunkMin = componentMax(shrunkMin, min);
+    shrunkMax = componentMin(shrunkMax, max);
+
+    // Select relevant constructor
     return (triangles.size() > MAX_LEAF_SIZE) ?
-        static_cast<std::unique_ptr<KDNode>>( KDNodeParent::construct(min, max, triangles) ) :
-        static_cast<std::unique_ptr<KDNode>>( KDNodeLeaf::construct(min, max, triangles) );
+        static_cast<std::unique_ptr<KDNode>>( KDNodeParent::construct(shrunkMin, shrunkMax, triangles) ) :
+        static_cast<std::unique_ptr<KDNode>>( KDNodeLeaf::construct(shrunkMin, shrunkMax, triangles) );
 }
 
 std::unique_ptr<KDNode> KDNode::construct(std::vector<RayTri> const &triangles)
