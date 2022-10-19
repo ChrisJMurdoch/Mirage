@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "aether/rayGeometry.hpp"
+#include "aether/raytrace.hpp"
 
 #include <memory>
 #include <optional>

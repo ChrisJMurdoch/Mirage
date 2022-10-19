@@ -4,13 +4,13 @@
 #include "aether/triAABBTest.hpp"
 
 #include <limits>
-#include <utility>
-#include <iostream>
 
 float constexpr FLOAT_MIN = std::numeric_limits<float>::min();
 float constexpr FLOAT_MAX = std::numeric_limits<float>::max();
 
 int constexpr MAX_LEAF_SIZE = 12; // TODO: Implement tree depth limit
+
+
 
 // ===== Helper Functions =====
 

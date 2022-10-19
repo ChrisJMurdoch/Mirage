@@ -1,13 +1,9 @@
 
-#include "aether/rayGeometry.hpp"
+#include "aether/raytrace.hpp"
 
+#include "utility/geometry.hpp"
+#include "aether/image.hpp"
 #include "aether/kdtree.hpp"
-
-#include <limits>
-#include <iostream>
-
-float constexpr FLOAT_MIN = std::numeric_limits<float>::min();
-float constexpr FLOAT_MAX = std::numeric_limits<float>::max();
 
 
 
@@ -44,4 +40,34 @@ Vertex RayTri::interpolate(glm::vec3 const &p) const
     float w = (d00 * d21 - d01 * d20) / denom;
     float u = 1 - v - w;
     return a*u + b*v + c*w;
+}
+
+
+
+// ===== RayScene =====
+
+std::vector<RayTri> getTriangles(std::vector<std::pair<Mesh const, Image &>> const &meshes)
+{
+    std::vector<RayTri> triangles;
+    for (std::pair<Mesh const, Image &> const &pair : meshes)
+    {
+        Mesh const &mesh = pair.first;
+        Image &image = pair.second;
+        for (int i=0; i<mesh.indices.size(); i+=3)
+            triangles.push_back( RayTri{ mesh.vertices[mesh.indices[i+0]], mesh.vertices[mesh.indices[i+1]], mesh.vertices[mesh.indices[i+2]], image } );
+    }
+    return triangles;
+}
+
+RayScene::RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes) : kdtree{ new KDTree(getTriangles(meshes)) }
+{ }
+
+RayScene::~RayScene()
+{
+    delete kdtree;
+}
+
+std::optional<Hit> RayScene::getHit(Ray const &ray) const
+{
+    return kdtree->getHit(ray);
 }

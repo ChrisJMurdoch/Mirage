@@ -4,11 +4,10 @@
 #include "utility/geometry.hpp"
 
 #include <optional>
-#include <memory>
 
+struct Mesh;
 class Image;
 class KDTree;
-struct RayTri;
 
 /// Ray with origin and direction
 struct Ray
@@ -19,14 +18,6 @@ struct Ray
     {
         return origin + dir*t;
     }
-};
-
-/// Represents a ray collision and stores the triangle collided with
-struct Hit
-{
-    float t;
-    RayTri const *triangle;
-    float &getT() { return t; }
 };
 
 /// Collidable triangle
@@ -42,4 +33,24 @@ struct RayTri
 
     RayTri(Vertex const &a, Vertex const &b, Vertex const &c, Image &lightmap);
     Vertex interpolate(glm::vec3 const &point) const;
+};
+
+/// Represents a ray collision and stores the triangle collided with
+struct Hit
+{
+    float t;
+    RayTri const *triangle;
+    float &getT() { return t; }
+};
+
+/// Collidable scene
+class RayScene
+{
+private:
+    KDTree *kdtree;
+
+public:
+    RayScene(std::vector<std::pair<Mesh const, Image &>> const &meshes);
+    ~RayScene();
+    std::optional<Hit> getHit(Ray const &ray) const;
 };
