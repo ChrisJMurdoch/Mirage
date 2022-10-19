@@ -40,7 +40,7 @@ bool overlaps(glm::vec3 const &min, glm::vec3 const &max, RayTri const &triangle
     return triBoxOverlap(boxcenter, boxhalfsize, triverts);
 }
 
-std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, float maxT)
+std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, std::pair<float, float> tBounds)
 {
     // Return if plane and ray are parallel
     float normDotRayDir = glm::dot(rayTri.norm, ray.dir);
@@ -51,7 +51,7 @@ std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, float maxT
     float t = -(glm::dot(rayTri.norm, ray.origin) + rayTri.d) / normDotRayDir;
  
     // Return if point is behind origin or is more than maxT (short-circuit if would be behind previously calculated triangle)
-    if (t < 0 || t >= maxT)
+    if (t < tBounds.first || t > tBounds.second)
         return {};
  
     // Compute intersection point
@@ -149,15 +149,15 @@ std::unique_ptr<KDNodeLeaf> KDNodeLeaf::construct(glm::vec3 const &min, glm::vec
     return std::make_unique<KDNodeLeaf>(min, max, triangles);
 }
 
-std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, float tMin, std::pair<float, float> tBounds) const
+std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, std::pair<float, float> tBounds) const
 {
     std::optional<Hit> closestHit = {};
     for (RayTri const &tri : triangles)
     {
-        float mT = closestHit ? closestHit->t : tMin;
-        std::optional<Hit> hit = getRayTriHit(tri, ray, mT);
-        if ( hit && (hit->t>tBounds.first && hit->t<tBounds.second) && (!closestHit || hit->t < closestHit->t) )
-            closestHit.emplace( *hit );
+        float tMin = closestHit ? closestHit->t : tBounds.first;
+        std::optional<Hit> hit = getRayTriHit(tri, ray, {tMin, tBounds.second});
+        if (hit)
+            closestHit.emplace(*hit);
     }
     return closestHit;
 }
@@ -208,7 +208,7 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
     return std::make_unique<KDNodeParent>( min, max, KDNode::construct(min, pivotMax, leftTriangles), KDNode::construct(pivotMin, max, rightTriangles) );
 }
 
-std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tMin, std::pair<float, float> tBounds) const
+std::optional<Hit> KDNodeParent::getHit(Ray const &ray, std::pair<float, float> tBounds) const
 {
     // Get child box intersections (minimum tval)
     std::optional<std::pair<float, float>> leftIntersect = left->intersection(ray); // TODO: Optimise by saving this value for later bounds check
@@ -225,13 +225,13 @@ std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tMin, std::pair<fl
 
     // Check for collision in close box
     std::optional<std::pair<float, float>> const &closeIntersect = leftCloser ? leftIntersect : rightIntersect;
-    std::optional<Hit> closeHit = close->getHit(ray, tMin, *closeIntersect);
+    std::optional<Hit> closeHit = close->getHit(ray, *closeIntersect);
     if (closeHit)
         return closeHit;
 
     // Check for collision in far box
     std::optional<std::pair<float, float>> const &farIntersect = leftCloser ? rightIntersect : leftIntersect;
-    return farIntersect ? far->getHit(ray, tMin, *farIntersect) : std::nullopt;
+    return farIntersect ? far->getHit(ray, *farIntersect) : std::nullopt;
 }
 
 
@@ -244,5 +244,5 @@ KDTree::KDTree(std::vector<RayTri> const &triangles)
 
 std::optional<Hit> KDTree::getHit(Ray const &ray) const
 {
-    return root->getHit(ray, FLOAT_MAX, {FLOAT_MIN, FLOAT_MAX});
+    return root->getHit(ray, {FLOAT_MIN, FLOAT_MAX});
 }
