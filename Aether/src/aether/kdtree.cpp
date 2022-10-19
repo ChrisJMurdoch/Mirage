@@ -211,7 +211,7 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
 std::optional<Hit> KDNodeParent::getHit(Ray const &ray, std::pair<float, float> tBounds) const
 {
     // Get child box intersections (minimum tval)
-    std::optional<std::pair<float, float>> leftIntersect = left->intersection(ray); // TODO: Optimise by saving this value for later bounds check
+    std::optional<std::pair<float, float>> leftIntersect = left->intersection(ray);
     std::optional<std::pair<float, float>> rightIntersect = right->intersection(ray);
 
     // No intersections
@@ -219,7 +219,7 @@ std::optional<Hit> KDNodeParent::getHit(Ray const &ray, std::pair<float, float> 
         return {};
     
     // Find close and far boxes
-    bool leftCloser = leftIntersect && ( !rightIntersect || (*leftIntersect) < (*rightIntersect) );
+    bool leftCloser = leftIntersect && ( !rightIntersect || leftIntersect->first < rightIntersect->first );
     std::unique_ptr<KDNode> const &close = leftCloser ? left : right;
     std::unique_ptr<KDNode> const &far   = leftCloser ? right : left;
 
