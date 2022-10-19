@@ -14,12 +14,12 @@ int constexpr MAX_LEAF_SIZE = 12; // TODO: Implement tree depth limit
 
 // ===== Helper Functions =====
 
-glm::vec3 componentMin(glm::vec3 a, glm::vec3 b)
+inline glm::vec3 componentMin(glm::vec3 a, glm::vec3 b)
 {
     return glm::vec3{std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z)};
 }
 
-glm::vec3 componentMax(glm::vec3 a, glm::vec3 b)
+inline glm::vec3 componentMax(glm::vec3 a, glm::vec3 b)
 {
     return glm::vec3{std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z)};
 }
@@ -105,9 +105,11 @@ std::unique_ptr<KDNode> KDNode::construct(std::vector<RayTri> const &triangles)
     return KDNode::construct(min, max, triangles);
 }
 
+/// Find min and max t value for ray-AABB intersection.  Adapted from 2D implementation: https://tavianator.com/2011/ray_box.html
 std::pair<float, float> KDNode::tRange(Ray const &ray) const
 {
-    glm::vec3 inv = 1.0f / ray.dir;
+    glm::vec3 inv = 1.0f / ray.dir; // TODO pre-calculate
+
     float tmin, tmax;
 
     float tx1 = (min.x - ray.origin.x)*inv.x;
@@ -128,7 +130,7 @@ std::pair<float, float> KDNode::tRange(Ray const &ray) const
     return {tmin, tmax};
 }
 
-std::optional<float> KDNode::intersect(Ray const &ray) const
+std::optional<float> KDNode::intersection(Ray const &ray) const
 {
     auto bounds = tRange(ray);
     float tmin = bounds.first, tmax = bounds.second;
@@ -218,8 +220,8 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
 std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tMin) const
 {
     // Get child box intersections (minimum tval)
-    std::optional<float> leftIntersect = left->intersect(ray);
-    std::optional<float> rightIntersect = right->intersect(ray);
+    std::optional<float> leftIntersect = left->intersection(ray); // TODO: Optimise by saving this value for later bounds check
+    std::optional<float> rightIntersect = right->intersection(ray);
 
     // No intersections
     if (!leftIntersect && !rightIntersect)

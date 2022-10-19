@@ -21,7 +21,7 @@ public:
     static std::unique_ptr<KDNode> construct(std::vector<RayTri> const &triangles);
 
     std::pair<float, float> tRange(Ray const &ray) const;
-    std::optional<float> intersect(Ray const &ray) const;
+    std::optional<float> intersection(Ray const &ray) const;
     virtual std::optional<Hit> getHit(Ray const &ray, float tMin) const = 0;
 };
 
