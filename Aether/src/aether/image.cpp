@@ -60,8 +60,7 @@ int Image::getHeight() const
 
 unsigned char toChar(float x)
 {
-    unsigned char scaled = std::round( x * 255 );
-    return std::clamp( scaled, static_cast<unsigned char>(0), static_cast<unsigned char>(255) );
+    return std::round( std::clamp(x, 0.0f, 1.0f) * 255 );
 }
 
 void Image::save(char const *filename) const

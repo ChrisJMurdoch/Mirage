@@ -1,17 +1,34 @@
 
 #pragma once
 
+#include <atomic>
 #include <vector>
+#include <algorithm>
 
 struct Pixel
 {
     float r, g, b;
+    Pixel(float r, float g, float b)
+    {
+        this->r = r;
+        this->g = g;
+        this->b = b;
+    }
     Pixel &operator+=(Pixel const &o)
     {
-        r+=o.r;
-        g+=o.g;
-        b+=o.b;
+        r=std::clamp(r+o.r, 0.0f, 1.0f);
+        g=std::clamp(g+o.g, 0.0f, 1.0f);
+        b=std::clamp(b+o.b, 0.0f, 1.0f);
         return *this;
+    }
+    Pixel operator*(float f)
+    {
+        return Pixel
+        {
+            std::clamp(r*f, 0.0f, 1.0f),
+            std::clamp(g*f, 0.0f, 1.0f),
+            std::clamp(b*f, 0.0f, 1.0f)
+        };
     }
 };
 
