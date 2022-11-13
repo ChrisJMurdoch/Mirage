@@ -23,6 +23,7 @@ Image::Image(int width, int height) : width(width), height(height), channels(3)
 Image::Image(char const *filename)
 {
     // Load data
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
     if (data==nullptr)
         throw std::exception("stbi_load failed.");
@@ -43,7 +44,36 @@ Image::Image(char const *filename)
     stbi_image_free(data);
 }
 
+Image::Image(Image const &other) :width{other.width}, height{other.height}, channels{other.channels}, pixels{other.pixels}
+{ }
+
+Image::Image(Image const &&other) :width{other.width}, height{other.height}, channels{other.channels}, pixels{std::move(other.pixels)}
+{ }
+
+Image &Image::operator=(Image const &other)
+{
+    width = other.width;
+    height = other.height;
+    channels = other.channels;
+    pixels = other.pixels;
+    return *this;
+}
+
+Image &Image::operator=(Image const &&other)
+{
+    width = other.width;
+    height = other.height;
+    channels = other.channels;
+    pixels = std::move(other.pixels);
+    return *this;
+}
+
 Pixel *Image::operator[](std::size_t index)
+{
+    return &pixels[index*width];
+}
+
+Pixel const *Image::operator[](std::size_t index) const
 {
     return &pixels[index*width];
 }
@@ -81,4 +111,32 @@ void Image::save(char const *filename) const
     std::filesystem::create_directories(loc);
     stbi_flip_vertically_on_write(true);
     stbi_write_jpg(filename, width, height, channels, data.data(), 90);
+}
+
+Image Image::blur() const
+{
+    Image blurred{width, height};
+    for (int y=0; y<height; y++)
+        for (int x=0; x<width; x++)
+            blurred[y][x] = blurredPixel(x, y);
+    return blurred;
+}
+
+Pixel Image::blurredPixel(int x, int y) const
+{
+    int count = 0;
+    Pixel sum{0, 0, 0};
+    for (int yi=y-1; yi<y+2; yi++)
+    {
+        if (yi<0 || yi>=height)
+            continue;
+        for (int xi=x-1; xi<x+2; xi++)
+        {
+            if (xi<0 || xi>=width)
+                continue;
+            count++;
+            sum += (*this)[yi][xi];
+        }
+    }
+    return sum / count;
 }

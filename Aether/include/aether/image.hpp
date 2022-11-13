@@ -1,34 +1,43 @@
 
 #pragma once
 
-#include <atomic>
+#include <glm/glm.hpp>
+
 #include <vector>
 #include <algorithm>
 
 struct Pixel
 {
     float r, g, b;
-    Pixel(float r, float g, float b)
-    {
-        this->r = r;
-        this->g = g;
-        this->b = b;
-    }
+
+    constexpr Pixel(float r, float g, float b) : r(r), g(g), b(b)
+    { }
     Pixel &operator+=(Pixel const &o)
     {
-        r=std::clamp(r+o.r, 0.0f, 1.0f);
-        g=std::clamp(g+o.g, 0.0f, 1.0f);
-        b=std::clamp(b+o.b, 0.0f, 1.0f);
+        r=r+o.r;
+        g=g+o.g;
+        b=b+o.b;
         return *this;
     }
-    Pixel operator*(float f)
+    Pixel operator*(float f) const
     {
-        return Pixel
-        {
-            std::clamp(r*f, 0.0f, 1.0f),
-            std::clamp(g*f, 0.0f, 1.0f),
-            std::clamp(b*f, 0.0f, 1.0f)
-        };
+        return Pixel{ r*f, g*f, b*f };
+    }
+    Pixel operator/(float f) const
+    {
+        return Pixel{ r/f, g/f, b/f };
+    }
+    Pixel operator+(float f) const
+    {
+        return Pixel{ r+f, g+f, b+f };
+    }
+    Pixel operator-(float f) const
+    {
+        return Pixel{ r-f, g-f, b-f };
+    }
+    operator glm::vec3() const
+    {
+        return glm::vec3(r, g, b);
     }
 };
 
@@ -41,12 +50,26 @@ private:
 public:
     Image(int width, int height);
     Image(char const *filename);
-    Image(Image const &other) = delete;
-    Image &operator=(Image const &other) = delete;
+    Image(Image const &other);
+    Image(Image const &&other);
+    Image &operator=(Image const &other);
+    Image &operator=(Image const &&other);
 
     Pixel *operator[](std::size_t index);
+    Pixel const *operator[](std::size_t index) const;
 
     int getWidth() const;
     int getHeight() const;
     void save(char const *filename) const;
+
+    Image blur() const;
+
+private:
+    Pixel blurredPixel(int x, int y) const;
+};
+
+struct PhysicalMaterial
+{
+    Image const *normal;
+    Image *lightmap;
 };
