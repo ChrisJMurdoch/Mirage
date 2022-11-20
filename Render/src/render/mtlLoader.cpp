@@ -1,7 +1,7 @@
 
-#include "display/mtlLoader.hpp"
+#include "render/mtlLoader.hpp"
 
-#include "display/texture.hpp"
+#include "render/texture.hpp"
 
 #include <fstream>
 #include <sstream>

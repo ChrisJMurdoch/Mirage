@@ -1,10 +1,10 @@
 
-#include "display/program.hpp"
+#include "render/program.hpp"
 
-#include "display/gl.hpp"
-#include "display/model.hpp"
+#include "render/gl.hpp"
+#include "render/model.hpp"
 #include "utility/geometry.hpp"
-#include "display/texture.hpp"
+#include "render/texture.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

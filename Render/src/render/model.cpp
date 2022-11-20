@@ -1,12 +1,12 @@
 
-#include "display/model.hpp"
+#include "render/model.hpp"
 
 #define UTILITY_GL_FUNCTIONS
 #include "utility/geometry.hpp"
 
-#include "display/gl.hpp"
-#include "display/program.hpp"
-#include "display/texture.hpp"
+#include "render/gl.hpp"
+#include "render/program.hpp"
+#include "render/texture.hpp"
 
 #include <iostream>
 #include <cstddef>

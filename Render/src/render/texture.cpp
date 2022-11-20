@@ -1,7 +1,7 @@
 
-#include "display/texture.hpp"
+#include "render/texture.hpp"
 
-#include "display/gl.hpp"
+#include "render/gl.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

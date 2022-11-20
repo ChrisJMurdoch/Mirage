@@ -16,4 +16,4 @@ namespace gl
     static inline void bindTexture2D(unsigned int handle);
 }
 
-#include "display/gl.inl"
+#include "render/gl.inl"

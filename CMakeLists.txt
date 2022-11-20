@@ -47,11 +47,11 @@ target_include_directories(Utility
 add_library(Render STATIC)
 target_sources(Render
     PRIVATE # Internal
-    Render/src/display/display.cpp
-    Render/src/display/model.cpp
-    Render/src/display/mtlLoader.cpp
-    Render/src/display/program.cpp
-    Render/src/display/texture.cpp
+    Render/src/render/display.cpp
+    Render/src/render/model.cpp
+    Render/src/render/mtlLoader.cpp
+    Render/src/render/program.cpp
+    Render/src/render/texture.cpp
     PRIVATE # Vendor
         ${GLAD_SRC}/glad.c
 )

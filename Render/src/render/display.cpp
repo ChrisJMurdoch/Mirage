@@ -1,7 +1,7 @@
 
-#include "display/display.hpp"
+#include "render/display.hpp"
 
-#include "display/model.hpp"
+#include "render/model.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

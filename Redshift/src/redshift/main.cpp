@@ -3,11 +3,11 @@
 #include "utility/objLoader.hpp"
 #include "utility/geometry.hpp"
 
-#include "display/display.hpp"
-#include "display/mtlLoader.hpp"
-#include "display/program.hpp"
-#include "display/texture.hpp"
-#include "display/model.hpp"
+#include "render/display.hpp"
+#include "render/mtlLoader.hpp"
+#include "render/program.hpp"
+#include "render/texture.hpp"
+#include "render/model.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
