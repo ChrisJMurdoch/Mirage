@@ -24,7 +24,7 @@ float time()
 
 int main()
 {
-    std::cout << " // === REDSHIFT === \\\\ " << std::endl << std::endl;
+    std::cout << " // === TERRA === \\\\ " << std::endl << std::endl;
 
     try
     {
@@ -32,21 +32,28 @@ int main()
         Display display{"Redshift", 1000, 600};
 
         // Compile shaders into program
-        Program program{"resources/shaders/model.vert", "resources/shaders/aether.frag"};
+        Program program{"resources/shaders/model.vert", "resources/shaders/model.frag"};
 
         auto start = std::chrono::system_clock::now();
 
-        // Load floor model
-        Mesh floorMesh = objLoader::loadObj("resources/models/floor/floor.obj");
+        // Generate and register land model
+        Mesh floorMesh{
+            std::vector<Vertex>{
+                Vertex{glm::vec3{-1, 1,-1}, glm::vec2{0,0}, glm::vec3{-1, 1,-1}},
+                Vertex{glm::vec3{ 1, 0,-1}, glm::vec2{1,0}, glm::vec3{ 1, 1,-1}},
+                Vertex{glm::vec3{ 1, 1, 1}, glm::vec2{1,1}, glm::vec3{ 1, 1, 1}},
+                Vertex{glm::vec3{-1, 0, 1}, glm::vec2{0,1}, glm::vec3{-1, 1, 1}}
+            },
+            std::vector<unsigned int>
+            {
+                0, 1, 2,
+                2, 3, 0
+            }
+        };
+        objLoader::generateTangents(floorMesh.indices, floorMesh.vertices);
         Material floorMaterial = mtlLoader::loadMtl("resources/models/floor/floor.mtl");
         Model floor{program, floorMesh, floorMaterial};
         display.registerModel(&floor);
-
-        // Load gargoyle model
-        Mesh gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj");
-        Material gargoyleMaterial = mtlLoader::loadMtl("resources/models/gargoyle/gargoyle.mtl");
-        Model gargoyle{program, gargoyleMesh, gargoyleMaterial};
-        display.registerModel(&gargoyle);
 
         auto end = std::chrono::system_clock::now();
         std::cout << "Loaded models (" << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << "ms)" << std::endl;
@@ -82,7 +89,7 @@ int main()
             display.render();
         }
         
-        std::cout << " \\\\ === REDSHIFT === // " << std::endl;
+        std::cout << " \\\\ === TERRA === // " << std::endl;
     }
     catch(const std::exception &e)
     {

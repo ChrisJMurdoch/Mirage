@@ -120,3 +120,27 @@ target_link_libraries(Aether
     PRIVATE # Vendor
         ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
 )
+
+# --- Terra Application ---
+
+add_executable(Terra)
+target_sources(Terra
+    PRIVATE # Internal
+        Terra/src/terra/main.cpp
+)
+target_include_directories(Terra
+    PRIVATE # Internal
+        Terra/include/
+    PRIVATE # Project
+        Utility/include/
+        Render/include/
+    PRIVATE # Vendor
+        ${GLM_INCLUDE}
+)
+target_link_libraries(Terra
+    PRIVATE # Project
+        Utility
+        Render
+    PRIVATE # Vendor
+        ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
+)

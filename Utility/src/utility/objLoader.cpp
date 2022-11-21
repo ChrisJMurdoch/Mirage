@@ -191,6 +191,23 @@ Mesh objLoader::loadObj(char const *filepath, bool const verbose)
     }
 
     // Calculate tangents and bitangents
+    generateTangents(indices, vertices);
+
+    auto processEnd = std::chrono::system_clock::now();
+
+    // Report load statistics
+    if (verbose)
+    {
+        long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-loadStart).count();
+        std::cout << "Loaded model " << filepath << " (" << ms << "ms)" << std::endl;
+    }
+
+    return Mesh{vertices, indices};
+}
+
+void objLoader::generateTangents(std::vector<unsigned int> const &indices, std::vector<Vertex> &vertices)
+{
+    // Calculate tangents and bitangents
     {
         std::unordered_map<unsigned int, unsigned int> vertexOccurrences;
 
@@ -228,15 +245,4 @@ Mesh objLoader::loadObj(char const *filepath, bool const verbose)
             vertices[i].btan /= occurrences;
         }
     }
-
-    auto processEnd = std::chrono::system_clock::now();
-
-    // Report load statistics
-    if (verbose)
-    {
-        long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(processEnd-loadStart).count();
-        std::cout << "Loaded model " << filepath << " (" << ms << "ms)" << std::endl;
-    }
-
-    return Mesh{vertices, indices};
 }
