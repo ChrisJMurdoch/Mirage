@@ -13,4 +13,7 @@ namespace objLoader
 
     /// Generates tangents and bitangents for given vertex array
     void generateTangents(std::vector<unsigned int> const &indices, std::vector<Vertex> &vertices);
+
+    /// Generates normals for given vertex array
+    void generateNormals(std::vector<unsigned int> const &indices, std::vector<Vertex> &vertices);
 }

@@ -1,7 +1,7 @@
 
+#include "terra/generate.hpp"
 #include "utility/objLoader.hpp"
 #include "utility/geometry.hpp"
-
 #include "render/display.hpp"
 #include "render/mtlLoader.hpp"
 #include "render/program.hpp"
@@ -37,20 +37,9 @@ int main()
         auto start = std::chrono::system_clock::now();
 
         // Generate and register land model
-        Mesh floorMesh{
-            std::vector<Vertex>{
-                Vertex{glm::vec3{-1, 1,-1}, glm::vec2{0,0}, glm::vec3{-1, 1,-1}},
-                Vertex{glm::vec3{ 1, 0,-1}, glm::vec2{1,0}, glm::vec3{ 1, 1,-1}},
-                Vertex{glm::vec3{ 1, 1, 1}, glm::vec2{1,1}, glm::vec3{ 1, 1, 1}},
-                Vertex{glm::vec3{-1, 0, 1}, glm::vec2{0,1}, glm::vec3{-1, 1, 1}}
-            },
-            std::vector<unsigned int>
-            {
-                0, 1, 2,
-                2, 3, 0
-            }
-        };
+        Mesh floorMesh = generate::generateMesh(100, 50);
         objLoader::generateTangents(floorMesh.indices, floorMesh.vertices);
+        objLoader::generateNormals(floorMesh.indices, floorMesh.vertices);
         Material floorMaterial = mtlLoader::loadMtl("resources/models/floor/floor.mtl");
         Model floor{program, floorMesh, floorMaterial};
         display.registerModel(&floor);

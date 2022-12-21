@@ -127,6 +127,7 @@ add_executable(Terra)
 target_sources(Terra
     PRIVATE # Internal
         Terra/src/terra/main.cpp
+        Terra/src/terra/generate.cpp
 )
 target_include_directories(Terra
     PRIVATE # Internal

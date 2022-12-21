@@ -246,3 +246,20 @@ void objLoader::generateTangents(std::vector<unsigned int> const &indices, std::
         }
     }
 }
+
+void objLoader::generateNormals(std::vector<unsigned int> const &indices, std::vector<Vertex> &vertices)
+{
+    std::unordered_map<unsigned int, glm::vec3> normalAccumulations;
+    for (int i1=0; i1+2<vertices.size(); i1+=3)
+    {
+        int i2=i1+1, i3=i1+2;
+        glm::vec3 const &a=vertices[i1].pos, b=vertices[i2].pos, c=vertices[i3].pos;
+        glm::vec3 normal = glm::cross(c-a, b-a);
+        normalAccumulations[i1] += normal;
+        normalAccumulations[i2] += normal;
+        normalAccumulations[i3] += normal;
+    }
+
+    for (int index=0; index<vertices.size(); index++)
+        vertices[index].norm = glm::normalize(normalAccumulations[index]);
+}
