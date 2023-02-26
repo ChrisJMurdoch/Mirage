@@ -11,9 +11,12 @@
 void resizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    Display *display = reinterpret_cast<Display *>(glfwGetWindowUserPointer(window));
+    display->width = width;
+    display->height = height;
 }
 
-Display::Display(char const *title, int width, int height) : visible(false)
+Display::Display(char const *title, int width, int height) : width(width), height(height), visible(false)
 {
     // Initialise GLFW
     glfwInit();
@@ -39,6 +42,9 @@ Display::Display(char const *title, int width, int height) : visible(false)
 
     // GL Options
     glEnable(GL_DEPTH_TEST);
+
+    // Set user pointer for callbacks
+    glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
 
     // Size OpenGL viewport to window and setup resize callback
     glViewport(0, 0, width, height);
@@ -70,7 +76,8 @@ void Display::render()
         glfwSetWindowShouldClose(window, true);
     
     // Clear viewport
-    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+    float backgroundBrightness = 0.05f;
+    glClearColor(backgroundBrightness, backgroundBrightness, backgroundBrightness, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render each model

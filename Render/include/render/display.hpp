@@ -8,6 +8,9 @@ class Model;
 
 class Display
 {
+public:
+    int width, height;
+
 private:
     GLFWwindow *window;
     std::unordered_set<Model const *> models;

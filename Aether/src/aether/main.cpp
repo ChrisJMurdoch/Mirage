@@ -31,13 +31,17 @@ glm::vec3 randvec()
     return glm::normalize(glm::vec3(x, y, z));
 }
 
-void randomRays(glm::vec3 lightOrigin, Pixel const lightAlpha, RayScene const &scene, int nRays)
+void randomRays(glm::vec3 lightOrigin, float lightRadius, Pixel const lightAlpha, RayScene const &scene, int nRays)
 {
     // Simulate rays
     for (int i=0; i<nRays; i++)
     {
         // Send out a ray in a random direction
-        Ray ray{lightOrigin, randvec()};
+        Ray ray
+        {
+            lightOrigin + randvec()*lightRadius*static_cast<float>(uniform01(generator)), // TODO: Improve sphere distribution
+            randvec()
+        };
         std::optional<Hit> hit = scene.getHit(ray);
 
         // If ray hit
@@ -100,18 +104,20 @@ int run()
     RayScene scene(rayMeshes);
 
     // Raytracing parameters
-    int constexpr N_RAYS = 10000000;
+    int constexpr QUALITY = 3; // 1 QUALITY ~= 1s processing
+    int constexpr N_RAYS = 10000000 * QUALITY;
     int constexpr N_THREADS = 24;
-    float constexpr A = 0.2f;
+    float constexpr A = 0.3f / QUALITY;
     Pixel constexpr LIGHT_ALPHA{A, A, A};
     glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.0f};
+    float const LIGHT_RADIUS = 0.2f;
 
     auto start = std::chrono::system_clock::now();
 
     // Simulate rays
     std::vector<std::thread> threads;
     for (int i=0; i<N_THREADS; i++)
-        threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_ALPHA, std::ref(scene), N_RAYS/N_THREADS) );
+        threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, std::ref(scene), N_RAYS/N_THREADS) );
     for (std::thread &thread : threads)
         thread.join();
 
@@ -120,10 +126,6 @@ int run()
     long ms = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
     float secs = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() / 1000000.0f;
     std::cout << "Rays: " << N_RAYS << " in " << ms << "ms (" << int(N_RAYS/secs) << " rays/s)" << std::endl << std::endl;
-
-    // Post processing
-    //floorLightmap = floorLightmap.blur();
-    //gargoyleLightmap = gargoyleLightmap.blur();
 
     // Save lightmaps to generated/ folders
     floorLightmap.save("resources/models/floor/generated/lightmap.jpg");

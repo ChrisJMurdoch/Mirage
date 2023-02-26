@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # MSVC
-set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDebug)
+set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
 
 # ===== VENDOR RESOURCE PATHS =====
 
@@ -20,7 +20,7 @@ set(GLAD_SRC     vendor/glad-4.6-core/src)
 set(GLAD_INCLUDE vendor/glad-4.6-core/include)
 
 set(GLFW_INCLUDE vendor/glfw-3.3.8/include)
-set(GLFW_BIN     vendor/glfw-3.3.8/bin/x64/debug)
+set(GLFW_BIN     vendor/glfw-3.3.8/bin/x64/release)
 
 set(GLM_INCLUDE  vendor/glm-9.9.9.8/include)
 
