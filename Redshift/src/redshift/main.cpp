@@ -37,8 +37,8 @@ int main()
         auto start = std::chrono::system_clock::now();
 
         // Load floor model
-        Mesh floorMesh = objLoader::loadObj("resources/models/floor/floor.obj");
-        Material floorMaterial = mtlLoader::loadMtl("resources/models/floor/floor.mtl");
+        Mesh floorMesh = objLoader::loadObj("resources/models/cornell/cornell.obj");
+        Material floorMaterial = mtlLoader::loadMtl("resources/models/cornell/cornell.mtl");
         Model floor{program, floorMesh, floorMaterial};
         display.registerModel(&floor);
 
@@ -65,11 +65,11 @@ int main()
             glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(display.width)/display.height, 0.1f, 100.0f);
 
             // Create matrices
-            float cHeight = 2, tHeight = 1;
-            float const radius = 3.0f;
+            float cHeight = 2, tHeight = 2;
+            float const radius = 4.0f;
 
-            // glm::vec3 cameraPos = glm::vec3( sin(time())*radius,cHeight, cos(time())*radius );
-            glm::vec3 cameraPos = glm::vec3( sin(5)*radius,cHeight, cos(5)*radius );
+            glm::vec3 cameraPos = glm::vec3( sin(time())*radius,cHeight, cos(time())*radius );
+            //glm::vec3 cameraPos = glm::vec3( sin(0)*radius,cHeight, cos(0)*radius );
             glm::vec3 cameraTarget = glm::vec3(0.0f, tHeight, 0.0f);
             glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
             glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, up);

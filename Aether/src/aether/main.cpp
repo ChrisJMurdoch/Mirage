@@ -16,8 +16,7 @@
 #include <math.h>
 #include <cmath>
 
-unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-std::mt19937 generator(seed);
+thread_local std::mt19937 generator(std::chrono::system_clock::now().time_since_epoch().count());
 std::uniform_real_distribution<double> uniform01(0.0, 1.0);
 
 // From http://corysimon.github.io/articles/uniformdistn-on-sphere/
@@ -83,7 +82,7 @@ int run()
     std::cout << " // === AETHER === \\\\ " << std::endl << std::endl;
 
     // Load PBR maps
-    Image floorNormalMap{"resources/models/floor/textures/2k/normal.jpg"};
+    Image floorNormalMap{"resources/models/cornell/textures/2k/normal.jpg"};
     Image gargoyleNormalMap{"resources/models/gargoyle/textures/2k/normal.jpg"};
 
     // Create lightmap targets
@@ -98,16 +97,16 @@ int run()
     // Create raytraceable scene
     std::vector<std::pair<Mesh const, PhysicalMaterial &>> rayMeshes
     {
-        { objLoader::loadObj("resources/models/floor/floor.obj"), floorMat },
+        { objLoader::loadObj("resources/models/cornell/cornell.obj"), floorMat },
         { objLoader::loadObj("resources/models/gargoyle/gargoyle.obj"), gargoyleMat }
     };
     RayScene scene(rayMeshes);
 
     // Raytracing parameters
-    int constexpr QUALITY = 3; // 1 QUALITY ~= 1s processing
+    int constexpr QUALITY = 30; // 1 QUALITY ~= 1s processing
     int constexpr N_RAYS = 10000000 * QUALITY;
     int constexpr N_THREADS = 24;
-    float constexpr A = 0.3f / QUALITY;
+    float constexpr A = 0.05f / QUALITY;
     Pixel constexpr LIGHT_ALPHA{A, A, A};
     glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.0f};
     float const LIGHT_RADIUS = 0.2f;
@@ -125,10 +124,10 @@ int run()
     auto end = std::chrono::system_clock::now();
     long ms = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
     float secs = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() / 1000000.0f;
-    std::cout << "Rays: " << N_RAYS << " in " << ms << "ms (" << int(N_RAYS/secs) << " rays/s)" << std::endl << std::endl;
+    std::cout << "Rays: " << N_RAYS << " in " << ms << "ms (" << int(N_RAYS/secs/1000000) << " MegaRays/sec)" << std::endl << std::endl;
 
     // Save lightmaps to generated/ folders
-    floorLightmap.save("resources/models/floor/generated/lightmap.jpg");
+    floorLightmap.save("resources/models/cornell/generated/lightmap.jpg");
     gargoyleLightmap.save("resources/models/gargoyle/generated/lightmap.jpg");
 
     std::cout << " \\\\ === AETHER === // " << std::endl;

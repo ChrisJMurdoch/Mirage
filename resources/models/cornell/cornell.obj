@@ -1,0 +1,54 @@
+
+# Manually built Cornell box mesh
+
+# Close plane anticlockwise
+v -2 4 2
+v -2 0 2
+v 2 0 2
+v 2 4 2
+
+# Far plane anticlockwise
+v -2 4 -2
+v -2 0 -2
+v 2 0 -2
+v 2 4 -2
+
+# Texture coords
+vt 0.33333 0
+vt 0.66666 0
+vt 0 0.33333
+vt 0.33333 0.33333
+vt 0.66666 0.33333
+vt 1 0.33333
+vt 0 0.66666
+vt 0.33333 0.66666
+vt 0.66666 0.66666
+vt 1 0.66666
+vt 0.33333 1
+vt 0.66666 1
+
+# Vertex normals
+vn 0 -1 0
+vn 1 0 0
+vn 0 0 1
+vn -1 0 0
+vn 0 1 0
+vn 0 0 -1
+
+# Ceiling
+f 1/1/1 5/4/1 8/5/1 4/2/1
+
+# Left wall
+f 1/3/2 2/7/2 6/8/2 5/4/2
+
+# Back wall
+f 5/4/3 6/8/3 7/9/3 8/5/3
+
+# Right wall
+f 8/5/4 7/9/4 3/10/4 4/6/4
+
+# Floor
+f 6/8/5 2/11/5 3/12/5 7/9/5
+
+# Front wall
+#f 4/4/6 3/8/6 2/9/6 1/5/6

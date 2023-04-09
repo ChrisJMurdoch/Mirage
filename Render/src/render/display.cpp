@@ -42,6 +42,7 @@ Display::Display(char const *title, int width, int height) : width(width), heigh
 
     // GL Options
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     // Set user pointer for callbacks
     glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
