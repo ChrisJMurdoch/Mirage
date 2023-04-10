@@ -109,7 +109,7 @@ int run()
     float constexpr A = 0.05f / QUALITY;
     Pixel constexpr LIGHT_ALPHA{A, A, A};
     glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.0f};
-    float const LIGHT_RADIUS = 0.2f;
+    float const LIGHT_RADIUS = 0.0f;
 
     auto start = std::chrono::system_clock::now();
 

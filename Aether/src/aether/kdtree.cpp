@@ -40,7 +40,7 @@ bool overlaps(glm::vec3 const &min, glm::vec3 const &max, RayTri const &triangle
     return triBoxOverlap(boxcenter, boxhalfsize, triverts);
 }
 
-std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, std::pair<float, float> tBounds)
+std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, float tLimit)
 {
     // Return if plane and ray are parallel
     float normDotRayDir = glm::dot(rayTri.norm, ray.dir);
@@ -50,8 +50,8 @@ std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, std::pair<
     // Compute t
     float t = -(glm::dot(rayTri.norm, ray.origin) + rayTri.d) / normDotRayDir;
  
-    // Return if point is behind origin or is more than maxT (short-circuit if would be behind previously calculated triangle)
-    if (t < tBounds.first || t > tBounds.second)
+    // Return if point is behind origin or is more than tLimit (short-circuit if would be behind previously calculated triangle - or behind bounding box)
+    if (t < 0 || t > tLimit)
         return {};
  
     // Compute intersection point
@@ -160,15 +160,17 @@ std::unique_ptr<KDNodeLeaf> KDNodeLeaf::construct(glm::vec3 const &min, glm::vec
     return std::make_unique<KDNodeLeaf>(min, max, triangles);
 }
 
-std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, std::pair<float, float> tBounds) const
+std::optional<Hit> KDNodeLeaf::getHit(Ray const &ray, float tLimit) const
 {
     std::optional<Hit> closestHit = {};
     for (RayTri const &tri : triangles)
     {
-        float tMin = closestHit ? closestHit->t : tBounds.first;
-        std::optional<Hit> hit = getRayTriHit(tri, ray, {tMin, tBounds.second});
+        std::optional<Hit> hit = getRayTriHit(tri, ray, tLimit);
         if (hit)
+        {
             closestHit.emplace(*hit);
+            tLimit = closestHit->t;
+        }
     }
     return closestHit;
 }
@@ -219,7 +221,7 @@ std::unique_ptr<KDNodeParent> KDNodeParent::construct(glm::vec3 const &min, glm:
     return std::make_unique<KDNodeParent>( min, max, KDNode::construct(min, pivotMax, leftTriangles), KDNode::construct(pivotMin, max, rightTriangles) );
 }
 
-std::optional<Hit> KDNodeParent::getHit(Ray const &ray, std::pair<float, float> tBounds) const
+std::optional<Hit> KDNodeParent::getHit(Ray const &ray, float tLimit) const
 {
     // Get child box intersections (minimum tval)
     std::optional<std::pair<float, float>> leftIntersect = left->intersection(ray);
@@ -228,21 +230,26 @@ std::optional<Hit> KDNodeParent::getHit(Ray const &ray, std::pair<float, float> 
     // No intersections
     if (!leftIntersect && !rightIntersect)
         return {};
+
+    // Find closer
+    bool leftCloser = leftIntersect && (
+        !rightIntersect || // Left is only intersection
+        (leftIntersect->first+leftIntersect->second) < (rightIntersect->first+rightIntersect->second) // Left centre is closer than right
+    );
     
-    // Find close and far boxes
-    bool leftCloser = leftIntersect && ( !rightIntersect || leftIntersect->first < rightIntersect->first );
+    // Get close and far boxes
     std::unique_ptr<KDNode> const &close = leftCloser ? left : right;
     std::unique_ptr<KDNode> const &far   = leftCloser ? right : left;
 
     // Check for collision in close box
     std::optional<std::pair<float, float>> const &closeIntersect = leftCloser ? leftIntersect : rightIntersect;
-    std::optional<Hit> closeHit = close->getHit(ray, *closeIntersect);
+    std::optional<Hit> closeHit = close->getHit(ray, closeIntersect->second);
     if (closeHit)
         return closeHit;
 
     // Check for collision in far box
     std::optional<std::pair<float, float>> const &farIntersect = leftCloser ? rightIntersect : leftIntersect;
-    return farIntersect ? far->getHit(ray, *farIntersect) : std::nullopt;
+    return farIntersect ? far->getHit(ray, farIntersect->second) : std::nullopt;
 }
 
 
@@ -255,5 +262,5 @@ KDTree::KDTree(std::vector<RayTri> const &triangles)
 
 std::optional<Hit> KDTree::getHit(Ray const &ray) const
 {
-    return root->getHit(ray, {FLOAT_MIN, FLOAT_MAX});
+    return root->getHit(ray, FLOAT_MAX);
 }
