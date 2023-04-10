@@ -5,10 +5,9 @@
 
 #include <limits>
 
-float constexpr FLOAT_MIN = std::numeric_limits<float>::min();
-float constexpr FLOAT_MAX = std::numeric_limits<float>::max();
+float constexpr FP_TOLERANCE = 1e-5f;
 
-int constexpr MAX_LEAF_SIZE = 15; // TODO: Implement tree depth limit
+int constexpr MAX_LEAF_SIZE = 15; // TODO: Implement tree depth limit and post-construction simplification
 
 
 
@@ -44,14 +43,14 @@ std::optional<Hit> getRayTriHit(RayTri const &rayTri, Ray const &ray, float tLim
 {
     // Return if plane and ray are parallel
     float normDotRayDir = glm::dot(rayTri.norm, ray.dir);
-    if (fabs(normDotRayDir) < FLOAT_MIN)
+    if (fabs(normDotRayDir) < FP_TOLERANCE)
         return {};
     
     // Compute t
     float t = -(glm::dot(rayTri.norm, ray.origin) + rayTri.d) / normDotRayDir;
  
     // Return if point is behind origin or is more than tLimit (short-circuit if would be behind previously calculated triangle - or behind bounding box)
-    if (t < 0 || t > tLimit)
+    if (t < 0 || t > tLimit+FP_TOLERANCE)
         return {};
  
     // Compute intersection point
@@ -86,10 +85,8 @@ KDNode::KDNode(glm::vec3 const &min, glm::vec3 const &max)
 
 std::unique_ptr<KDNode> KDNode::construct(glm::vec3 const &min, glm::vec3 const &max, std::vector<RayTri> const &triangles)
 {
-    // Not 100% sure about this optimisation
-    // Might introduce bugs but gives a +42% speedup
-    // Shrinks bounding box to fit elements
-    glm::vec3 shrunkMin{FLOAT_MAX}, shrunkMax{FLOAT_MIN};
+    // Shrink box to fit elements
+    glm::vec3 shrunkMin{std::numeric_limits<float>::max()}, shrunkMax{std::numeric_limits<float>::lowest()};
     for (RayTri const &tri : triangles)
     {
         shrunkMin = componentMin( componentMin(shrunkMin, tri.a.pos), componentMin(tri.b.pos, tri.c.pos) );
@@ -107,7 +104,7 @@ std::unique_ptr<KDNode> KDNode::construct(glm::vec3 const &min, glm::vec3 const 
 std::unique_ptr<KDNode> KDNode::construct(std::vector<RayTri> const &triangles)
 {
     // Calculate min and max
-    glm::vec3 min{FLOAT_MAX}, max{FLOAT_MIN};
+    glm::vec3 min{std::numeric_limits<float>::max()}, max{std::numeric_limits<float>::lowest()};
     for (RayTri const &tri : triangles)
     {
         min = componentMin( componentMin(min, tri.a.pos), componentMin(tri.b.pos, tri.c.pos) );
@@ -262,5 +259,5 @@ KDTree::KDTree(std::vector<RayTri> const &triangles)
 
 std::optional<Hit> KDTree::getHit(Ray const &ray) const
 {
-    return root->getHit(ray, FLOAT_MAX);
+    return root->getHit(ray, std::numeric_limits<float>::max());
 }

@@ -98,7 +98,7 @@ int run()
     std::vector<std::pair<Mesh const, PhysicalMaterial &>> rayMeshes
     {
         { objLoader::loadObj("resources/models/cornell/cornell.obj"), floorMat },
-        { objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", 0.5f), gargoyleMat }
+        { objLoader::loadObj("resources/models/gargoyle/gargoyle.obj"), gargoyleMat }
     };
     RayScene scene(rayMeshes);
 

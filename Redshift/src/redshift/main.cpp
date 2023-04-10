@@ -43,7 +43,7 @@ int main()
         display.registerModel(&floor);
 
         // Load gargoyle model
-        Mesh gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", 0.5f);
+        Mesh gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj");
         Material gargoyleMaterial = mtlLoader::loadMtl("resources/models/gargoyle/gargoyle.mtl");
         Model gargoyle{program, gargoyleMesh, gargoyleMaterial};
         display.registerModel(&gargoyle);
