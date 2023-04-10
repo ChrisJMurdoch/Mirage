@@ -98,12 +98,12 @@ int run()
     std::vector<std::pair<Mesh const, PhysicalMaterial &>> rayMeshes
     {
         { objLoader::loadObj("resources/models/cornell/cornell.obj"), floorMat },
-        { objLoader::loadObj("resources/models/gargoyle/gargoyle.obj"), gargoyleMat }
+        { objLoader::loadObj("resources/models/gargoyle/gargoyle.obj", 0.5f), gargoyleMat }
     };
     RayScene scene(rayMeshes);
 
     // Raytracing parameters
-    int constexpr QUALITY = 30; // 1 QUALITY ~= 1s processing
+    int constexpr QUALITY = 3; // 1 QUALITY ~= 1s processing
     int constexpr N_RAYS = 10000000 * QUALITY;
     int constexpr N_THREADS = 24;
     float constexpr A = 0.05f / QUALITY;

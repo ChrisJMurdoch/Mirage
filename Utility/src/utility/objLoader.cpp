@@ -106,7 +106,8 @@ void readData
     std::vector<glm::vec3> &vertCoords,
     std::vector<glm::vec2> &texCoords,
     std::vector<glm::vec3> &normals,
-    std::vector<Face> &faces
+    std::vector<Face> &faces,
+    float const scale
 )
 {
     // Open file
@@ -119,7 +120,7 @@ void readData
 
         // Parse vertex coordinate
         if ( std::strncmp(lPtr, "v ", 2)==0 ) 
-            vertCoords.push_back( readVec3(&lPtr[2]) );
+            vertCoords.push_back( readVec3(&lPtr[2]) * scale );
         
         // Parse texture coordinate
         else if ( std::strncmp(lPtr, "vt ", 3)==0 ) 
@@ -146,7 +147,7 @@ std::vector<Triangle> triangulate(std::vector<Face> const &faces)
     return triangles;
 }
 
-Mesh objLoader::loadObj(char const *filepath, bool const verbose)
+Mesh objLoader::loadObj(char const *filepath, float const scale, bool const verbose)
 {
     auto loadStart = std::chrono::system_clock::now();
 
@@ -155,7 +156,7 @@ Mesh objLoader::loadObj(char const *filepath, bool const verbose)
     std::vector<glm::vec2> texCoords;
     std::vector<glm::vec3> normals;
     std::vector<Face> faces;
-    readData(filepath, vertCoords, texCoords, normals, faces);
+    readData(filepath, vertCoords, texCoords, normals, faces, scale);
 
     auto processStart = std::chrono::system_clock::now();
 
