@@ -12,6 +12,8 @@ struct Pixel
 
     constexpr Pixel(float r, float g, float b) : r(r), g(g), b(b)
     { }
+    constexpr Pixel(glm::vec3 const v) : r(v.r), g(v.g), b(v.b)
+    { }
     Pixel &operator+=(Pixel const &o)
     {
         r=r+o.r;

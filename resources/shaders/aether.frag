@@ -14,12 +14,12 @@ out vec4 fragColour;
 
 void main()
 {
-    // Combined light
+    // Read albedo
+    vec4 albedo = texture(albedoMap, vTexPos);
+
+    // Read lightmap
     vec3 light = texture(bakedMap, vTexPos).xyz;
 
-    // Add ambient
-    light = clamp(light+0.05f, 0.0f, 1.0f);
-
     // Calculate colour
-    fragColour = texture(albedoMap, vTexPos) * vec4(light, 1.0);
+    fragColour = albedo * vec4(light, 1.0);
 }
