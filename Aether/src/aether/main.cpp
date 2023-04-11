@@ -135,11 +135,14 @@ int run()
     auto start = std::chrono::system_clock::now();
 
     // Simulate rays
-    std::vector<std::thread> threads;
-    for (int i=0; i<N_THREADS; i++)
-        threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, std::ref(scene), N_RAYS/N_THREADS, BOUNCES) );
-    for (std::thread &thread : threads)
-        thread.join();
+    {
+        std::vector<std::thread> threads;
+        for (int i=0; i<N_THREADS-1; i++)
+            threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, std::ref(scene), N_RAYS/N_THREADS, BOUNCES) );
+        randomRays(LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, scene, N_RAYS/N_THREADS, BOUNCES);
+        for (std::thread& thread : threads)
+            thread.join();
+    }
 
     // Report timing
     auto end = std::chrono::system_clock::now();
