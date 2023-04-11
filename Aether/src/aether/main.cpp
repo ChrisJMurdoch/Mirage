@@ -145,7 +145,7 @@ int run()
     auto end = std::chrono::system_clock::now();
     long ms = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
     float secs = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() / 1000000.0f;
-    std::cout << "Rays: " << N_RAYS << " in " << ms << "ms (" << int(N_RAYS*(1+BOUNCES)/secs/1000000) << " MegaRays/sec)" << std::endl << std::endl;
+    std::cout << "Rays: " << N_RAYS << " in " << ms << "ms (" << std::fixed << std::setprecision(2) << (N_RAYS*(1+BOUNCES)/secs/1000000) << " MegaRays/sec)" << std::endl << std::endl;
 
     // Save lightmaps to generated/ folders
     floorLightmap.save("resources/models/cornell/generated/lightmap.jpg");
