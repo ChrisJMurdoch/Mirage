@@ -30,7 +30,7 @@ glm::vec3 randvec()
     return glm::normalize(glm::vec3(x, y, z));
 }
 
-void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, int const bounces)
+void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, float decay, int const bounces)
 {
     // Test scene for ray collision
     std::optional<Hit> hit = scene.getHit(ray);
@@ -73,14 +73,14 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, int con
         do
         {
             bounceDir = randvec();
-        } while (glm::dot(finalNormal, bounceDir) <= 0);
+        } while (glm::dot(finalNormal, bounceDir) <= 0.3f); // TODO: Calculate properly
 
         // Recursively simulate new ray
-        simulateRay( Ray{ray.at(hit->t)+bounceDir*0.001f, bounceDir}, scene, light, bounces-1 );
+        simulateRay( Ray{ray.at(hit->t)+bounceDir*0.001f, bounceDir}, scene, light*(1.0f-decay), decay, bounces-1 );
     }
 }
 
-void randomRays(glm::vec3 lightOrigin, float lightRadius, glm::vec3 const light, RayScene const &scene, int nRays, int bounces)
+void randomRays(glm::vec3 lightOrigin, float lightRadius, glm::vec3 const light, float decay, RayScene const &scene, int nRays, int bounces)
 {
     // Simulate rays
     for (int i=0; i<nRays; i++)
@@ -91,7 +91,7 @@ void randomRays(glm::vec3 lightOrigin, float lightRadius, glm::vec3 const light,
             lightOrigin + randvec()*lightRadius*static_cast<float>(uniform01(generator)), // TODO: Improve sphere distribution
             randvec()
         };
-        simulateRay(ray, scene, light, bounces);
+        simulateRay(ray, scene, light, decay, bounces);
     }
 }
 
@@ -121,15 +121,17 @@ int run()
     RayScene scene(rayMeshes);
 
     // Raytracing parameters
-    int constexpr QUALITY = 3; // 1 QUALITY ~= 1s processing
-    int constexpr BOUNCES = 1;
+    int constexpr QUALITY = 5; // 1 QUALITY ~= 1s processing
+    int constexpr BOUNCES = 2;
     int constexpr N_THREADS = 24;
 
     // Derivative parameters
-    int constexpr N_RAYS = 10000000 * QUALITY / (1+BOUNCES);
+    int constexpr T_RAYS = 10000000 * QUALITY; // 10M per quality level
+    int constexpr N_RAYS = T_RAYS / (1+BOUNCES);
     float constexpr A = 0.05f / QUALITY;
     Pixel constexpr LIGHT_ALPHA{A, A, A};
-    glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.0f};
+    float const LIGHT_DECAY = 0.25f;
+    glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.5f};
     float const LIGHT_RADIUS = 0.1f;
 
     auto start = std::chrono::system_clock::now();
@@ -138,8 +140,8 @@ int run()
     {
         std::vector<std::thread> threads;
         for (int i=0; i<N_THREADS-1; i++)
-            threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, std::ref(scene), N_RAYS/N_THREADS, BOUNCES) );
-        randomRays(LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, scene, N_RAYS/N_THREADS, BOUNCES);
+            threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, LIGHT_DECAY, std::ref(scene), N_RAYS/N_THREADS, BOUNCES) );
+        randomRays(LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, LIGHT_DECAY, scene, N_RAYS/N_THREADS, BOUNCES);
         for (std::thread& thread : threads)
             thread.join();
     }
@@ -148,7 +150,7 @@ int run()
     auto end = std::chrono::system_clock::now();
     long ms = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
     float secs = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() / 1000000.0f;
-    std::cout << "Rays: " << N_RAYS << " in " << ms << "ms (" << std::fixed << std::setprecision(2) << (N_RAYS*(1+BOUNCES)/secs/1000000) << " MegaRays/sec)" << std::endl << std::endl;
+    std::cout << "Rays: " << T_RAYS << " in " << ms << "ms (" << std::fixed << std::setprecision(2) << (T_RAYS/secs/1000000) << " MegaRays/sec)" << std::endl << std::endl;
 
     // Save lightmaps to generated/ folders
     floorLightmap.save("resources/models/cornell/generated/lightmap.jpg");

@@ -65,7 +65,7 @@ int main()
             glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(display.width)/display.height, 0.1f, 100.0f);
 
             // Create matrices
-            float cHeight = 2, tHeight = 2;
+            float cHeight = 2, tHeight = 1.5f;
             float const radius = 4.0f;
 
             glm::vec3 cameraPos = glm::vec3( sin(time())*radius,cHeight, cos(time())*radius );
