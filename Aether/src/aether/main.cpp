@@ -30,7 +30,7 @@ glm::vec3 randvec()
     return glm::normalize(glm::vec3(x, y, z));
 }
 
-void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, float decay, int const bounces)
+void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, int const bounces)
 {
     // Test scene for ray collision
     std::optional<Hit> hit = scene.getHit(ray);
@@ -48,6 +48,9 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, float d
     auto &normalMap = hit->triangle->material.normal;
     int nRow = interpolatedVertex.uv.y*(normalMap->getHeight()-1);
     int nCol = interpolatedVertex.uv.x*(normalMap->getWidth()-1);
+    auto &albedoMap = hit->triangle->material.albedo;
+    int aRow = interpolatedVertex.uv.y*(albedoMap->getHeight()-1);
+    int aCol = interpolatedVertex.uv.x*(albedoMap->getWidth()-1);
 
     // Calculate TBN
     glm::mat3 tbn = glm::mat3
@@ -65,6 +68,9 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, float d
     // Modify lightmap pixel
     (*lightmap)[lRow][lCol] += light * gradientModifier * hit->triangle->lightModifier;
 
+    // Calculate bounce colour
+    glm::vec3 colour = static_cast<glm::vec3>((*albedoMap)[aRow][aCol]);
+
     // Bounce
     if (bounces>0)
     {
@@ -73,14 +79,14 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, float d
         do
         {
             bounceDir = randvec();
-        } while (glm::dot(finalNormal, bounceDir) <= 0.3f); // TODO: Calculate properly
+        } while (glm::dot(finalNormal, bounceDir) <= 0.15f); // TODO: Calculate properly
 
         // Recursively simulate new ray
-        simulateRay( Ray{ray.at(hit->t)+bounceDir*0.001f, bounceDir}, scene, light*(1.0f-decay), decay, bounces-1 );
+        simulateRay( Ray{ray.at(hit->t)+bounceDir*0.001f, bounceDir}, scene, light*colour, bounces-1 );
     }
 }
 
-void randomRays(glm::vec3 lightOrigin, float lightRadius, glm::vec3 const light, float decay, RayScene const &scene, int nRays, int bounces)
+void randomRays(glm::vec3 lightOrigin, float lightRadius, glm::vec3 const light, RayScene const &scene, int nRays, int bounces)
 {
     // Simulate rays
     for (int i=0; i<nRays; i++)
@@ -91,13 +97,17 @@ void randomRays(glm::vec3 lightOrigin, float lightRadius, glm::vec3 const light,
             lightOrigin + randvec()*lightRadius*static_cast<float>(uniform01(generator)), // TODO: Improve sphere distribution
             randvec()
         };
-        simulateRay(ray, scene, light, decay, bounces);
+        simulateRay(ray, scene, light, bounces);
     }
 }
 
 int run()
 {
     std::cout << " // === AETHER === \\\\ " << std::endl << std::endl;
+
+    // Load albedo maps
+    Image floorAlbedoMap{"resources/models/cornell/textures/2k/albedo.jpg"};
+    Image gargoyleAlbedoMap{"resources/models/gargoyle/textures/2k/albedo.jpg"};
 
     // Load PBR maps
     Image floorNormalMap{"resources/models/cornell/textures/2k/normal.jpg"};
@@ -109,8 +119,8 @@ int run()
     Image gargoyleLightmap{res, res};
 
     // Create physical materials
-    PhysicalMaterial floorMat{&floorNormalMap, &floorLightmap};
-    PhysicalMaterial gargoyleMat{&gargoyleNormalMap, &gargoyleLightmap};
+    PhysicalMaterial floorMat{&floorAlbedoMap, &floorNormalMap, &floorLightmap};
+    PhysicalMaterial gargoyleMat{&gargoyleAlbedoMap, &gargoyleNormalMap, &gargoyleLightmap};
 
     // Create raytraceable scene
     std::vector<std::pair<Mesh const, PhysicalMaterial &>> rayMeshes
@@ -126,13 +136,12 @@ int run()
     int constexpr N_THREADS = 24;
 
     // Derivative parameters
-    int constexpr T_RAYS = 8000000 * QUALITY;
+    int constexpr T_RAYS = 7500000 * QUALITY;
     int constexpr N_RAYS = T_RAYS / (1+BOUNCES);
     float constexpr A = 0.000006f / QUALITY;
     Pixel constexpr LIGHT_ALPHA{A, A, A};
-    float const LIGHT_DECAY = 0.25f;
-    glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.5f};
-    float const LIGHT_RADIUS = 0.1f;
+    glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.0f};
+    float const LIGHT_RADIUS = 0.75f;
 
     auto start = std::chrono::system_clock::now();
 
@@ -140,8 +149,8 @@ int run()
     {
         std::vector<std::thread> threads;
         for (int i=0; i<N_THREADS-1; i++)
-            threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, LIGHT_DECAY, std::ref(scene), N_RAYS/N_THREADS, BOUNCES) );
-        randomRays(LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, LIGHT_DECAY, scene, N_RAYS/N_THREADS, BOUNCES);
+            threads.push_back( std::thread(randomRays, LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, std::ref(scene), N_RAYS/N_THREADS, BOUNCES) );
+        randomRays(LIGHT_ORIGIN, LIGHT_RADIUS, LIGHT_ALPHA, scene, N_RAYS/N_THREADS, BOUNCES);
         for (std::thread& thread : threads)
             thread.join();
     }

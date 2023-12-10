@@ -72,6 +72,7 @@ private:
 
 struct PhysicalMaterial
 {
+    Image const *albedo;
     Image const *normal;
     Image *lightmap;
 };
