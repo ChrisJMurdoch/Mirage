@@ -60,8 +60,7 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, float d
     glm::vec3 finalNormal = tbn * tangentSpaceNormal;
 
     // Get gradient modifier
-    // float gradientModifier = std::clamp( glm::dot(-ray.dir, finalNormal), 0.0f, 1.0f );
-    float gradientModifier = 1;
+    float gradientModifier = std::clamp( glm::dot(-ray.dir, finalNormal), 0.0f, 1.0f );
 
     // Modify lightmap pixel
     (*lightmap)[lRow][lCol] += light * gradientModifier * hit->triangle->lightModifier;
