@@ -2,6 +2,7 @@
 #include "aether/raytrace.hpp"
 
 #include "aether/kdtree.hpp"
+#include "aether/image.hpp"
 
 
 
@@ -22,6 +23,18 @@ RayTri::RayTri(Vertex const &a, Vertex const &b, Vertex const &c, PhysicalMateri
     v12 = b.pos-a.pos;
     v23 = c.pos-b.pos;
     v31 = a.pos-c.pos;
+    
+    // Pre-calculate real surface area
+    float realSurfaceArea = 0.5f * glm::length(norm);
+
+    // Pre-calculate texture surface area
+    glm::vec2 uvAb=b.uv-a.uv, uvAc=c.uv-a.uv;
+    float uvSurfaceArea = 0.5f * std::abs(uvAb.x*uvAc.y - uvAb.y*uvAc.x);
+    int texturePixels = material.lightmap->getWidth() * material.lightmap->getHeight();
+    float textureSurfaceArea = texturePixels * uvSurfaceArea;
+
+    // Set light modifier based on real and texture areas (accounts for per-texel ray hit frequency)
+    lightModifier = textureSurfaceArea / realSurfaceArea;
 }
 
 Vertex RayTri::interpolate(glm::vec3 const &p) const

@@ -59,11 +59,12 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, float d
     glm::vec3 const &tangentSpaceNormal = glm::normalize( static_cast<glm::vec3>((*normalMap)[nRow][nCol]) * 2.0f - 1.0f );
     glm::vec3 finalNormal = tbn * tangentSpaceNormal;
 
-    // Get diffuse gradient
-    float diffuseMult = std::clamp( glm::dot(-ray.dir, finalNormal), 0.0f, 1.0f );
+    // Get gradient modifier
+    // float gradientModifier = std::clamp( glm::dot(-ray.dir, finalNormal), 0.0f, 1.0f );
+    float gradientModifier = 1;
 
     // Modify lightmap pixel
-    (*lightmap)[lRow][lCol] += light * diffuseMult;
+    (*lightmap)[lRow][lCol] += light * gradientModifier * hit->triangle->lightModifier;
 
     // Bounce
     if (bounces>0)
@@ -126,9 +127,9 @@ int run()
     int constexpr N_THREADS = 24;
 
     // Derivative parameters
-    int constexpr T_RAYS = 10000000 * QUALITY; // 10M per quality level
+    int constexpr T_RAYS = 8000000 * QUALITY;
     int constexpr N_RAYS = T_RAYS / (1+BOUNCES);
-    float constexpr A = 0.05f / QUALITY;
+    float constexpr A = 0.000006f / QUALITY;
     Pixel constexpr LIGHT_ALPHA{A, A, A};
     float const LIGHT_DECAY = 0.25f;
     glm::vec3 constexpr LIGHT_ORIGIN{0.0f, 1.0f, 1.5f};

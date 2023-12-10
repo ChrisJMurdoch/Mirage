@@ -34,6 +34,9 @@ struct RayTri
     float d;
     glm::vec3 v12, v23, v31;
 
+    // Pre-calculated light modifier
+    float lightModifier;
+
     RayTri(Vertex const &a, Vertex const &b, Vertex const &c, PhysicalMaterial &material);
     Vertex interpolate(glm::vec3 const &point) const;
 };
