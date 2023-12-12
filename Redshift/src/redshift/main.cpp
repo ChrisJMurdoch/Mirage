@@ -1,5 +1,6 @@
 
 #include "utility/objLoader.hpp"
+#include "utility/fbxLoader.hpp"
 #include "utility/geometry.hpp"
 
 #include "render/display.hpp"
@@ -46,7 +47,14 @@ int main()
         Mesh gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj");
         Material gargoyleMaterial = mtlLoader::loadMtl("resources/models/gargoyle/gargoyle.mtl");
         Model gargoyle{program, gargoyleMesh, gargoyleMaterial};
-        display.registerModel(&gargoyle);
+        // display.registerModel(&gargoyle);
+
+        // Load model
+        Mesh mesh = fbxLoader::loadFbx("resources/models/wall/wall.fbx");
+        Mesh mesh2 = fbxLoader::loadFbx("resources/models/statue/statue.fbx");
+        Material material = mtlLoader::loadMtl("resources/models/cornell/cornell.mtl");
+        Model model{program, mesh, material};
+        display.registerModel(&model);
 
         auto end = std::chrono::system_clock::now();
         std::cout << "Loaded models (" << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << "ms)" << std::endl;

@@ -4,7 +4,6 @@
 #include "utility/utility.hpp"
 
 #include <typeinfo>
-#include <iostream>
 
 /// RAII wrapper around any closeable resource
 template <typename T, template <typename> typename CreationPolicy, template <typename> typename DestructionPolicy>
@@ -20,6 +19,14 @@ public:
     Resource(Resource const &) = delete;
 
     Resource &operator=(Resource const &) = delete;
+
+    operator T *() {
+        return ptr;
+    }
+
+    T *operator->() {
+        return ptr;
+    }
 
     ~Resource()
     {
@@ -48,4 +55,7 @@ struct FbxCreationPolicy
 /// Resource specialised for FBX SDK objects
 template <typename T>
 class FbxResource : public Resource<T, FbxCreationPolicy, FbxDestructionPolicy>
-{ };
+{
+public:
+    using Resource<T, FbxCreationPolicy, FbxDestructionPolicy>::Resource;
+};
