@@ -24,6 +24,7 @@ Display::Display(char const *title, int width, int height) : width(width), heigh
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create GLFW window
     if ((window = glfwCreateWindow(width, height, title, nullptr, nullptr)) == NULL)
@@ -43,6 +44,7 @@ Display::Display(char const *title, int width, int height) : width(width), heigh
     // GL Options
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_MULTISAMPLE);
 
     // Set user pointer for callbacks
     glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
