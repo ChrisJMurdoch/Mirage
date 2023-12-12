@@ -16,15 +16,18 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
 
 # ===== VENDOR RESOURCE PATHS =====
 
-set(GLAD_SRC     vendor/glad-4.6-core/src)
-set(GLAD_INCLUDE vendor/glad-4.6-core/include)
+set(FBXSDK_INCLUDE vendor/fbxsdk-2020.3.4/include)
+set(FBXSDK_BIN     vendor/fbxsdk-2020.3.4/bin)
 
-set(GLFW_INCLUDE vendor/glfw-3.3.8/include)
-set(GLFW_BIN     vendor/glfw-3.3.8/bin/x64/release)
+set(GLAD_SRC       vendor/glad-4.6-core/src)
+set(GLAD_INCLUDE   vendor/glad-4.6-core/include)
 
-set(GLM_INCLUDE  vendor/glm-9.9.9.8/include)
+set(GLFW_INCLUDE   vendor/glfw-3.3.8/include)
+set(GLFW_BIN       vendor/glfw-3.3.8/bin/x64/release)
 
-set(STBI_INCLUDE vendor/stb_image/include)
+set(GLM_INCLUDE    vendor/glm-9.9.9.8/include)
+
+set(STBI_INCLUDE   vendor/stb_image/include)
 
 # ===== BUILDSCRIPT =====
 
@@ -33,12 +36,14 @@ set(STBI_INCLUDE vendor/stb_image/include)
 add_library(Utility STATIC)
 target_sources(Utility
     PRIVATE # Internal
+        Utility/src/utility/fbxLoader.cpp
         Utility/src/utility/objLoader.cpp
 )
 target_include_directories(Utility
     PRIVATE # Internal
         Utility/include/
     PRIVATE # Vendor
+        ${FBXSDK_INCLUDE}
         ${GLM_INCLUDE}
 )
 
@@ -90,6 +95,9 @@ target_link_libraries(Redshift
         Render
     PRIVATE # Vendor
         ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
+        ${CMAKE_SOURCE_DIR}/${FBXSDK_BIN}/libfbxsdk-mt.lib
+        ${CMAKE_SOURCE_DIR}/${FBXSDK_BIN}/libxml2-mt.lib
+        ${CMAKE_SOURCE_DIR}/${FBXSDK_BIN}/zlib-mt.lib
 )
 
 # --- Aether Application ---

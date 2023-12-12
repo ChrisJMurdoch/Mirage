@@ -8,7 +8,7 @@ struct Vertex;
 
 namespace objLoader
 {
-    /// Loads and processes .obj file and returns pair<vertices, indices>
+    /// Loads and processes .obj file and returns a Mesh object
     Mesh loadObj(char const *filepath, float const scale=1.0f, bool const verbose=false);
 
     /// Generates tangents and bitangents for given vertex array
