@@ -2,9 +2,10 @@
 # VSCode settings
 /.vscode/
 
-# _ Build script and artefacts
+# _ Build scripts and artifacts (https://github.com/ChrisJMurdoch/_)
 /_.bat
 /_/
+/__/
 
 # Higher-resolution textures
 /resources/models/*/textures/4k/

@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.23)
 
 # Project
-project("WorldEngine" VERSION 0.2.0)
+project("Mirage" VERSION 0.3.0)
 
 # C++ version
 set(CMAKE_CXX_STANDARD 20)
@@ -31,125 +31,46 @@ set(STBI_INCLUDE   vendor/stb_image/include)
 
 # ===== BUILDSCRIPT =====
 
-# --- Utility Library ---
+# --- Mirage Application ---
 
-add_library(Utility STATIC)
-target_sources(Utility
+add_executable(Mirage)
+target_sources(Mirage
     PRIVATE # Internal
-        Utility/src/utility/fbxLoader.cpp
-        Utility/src/utility/objLoader.cpp
-)
-target_include_directories(Utility
-    PRIVATE # Internal
-        Utility/include/
-    PRIVATE # Vendor
-        ${FBXSDK_INCLUDE}
-        ${GLM_INCLUDE}
-)
-
-# --- Render Library ---
-
-add_library(Render STATIC)
-target_sources(Render
-    PRIVATE # Internal
-    Render/src/render/display.cpp
-    Render/src/render/model.cpp
-    Render/src/render/mtlLoader.cpp
-    Render/src/render/program.cpp
-    Render/src/render/texture.cpp
+        Mirage/src/aether/aether.cpp
+        Mirage/src/aether/image.cpp
+        Mirage/src/aether/kdtree.cpp
+        Mirage/src/aether/raytrace.cpp
+        Mirage/src/mirage/main.cpp
+        Mirage/src/render/display.cpp
+        Mirage/src/render/model.cpp
+        Mirage/src/render/mtlLoader.cpp
+        Mirage/src/render/program.cpp
+        Mirage/src/render/texture.cpp
+        Mirage/src/render/display.cpp
+        Mirage/src/render/model.cpp
+        Mirage/src/render/mtlLoader.cpp
+        Mirage/src/render/program.cpp
+        Mirage/src/render/texture.cpp
+        Mirage/src/utility/fbxLoader.cpp
+        Mirage/src/utility/objLoader.cpp
     PRIVATE # Vendor
         ${GLAD_SRC}/glad.c
 )
-target_include_directories(Render
+target_include_directories(Mirage
     PRIVATE # Internal
-        Render/include/
-        Render/src/ # For .inl files
-    PRIVATE # Project
-        Utility/include/
+        Mirage/include/
+        Mirage/inline/
     PRIVATE # Vendor
+        ${FBXSDK_INCLUDE}
         ${GLAD_INCLUDE}
         ${GLFW_INCLUDE}
         ${GLM_INCLUDE}
         ${STBI_INCLUDE}
 )
-
-# --- Redshift Application ---
-
-add_executable(Redshift)
-target_sources(Redshift
-    PRIVATE # Internal
-        Redshift/src/redshift/main.cpp
-)
-target_include_directories(Redshift
-    PRIVATE # Internal
-        Redshift/include/
-    PRIVATE # Project
-        Utility/include/
-        Render/include/
-    PRIVATE # Vendor
-        ${GLM_INCLUDE}
-)
-target_link_libraries(Redshift
-    PRIVATE # Project
-        Utility
-        Render
+target_link_libraries(Mirage
     PRIVATE # Vendor
         ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
         ${CMAKE_SOURCE_DIR}/${FBXSDK_BIN}/libfbxsdk-mt.lib
         ${CMAKE_SOURCE_DIR}/${FBXSDK_BIN}/libxml2-mt.lib
         ${CMAKE_SOURCE_DIR}/${FBXSDK_BIN}/zlib-mt.lib
-)
-
-# --- Aether Application ---
-
-add_executable(Aether)
-target_sources(Aether
-    PRIVATE # Internal
-        Aether/src/aether/image.cpp
-        Aether/src/aether/kdtree.cpp
-        Aether/src/aether/main.cpp
-        Aether/src/aether/raytrace.cpp
-)
-target_include_directories(Aether
-    PRIVATE # Internal
-        Aether/include/
-        Aether/src/ # For .inl files
-    PRIVATE # Project
-        Utility/include/
-        Render/include/
-    PRIVATE # Vendor
-        ${GLM_INCLUDE}
-        ${STBI_INCLUDE}
-)
-target_link_libraries(Aether
-    PRIVATE # Project
-        Utility
-        Render
-    PRIVATE # Vendor
-        ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
-)
-
-# --- Terra Application ---
-
-add_executable(Terra)
-target_sources(Terra
-    PRIVATE # Internal
-        Terra/src/terra/main.cpp
-        Terra/src/terra/generate.cpp
-)
-target_include_directories(Terra
-    PRIVATE # Internal
-        Terra/include/
-    PRIVATE # Project
-        Utility/include/
-        Render/include/
-    PRIVATE # Vendor
-        ${GLM_INCLUDE}
-)
-target_link_libraries(Terra
-    PRIVATE # Project
-        Utility
-        Render
-    PRIVATE # Vendor
-        ${CMAKE_SOURCE_DIR}/${GLFW_BIN}/glfw3.lib
 )

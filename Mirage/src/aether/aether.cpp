@@ -1,7 +1,8 @@
 
+#include "aether/aether.hpp"
+
 #include "utility/geometry.hpp"
 #include "utility/objLoader.hpp"
-
 #include "aether/image.hpp"
 #include "aether/raytrace.hpp"
 
@@ -101,7 +102,7 @@ void randomRays(glm::vec3 lightOrigin, float lightRadius, glm::vec3 const light,
     }
 }
 
-int run()
+int Aether::run()
 {
     std::cout << " // === AETHER === \\\\ " << std::endl << std::endl;
 
@@ -168,16 +169,4 @@ int run()
     std::cout << " \\\\ === AETHER === // " << std::endl;
 
     return 0;
-}
-
-int main()
-{
-    try
-    {
-        return run();
-    }
-    catch(std::exception const &e)
-    {
-        std::cerr << e.what() << '\n';
-    }
 }

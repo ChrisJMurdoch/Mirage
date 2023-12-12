@@ -2,12 +2,12 @@
 #include "utility/objLoader.hpp"
 #include "utility/fbxLoader.hpp"
 #include "utility/geometry.hpp"
-
 #include "render/display.hpp"
 #include "render/mtlLoader.hpp"
 #include "render/program.hpp"
 #include "render/texture.hpp"
 #include "render/model.hpp"
+#include "aether/aether.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,14 +23,14 @@ float time()
     return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start).count() / 1000000.0f;
 }
 
-int main()
+void run()
 {
-    std::cout << " // === REDSHIFT === \\\\ " << std::endl << std::endl;
+    std::cout << std::endl << " // === MIRAGE === \\\\ " << std::endl << std::endl;
 
     try
     {
         // Create OpenGL display
-        Display display{"Redshift", 1000, 600};
+        Display display{"Mirage", 1000, 600};
 
         // Compile shaders into program
         Program program{"resources/shaders/model.vert", "resources/shaders/aether.frag"};
@@ -47,14 +47,11 @@ int main()
         Mesh gargoyleMesh = objLoader::loadObj("resources/models/gargoyle/gargoyle.obj");
         Material gargoyleMaterial = mtlLoader::loadMtl("resources/models/gargoyle/gargoyle.mtl");
         Model gargoyle{program, gargoyleMesh, gargoyleMaterial};
-        // display.registerModel(&gargoyle);
+        display.registerModel(&gargoyle);
 
-        // Load model
-        Mesh mesh = fbxLoader::loadFbx("resources/models/wall/wall.fbx");
+        // Load FBX models - WIP
+        Mesh mesh1 = fbxLoader::loadFbx("resources/models/wall/wall.fbx");
         Mesh mesh2 = fbxLoader::loadFbx("resources/models/statue/statue.fbx");
-        Material material = mtlLoader::loadMtl("resources/models/cornell/cornell.mtl");
-        Model model{program, mesh, material};
-        display.registerModel(&model);
 
         auto end = std::chrono::system_clock::now();
         std::cout << "Loaded models (" << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << "ms)" << std::endl;
@@ -91,7 +88,23 @@ int main()
             display.render();
         }
         
-        std::cout << " \\\\ === REDSHIFT === // " << std::endl;
+        std::cout << " \\\\ === MIRAGE === // " << std::endl;
+    }
+    catch(const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    try
+    {
+        // Optionally generate lightmaps with aether
+        if (argc>=2 && strcmp(argv[1], "aether")==0) Aether::run();
+
+        // Start engine
+        run();
     }
     catch(const std::exception &e)
     {

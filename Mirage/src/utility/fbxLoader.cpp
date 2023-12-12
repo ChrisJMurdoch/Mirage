@@ -77,7 +77,7 @@ Mesh fbxLoader::loadFbx(char const *filepath, float const scale, bool const verb
     FbxResource<fbxsdk::FbxIOSettings> settings{manager, IOSROOT};
 
     // Initialise importer
-    FbxResource<fbxsdk::FbxImporter> importer{manager, "World Engine FBX Importer"};
+    FbxResource<fbxsdk::FbxImporter> importer{manager, "Mirage FBX Importer"};
     falseThrow(importer->Initialize(filepath, -1, settings), std::string("Failed to load ") + filepath);
 
     // Create blank scene
