@@ -44,14 +44,22 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, int con
 
     // Get relevant maps
     auto &lightmap = hit->triangle->material.lightmap;
-    int lRow = interpolatedVertex.uv.y*(lightmap->getHeight()-1);
-    int lCol = interpolatedVertex.uv.x*(lightmap->getWidth()-1);
+    int lRow = floor(interpolatedVertex.uv.y*(lightmap->getHeight()));
+    int lCol = floor(interpolatedVertex.uv.x*(lightmap->getWidth()));
     auto &normalMap = hit->triangle->material.normal;
-    int nRow = interpolatedVertex.uv.y*(normalMap->getHeight()-1);
-    int nCol = interpolatedVertex.uv.x*(normalMap->getWidth()-1);
+    int nRow = floor(interpolatedVertex.uv.y*(normalMap->getHeight()));
+    int nCol = floor(interpolatedVertex.uv.x*(normalMap->getWidth()));
     auto &albedoMap = hit->triangle->material.albedo;
-    int aRow = interpolatedVertex.uv.y*(albedoMap->getHeight()-1);
-    int aCol = interpolatedVertex.uv.x*(albedoMap->getWidth()-1);
+    int aRow = floor(interpolatedVertex.uv.y*(albedoMap->getHeight()));
+    int aCol = floor(interpolatedVertex.uv.x*(albedoMap->getWidth()));
+
+    // Clamp to avoid border case where UV coord is perfect 1.0
+    lRow = std::clamp(lRow, 0, lightmap->getHeight());
+    lCol = std::clamp(lCol, 0, lightmap->getWidth());
+    nRow = std::clamp(nRow, 0, normalMap->getHeight());
+    nCol = std::clamp(nCol, 0, normalMap->getWidth());
+    aRow = std::clamp(aRow, 0, albedoMap->getHeight());
+    aCol = std::clamp(aCol, 0, albedoMap->getWidth());
 
     // Calculate TBN
     glm::mat3 tbn = glm::mat3
