@@ -1,7 +1,7 @@
 
 #version 460 core
 
-const vec3 cLightPosition = vec3(2,5,1);
+const vec3 cLightPosition = vec3(0, 1, 1);
 
 uniform sampler2D albedoMap;
 uniform sampler2D normalMap;

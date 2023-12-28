@@ -54,12 +54,12 @@ void simulateRay(Ray const &ray, RayScene const &scene, glm::vec3 light, int con
     int aCol = floor(interpolatedVertex.uv.x*(albedoMap->getWidth()));
 
     // Clamp to avoid border case where UV coord is perfect 1.0
-    lRow = std::clamp(lRow, 0, lightmap->getHeight());
-    lCol = std::clamp(lCol, 0, lightmap->getWidth());
-    nRow = std::clamp(nRow, 0, normalMap->getHeight());
-    nCol = std::clamp(nCol, 0, normalMap->getWidth());
-    aRow = std::clamp(aRow, 0, albedoMap->getHeight());
-    aCol = std::clamp(aCol, 0, albedoMap->getWidth());
+    lRow = std::clamp(lRow, 0, lightmap->getHeight()-1);
+    lCol = std::clamp(lCol, 0, lightmap->getWidth()-1);
+    nRow = std::clamp(nRow, 0, normalMap->getHeight()-1);
+    nCol = std::clamp(nCol, 0, normalMap->getWidth()-1);
+    aRow = std::clamp(aRow, 0, albedoMap->getHeight()-1);
+    aCol = std::clamp(aCol, 0, albedoMap->getWidth()-1);
 
     // Calculate TBN
     glm::mat3 tbn = glm::mat3
